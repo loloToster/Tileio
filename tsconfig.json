@@ -1,19 +1,16 @@
 {
+  "exclude": [
+    "./src/public"
+  ],
   "compilerOptions": {
-    /* Language and Environment */
     "target": "es2021",
-    /* Modules */
     "module": "commonjs",
     "rootDir": "./src",
     "moduleResolution": "node",
-    /* Emit */
     "outDir": "./dist",
-    /* Interop Constraints */
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    /* Type Checking */
     "strict": true,
-    /* Completeness */
     "skipLibCheck": true
   }
 }

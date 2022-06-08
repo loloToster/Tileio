@@ -28,6 +28,8 @@ app.use(passport.session())
 app.use("/", require(__dirname + "/routers/root"))
 app.use("/auth", require(__dirname + "/routers/auth"))
 
+app.use("/static", express.static(__dirname + "/public/static"))
+
 mongoose.connect(process.env.MONGO!)
 
 const port = process.env.PORT
