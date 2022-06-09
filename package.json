@@ -4,8 +4,9 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
+    "watch-ts": "webpack --config ./src/public/webpack.dev.js",
     "watch-sass": "sass -w ./src/public/src/sass/:./src/public/static/css --no-source-map",
-    "build-client": "webpack --config ./src/public/webpack.config.js",
+    "build-client": "webpack --config ./src/public/webpack.prod.js",
     "build-server": "tsc && xcopy .\\src\\views\\ .\\dist\\views\\ /Y /E && xcopy .\\src\\public\\static\\ .\\dist\\public\\static\\ /Y /E",
     "build": "npm run build-client && npm run build-server",
     "prestart": "npm run build",

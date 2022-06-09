@@ -20,7 +20,7 @@ for (file of fs.readdirSync(sassDir)) {
 
 // compile typescript
 module.exports = {
-    mode: "development",
+    mode: "production",
     entry: {
         login: tsDir + "/login.ts",
         index: tsDir + "/index.ts"
