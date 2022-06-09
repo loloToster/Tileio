@@ -4,12 +4,13 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
+    "watch-sass": "sass -w ./src/public/src/sass/:./src/public/static/css --no-source-map",
     "build-client": "webpack --config ./src/public/webpack.config.js",
     "build-server": "tsc && xcopy .\\src\\views\\ .\\dist\\views\\ /Y /E && xcopy .\\src\\public\\static\\ .\\dist\\public\\static\\ /Y /E",
     "build": "npm run build-client && npm run build-server",
     "prestart": "npm run build",
     "start": "node ./dist/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ts-node ./src/app.ts"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,8 @@
     "@types/express": "^4.17.13",
     "@types/express-session": "^1.17.4",
     "@types/passport": "^1.0.8",
+    "@types/passport-discord": "^0.1.5",
+    "@types/passport-github2": "^1.2.5",
     "@types/passport-google-oauth20": "^2.0.11",
     "css-loader": "^6.7.1",
     "dotenv": "^16.0.1",
@@ -26,6 +29,8 @@
     "gridstack": "^5.1.0",
     "mongoose": "^6.3.5",
     "passport": "^0.6.0",
+    "passport-discord": "^0.1.4",
+    "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
     "sass": "^1.52.2",
     "style-loader": "^3.3.1",

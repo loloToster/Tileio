@@ -15,7 +15,7 @@
     <% if (user) { %>
         <ul>
             <li>
-                id: <%= user.googleId %>
+                id: <%= user.strategyId %>
             </li>
             <li>
                 name: <%= user.name %>
@@ -23,6 +23,7 @@
             <li>
                 pic: <%= user.picture %>
             </li>
+            <img src="<%= user.picture %>" width="128">
             <li>
                 email: <%= user.email %>
             </li>
@@ -31,7 +32,7 @@
             logout
         </a>
         <% } else { %>
-            <a href="/auth/login">
+            <a href="/auth">
                 login
             </a>
             <%}%>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <main>
+        <h1>Login</h1>
+        <input type="email" placeholder="email" id="email-input">
+        <input type="password" placeholder="password" id="password-input">
+        <a class="forgot-pass" href="">Forgot password?</a>
+        <button id="login">Login</button>
+        <div class="separator">
+            <div class="separator-line"></div>
+            <span>or</span>
+            <div class="separator-line"></div>
+        </div>
+        <a class="login-btn google" href="/auth/google">
+            <div class="brand-logo">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/google.svg">
+            </div>
+            <div class="text">LOGIN WITH GOOGLE</div>
+        </a>
+        <a class="login-btn discord" href="/auth/discord">
+            <div class="brand-logo">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/discord.svg">
+            </div>
+            <div class="text">LOGIN WITH DISCORD</div>
+        </a>
+        <a class="login-btn github" href="/auth/github">
+            <div class="brand-logo">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/github.svg">
+            </div>
+            <div class="text">LOGIN WITH GITHUB</div>
+        </a>
+    </main>
+</body>
+
+</html>

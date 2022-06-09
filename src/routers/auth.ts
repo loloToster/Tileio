@@ -4,14 +4,29 @@ import passport from "passport"
 const router = express.Router()
 
 router.get("/", async (req, res) => {
-    res.redirect("/auth/login")
+    res.render("login")
 })
 
-router.get("/login", passport.authenticate("google", {
-    scope: ["profile", "email"]
-}))
+router.get("/logout", (req, res) => {
+    req.logout()
+    res.redirect("/")
+})
 
-router.get("/callback", passport.authenticate("google"), (req, res) => {
+router.get("/google", passport.authenticate("google"))
+
+router.get("/google/callback", passport.authenticate("google"), (req, res) => {
+    res.redirect("/")
+})
+
+router.get("/discord", passport.authenticate("discord"))
+
+router.get("/discord/callback", passport.authenticate("discord"), (req, res) => {
+    res.redirect("/")
+})
+
+router.get("/github", passport.authenticate("github"))
+
+router.get("/github/callback", passport.authenticate("github"), (req, res) => {
     res.redirect("/")
 })
 
