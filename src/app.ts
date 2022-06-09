@@ -1,6 +1,6 @@
-import express from "express"
-import cookieSession from "express-session"
 import dotenv from "dotenv"
+import express from "express"
+import cookieSession from "cookie-session"
 import passport from "passport"
 import mongoose from "mongoose"
 
@@ -14,12 +14,8 @@ app.set("views", __dirname + "/views")
 require(__dirname + "/config/passport-config")
 
 app.use(cookieSession({
-    resave: false,
-    saveUninitialized: true,
-    secret: process.env.COOKIE_SECRET!,
-    cookie: {
-        maxAge: 24 * 60 * 60 * 1000
-    }
+    maxAge: 24 * 60 * 60 * 1000,
+    keys: [process.env.COOKIE_SECRET!]
 }))
 
 app.use(passport.initialize())
