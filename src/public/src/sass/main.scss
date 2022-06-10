@@ -19,27 +19,6 @@ $grid-margin: 5px;
 $edit-el-size: 2.7rem;
 $num-of-els: 3;
 
-#edit {
-    background-color: c.$cell-color;
-    display: flex;
-}
-
-#add-cell {
-    background-color: c.$green;
-}
-
-#trash {
-    background-color: c.$red;
-
-    transition: all 200ms linear;
-}
-
-#trash.active {
-    width: $edit-el-size * 3;
-    height: $edit-el-size * 3;
-    border-top-left-radius: calc($edit-el-size / 2);
-}
-
 .edit-panel {
     position: absolute;
     background-color: c.$light-grey;
@@ -100,4 +79,26 @@ $num-of-els: 3;
             display: block;
         }
     }
+}
+
+#edit {
+    background-color: c.$cell-color;
+    display: flex;
+}
+
+#add-cell {
+    background-color: c.$green;
+}
+
+#trash {
+    background-color: c.$red;
+
+    transition: 200ms linear;
+    transition-property: width, height;
+    border-top-left-radius: calc($edit-el-size / 2);
+}
+
+#trash.active {
+    width: $edit-el-size * 3;
+    height: $edit-el-size * 3;
 }
