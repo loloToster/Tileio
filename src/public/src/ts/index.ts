@@ -4,17 +4,23 @@ import "gridstack/dist/h5/gridstack-dd-native"
 async function main() {
     let initialGrid = await fetch("/grid").then(r => r.json())
 
+    const trashSelector = "#trash"
+
     const grid = GridStack.init({
         row: initialGrid.row,
         column: initialGrid.col,
         cellHeight: "initial",
         margin: "5px",
         disableOneColumnMode: true,
-        removable: "#trash",
+        removable: trashSelector,
         float: true,
         disableDrag: true,
         disableResize: true
     })
+
+    const trash = document.querySelector(trashSelector)
+    grid.on("dragstart", () => trash?.classList.add("active"))
+    grid.on("dragstop", () => trash?.classList.remove("active"))
 
     const dummyClass = "dummy-cell"
 
@@ -72,22 +78,18 @@ async function main() {
     }
 
     const editButton = document.getElementById("edit")
-    const addButton = document.getElementById("add")
-
-    addButton!.style.display = "none"
+    const addButton = document.getElementById("add-cell")
 
     let editing = false
     editButton?.addEventListener("click", async () => {
         editing = !editing
-        editButton.innerText = editing ? "Save" : "Edit"
+        editButton.parentElement?.classList.toggle("active", editing)
 
         if (editing) {
             grid.enable()
             removeDummies()
-            addButton!.style.display = "inline-block"
         } else {
             grid.disable()
-            addButton!.style.display = "none"
             await saveGrid()
             fillGridWithDummies()
         }

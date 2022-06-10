@@ -13,13 +13,20 @@
 </head>
 
 <body>
-    <div>
-        <button id="edit">Edit</button>
-        <button id="add">Add</button>
-        <div id="trash">trash</div>
-    </div>
-    <div id="main">
+    <div class="grid-container">
         <div class="grid-stack"></div>
+        <div class="edit-panel">
+            <button id="edit" class="edit-panel-element">
+                <img class="edit-icon" src="/static/assets/edit.svg" alt="edit">
+                <img class="save-icon" src="/static/assets/cloud_upload.svg" alt="edit">
+            </button>
+            <button id="add-cell" class="edit-panel-element">
+                <img src="/static/assets/add.svg" alt="add">
+            </button>
+            <div id="trash" class="edit-panel-element">
+                <img src="/static/assets/delete.svg" alt="delete">
+            </div>
+        </div>
     </div>
 </body>
 

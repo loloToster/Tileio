@@ -1,0 +1,12 @@
+@use "../colors" as c;
+
+.grid-stack-item-content {
+    background-color: c.$cell-color;
+    border-radius: 10px;
+
+    &:hover {
+        filter: opacity(70%);
+        transform: scale(1.03);
+        cursor: pointer;
+    }
+}

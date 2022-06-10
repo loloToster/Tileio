@@ -1,32 +1,103 @@
-$bg-color: #212121;
-$cell-color: #3e3e3e;
+@use "./colors" as c;
+@use "./utils" as u;
+@forward "./components/grid";
 
 body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: $bg-color;
+    @include u.flexCenter();
+
+    background-color: c.$bg-color;
     min-height: 100vh;
     margin: 0;
 }
 
-#trash {
-    color: white;
-    padding: 2rem;
-    background-color: lightcoral;
-}
-
-#main {
+.grid-container {
     min-width: 1400px;
+    position: relative;
 }
 
-.grid-stack-item-content {
-    background-color: $cell-color;
-    border-radius: 10px;
+$grid-margin: 5px;
+$edit-el-size: 2.7rem;
+$num-of-els: 3;
 
-    &:hover {
-        filter: opacity(70%);
-        transform: scale(1.03);
+#edit {
+    background-color: c.$cell-color;
+    display: flex;
+}
+
+#add-cell {
+    background-color: c.$green;
+}
+
+#trash {
+    background-color: c.$red;
+
+    transition: all 200ms linear;
+}
+
+#trash.active {
+    width: $edit-el-size * 3;
+    height: $edit-el-size * 3;
+    border-top-left-radius: calc($edit-el-size / 2);
+}
+
+.edit-panel {
+    position: absolute;
+    background-color: c.$light-grey;
+    color: white;
+
+    width: $edit-el-size;
+    max-height: $edit-el-size * $num-of-els;
+
+    top: $grid-margin;
+    right: -$grid-margin;
+    transform: translateX(100%);
+
+    border-radius: 100vw;
+
+    button#{&}-element {
         cursor: pointer;
+    }
+
+    .edit-panel-element {
+        @include u.flexCenter();
+
+        border: none;
+        display: none;
+
+        width: $edit-el-size;
+        height: $edit-el-size;
+
+        border-radius: 50%;
+
+        margin-top: .3rem;
+
+        img {
+            filter: invert(1);
+            width: 70%;
+        }
+    }
+
+    #{&}-element:first-child {
+        margin: 0;
+    }
+
+    .edit-icon {
+        display: block;
+    }
+
+    .save-icon {
+        display: none;
+    }
+
+    &.active .edit-panel-element {
+        display: flex;
+
+        .edit-icon {
+            display: none;
+        }
+
+        .save-icon {
+            display: block;
+        }
     }
 }
