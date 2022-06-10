@@ -21,8 +21,11 @@ app.use(cookieSession({
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use(express.json())
+
 app.use("/", require(__dirname + "/routers/root"))
 app.use("/auth", require(__dirname + "/routers/auth"))
+app.use("/grid", require(__dirname + "/routers/grid"))
 
 mongoose.connect(process.env.MONGO!)
 

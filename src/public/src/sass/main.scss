@@ -1,3 +1,32 @@
-h1 {
-    background-color: red;
+$bg-color: #212121;
+$cell-color: #3e3e3e;
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $bg-color;
+    min-height: 100vh;
+    margin: 0;
+}
+
+#trash {
+    color: white;
+    padding: 2rem;
+    background-color: lightcoral;
+}
+
+#main {
+    min-width: 1400px;
+}
+
+.grid-stack-item-content {
+    background-color: $cell-color;
+    border-radius: 10px;
+
+    &:hover {
+        filter: opacity(70%);
+        transform: scale(1.03);
+        cursor: pointer;
+    }
 }

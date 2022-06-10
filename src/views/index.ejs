@@ -6,38 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/gridstack.min.css" />
+    <link rel="stylesheet" href="/gridstack-extra.min.css" />
     <link rel="stylesheet" href="/static/css/main.css">
     <script defer src="/static/js/index.js"></script>
 </head>
 
 <body>
-    <h1>HELLO WORLD</h1>
-    <% if (user) { %>
-        <ul>
-            <li>
-                id: <%= user.strategyId %>
-            </li>
-            <li>
-                name: <%= user.name %>
-            </li>
-            <li>
-                pic: <%= user.picture %>
-            </li>
-            <img src="<%= user.picture %>" width="128">
-            <li>
-                email: <%= user.email %>
-            </li>
-        </ul>
-        <a href="/auth/logout">
-            logout
-        </a>
-        <% } else { %>
-            <a href="/auth">
-                login
-            </a>
-            <%}%>
-
-                <div class="grid-stack"></div>
+    <div>
+        <button id="edit">Edit</button>
+        <button id="add">Add</button>
+        <div id="trash">trash</div>
+    </div>
+    <div id="main">
+        <div class="grid-stack"></div>
+    </div>
 </body>
 
 </html>
