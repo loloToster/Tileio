@@ -3,7 +3,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20"
 import { Strategy as DiscordStrategy } from "passport-discord"
 import { Strategy as GithubStrategy } from "passport-github2"
 
-import User from "../models/user"
+import User, { IUser } from "../models/user"
 
 passport.serializeUser((user, done) => {
     // @ts-ignore: Property 'id' does not exist on type 'User'.
@@ -15,68 +15,59 @@ passport.deserializeUser(async (id, done) => {
     done(null, user)
 })
 
+type parserFunc = (profile: any, sId: string) => IUser
+async function verify(profile: any, done: Function, strategy: string, parser: parserFunc) {
+    const strategyId = `${strategy}-${profile.id}`
+
+    let user = await User.findOne({ strategyId })
+
+    if (user) return done(null, user)
+
+    user = await new User(parser(profile, strategyId)).save()
+
+    done(null, user)
+}
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     callbackURL: "/auth/google/callback",
     scope: ["profile", "email"]
-}, async (aT, rT, profile, done) => {
-    const strategyId = "ggl-" + profile.id
-
-    let user = await User.findOne({ strategyId: strategyId })
-
-    if (user) return done(null, user)
-
-    user = await new User({
-        name: profile.displayName,
-        strategyId: strategyId,
-        email: profile._json.email || "",
-        picture: profile._json.picture || ""
-    }).save()
-
-    done(null, user)
-}))
+}, async (aT, rT, prof, cb) => verify(prof, cb, "ggl", (p, sId) => {
+    return {
+        name: p.displayName,
+        strategyId: sId,
+        email: p._json.email || "",
+        picture: p._json.picture || ""
+    }
+})))
 
 passport.use(new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID!,
     clientSecret: process.env.DISCORD_CLIENT_SECRET!,
     callbackURL: "/auth/discord/callback",
     scope: ["identify", "email"]
-}, async (aT, rT, profile, done) => {
-    const strategyId = "dsc-" + profile.id
-
-    let user = await User.findOne({ strategyId: strategyId })
-
-    if (user) return done(null, user)
-
-    user = await new User({
-        name: profile.username,
-        strategyId: strategyId,
-        email: profile.email || "",
-        picture: profile.avatar ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : ""
-    }).save()
-
-    done(null, user)
-}))
+}, async (aT, rT, prof, cb) => verify(prof, cb, "dsc", (p, sId) => {
+    return {
+        name: p.username,
+        strategyId: sId,
+        email: p.email || "",
+        picture: p.avatar ? `https://cdn.discordapp.com/avatars/${p.id}/${p.avatar}.png` : ""
+    }
+})))
 
 passport.use(new GithubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID!,
     clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     callbackURL: "/auth/github/callback",
     scope: ["read:user", "user:email"]
-}, async (aT: string, rT: string, profile: any, done: Function) => {
-    const strategyId = "git-" + profile.id
-
-    let user = await User.findOne({ strategyId: strategyId })
-
-    if (user) return done(null, user)
-
-    user = await new User({
-        name: profile.username || profile.displayName,
-        strategyId: strategyId,
-        email: profile.emails[0]?.value || "",
-        picture: profile._json.avatar_url
-    }).save()
-
-    done(null, user)
-}))
+}, async (aT: string, rT: string, prof: any, cb: Function) =>
+    verify(prof, cb, "git", (p, sId) => {
+        return {
+            name: p.username || p.displayName,
+            strategyId: sId,
+            email: p.emails[0]?.value || "",
+            picture: p._json.avatar_url
+        }
+    })
+))

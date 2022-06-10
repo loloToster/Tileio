@@ -1,10 +1,37 @@
-import mongoose from "mongoose"
+import { Schema, model } from "mongoose"
 
-const userSchema = new mongoose.Schema({
+export interface IGrid {
+    col: number,
+    row: number,
+    cells: Array<{
+        w?: number,
+        h?: number
+    }>
+}
+
+export interface IUser {
+    name: string,
+    strategyId: string,
+    email: string,
+    picture: string,
+    grid?: IGrid
+}
+
+const gridSchema = new Schema<IGrid>({
+    col: Number,
+    row: Number,
+    cells: [{
+        w: Number,
+        h: Number
+    }]
+})
+
+const userSchema = new Schema<IUser>({
     name: String,
     strategyId: String,
     email: String,
-    picture: String
+    picture: String,
+    grid: gridSchema
 })
 
-export = mongoose.model("user", userSchema)
+export default model<IUser>("user", userSchema)
