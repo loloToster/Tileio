@@ -5,7 +5,7 @@ $grid-margin: 5px;
 $edit-el-size: 2.7rem;
 $num-of-els: 3;
 
-.edit-panel {
+.grid__edit-panel {
     position: absolute;
     background-color: c.$light-grey;
     color: white;
@@ -19,11 +19,11 @@ $num-of-els: 3;
 
     border-radius: 100vw;
 
-    button#{&}-element {
+    button#{&}__item {
         cursor: pointer;
     }
 
-    .edit-panel-element {
+    &__item {
         @include u.flexCenter();
 
         border: none;
@@ -42,7 +42,7 @@ $num-of-els: 3;
         }
     }
 
-    #{&}-element:first-child {
+    &__item:first-child {
         margin: 0;
     }
 
@@ -54,7 +54,7 @@ $num-of-els: 3;
         display: none;
     }
 
-    &.active .edit-panel-element {
+    &.active &__item {
         display: flex;
 
         .edit-icon {
@@ -67,16 +67,16 @@ $num-of-els: 3;
     }
 }
 
-#edit {
+#grid__edit {
     background-color: c.$cell-color;
     display: flex;
 }
 
-#add-cell {
+#grid__add {
     background-color: c.$green;
 }
 
-#trash {
+#grid__trash {
     background-color: c.$red;
 
     transition: 200ms linear;
@@ -84,7 +84,7 @@ $num-of-els: 3;
     border-top-left-radius: calc($edit-el-size / 2);
 }
 
-#trash.active {
+#grid__trash.active {
     width: $edit-el-size * 3;
     height: $edit-el-size * 3;
 }

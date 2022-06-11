@@ -13,38 +13,39 @@
 </head>
 
 <body>
-    <div id="add-cell-modal">
-        <div class="modal-content">
+    <div class="add-modal">
+        <div class="add-modal__content">
             <h1>
                 Create Cell
             </h1>
             <h2>
                 Choose Icon
             </h2>
-            <input id="cell-icon" type="text" placeholder="Search for icon">
-            <div class="icons">
+            <input id="add-modal__icon-inp" type="text" placeholder="Search for icon">
+            <div class="add-modal__icons">
             </div>
             <h2>
                 Choose Color
             </h2>
-            <span class="choose-color">Based on icon: <div id="suggested-color" class="color"></div></span>
-            <span class="choose-color">Or your own: <input type="color" id="color-picker" class="color"></span>
+            <span class="add-modal__choose-color">Based on icon: <div id="suggested-color" class="color"></div></span>
+            <span class="add-modal__choose-color">Or your own: <input type="color" id="color-picker"
+                    class="color"></span>
             <h2>Choose link</h2>
-            <input id="cell-link" type="text" placeholder="Type your link here">
-            <span class="cell-link-validator">This doesn't look like a valid link</span>
+            <input id="add-modal__link-inp" type="text" placeholder="Type your link here">
+            <span class="add-modal__link-validator">This doesn't look like a valid link</span>
         </div>
     </div>
-    <div class="grid-container">
+    <div class="grid">
         <div class="grid-stack"></div>
-        <div class="edit-panel">
-            <button id="edit" class="edit-panel-element">
+        <div class="grid__edit-panel">
+            <button id="grid__edit" class="grid__edit-panel__item">
                 <img class="edit-icon" src="/static/assets/edit.svg" alt="edit">
                 <img class="save-icon" src="/static/assets/cloud_upload.svg" alt="edit">
             </button>
-            <button id="add-cell" class="edit-panel-element">
+            <button id="grid__add" class="grid__edit-panel__item">
                 <img src="/static/assets/add.svg" alt="add">
             </button>
-            <div id="trash" class="edit-panel-element" title="Move cells here to delete them">
+            <div id="grid__trash" class="grid__edit-panel__item" title="Move cells here to delete them">
                 <img src="/static/assets/delete.svg" alt="delete">
             </div>
         </div>

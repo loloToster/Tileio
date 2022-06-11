@@ -4,7 +4,7 @@ import "gridstack/dist/h5/gridstack-dd-native"
 async function main() {
     let initialGrid = await fetch("/grid").then(r => r.json())
 
-    const trashSelector = "#trash"
+    const trashSelector = "#grid__trash"
 
     const grid = GridStack.init({
         row: initialGrid.row,
@@ -77,8 +77,7 @@ async function main() {
         }) // .then(r => r.json())
     }
 
-    const editButton = document.getElementById("edit")
-    const addButton = document.getElementById("add-cell")
+    const editButton = document.getElementById("grid__edit")
 
     let editing = false
     editButton?.addEventListener("click", async () => {
@@ -96,9 +95,10 @@ async function main() {
     })
 
     // Creating Cells
-    const createCellModal = document.getElementById("add-cell-modal")
-    const searchIconsInput = <HTMLInputElement>document.getElementById("cell-icon")
-    const iconSearchResultsBox = document.querySelector("#add-cell-modal .icons")
+    const addButton = document.getElementById("grid__add")
+    const createCellModal = document.querySelector(".add-modal")
+    const searchIconsInput = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
+    const iconSearchResultsBox = document.querySelector(".add-modal__icons")
 
     // TODO: check if cell can fit
     addButton?.addEventListener("click", () => {

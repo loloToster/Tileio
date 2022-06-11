@@ -2,7 +2,13 @@
 @use "../colors" as c;
 @use "../utils" as u;
 
-#add-cell-modal {
+$content-width: 320px;
+$num-of-icon-in-row: 6;
+$icon-margin: 6px;
+
+$cell-width: math.div(($content-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row );
+
+.add-modal {
     @include u.flexCenter();
     display: none;
 
@@ -17,20 +23,14 @@
     &.active {
         display: flex;
     }
-}
 
-$content-width: 320px;
-$num-of-icon-in-row: 6;
-$icon-margin: 6px;
+    &__content {
+        width: $content-width;
+        padding: 32px;
 
-$cell-width: math.div(($content-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row);
-
-#add-cell-modal .modal-content {
-    width: $content-width;
-    padding: 32px;
-
-    background-color: white;
-    border-radius: 16px;
+        background-color: white;
+        border-radius: 16px;
+    }
 
     h1 {
         margin-top: 0;
@@ -51,7 +51,7 @@ $cell-width: math.div(($content-width - (($num-of-icon-in-row - 1) * $icon-margi
         }
     }
 
-    .icons {
+    &__icons {
         width: $content-width;
         display: flex;
         flex-wrap: wrap;
@@ -80,7 +80,7 @@ $cell-width: math.div(($content-width - (($num-of-icon-in-row - 1) * $icon-margi
         }
     }
 
-    .choose-color {
+    &__choose-color {
         display: flex;
         align-items: center;
         margin-bottom: 8px;
@@ -92,12 +92,12 @@ $cell-width: math.div(($content-width - (($num-of-icon-in-row - 1) * $icon-margi
             border-radius: 100vh;
             overflow: hidden;
         }
-    }
 
-    .choose-color>#suggested-color {
-        background-color: currentColor;
+        &>#suggested-color {
+            background-color: currentColor;
 
-        display: inline-block;
+            display: inline-block;
+        }
     }
 
     #color-picker {
@@ -115,7 +115,7 @@ $cell-width: math.div(($content-width - (($num-of-icon-in-row - 1) * $icon-margi
         border: none;
     }
 
-    .cell-link-validator {
+    &__link-validator {
         color: white;
 
         font-size: .8rem;
