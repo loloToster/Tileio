@@ -15,7 +15,7 @@ passport.deserializeUser(async (id, done) => {
     done(null, user)
 })
 
-type parserFunc = (profile: any, sId: string) => IUser
+type parserFunc = (profile: any, sId: string) => Omit<IUser, "grid">
 async function verify(profile: any, done: Function, strategy: string, parser: parserFunc) {
     const strategyId = `${strategy}-${profile.id}`
 
