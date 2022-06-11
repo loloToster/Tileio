@@ -95,9 +95,16 @@ async function main() {
         }
     })
 
+    const createCellModal = document.getElementById("add-cell-modal")
+
+    // TODO: check if cell can fit
     addButton?.addEventListener("click", () => {
-        if (grid.willItFit({}))
-            grid.addWidget()
+        createCellModal?.classList.add("active")
+    })
+
+    window.addEventListener("click", e => {
+        if (e.target == createCellModal)
+            createCellModal?.classList.remove("active")
     })
 }
 

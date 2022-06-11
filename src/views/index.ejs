@@ -13,6 +13,30 @@
 </head>
 
 <body>
+    <div id="add-cell-modal">
+        <div class="modal-content">
+            <h1>
+                Create Cell
+            </h1>
+            <h2>
+                Choose Icon
+            </h2>
+            <input id="cell-icon" type="text" placeholder="Search for icon">
+            <div class="icons">
+                <img src="/static/assets/edit.svg">
+                <img src="/static/assets/edit.svg">
+                <img src="/static/assets/edit.svg">
+            </div>
+            <h2>
+                Choose Color
+            </h2>
+            <span class="choose-color">Based on icon: <div id="suggested-color" class="color"></div></span>
+            <span class="choose-color">Or your own: <input type="color" id="color-picker" class="color"></span>
+            <h2>Choose link</h2>
+            <input id="cell-link" type="text" placeholder="Type your link here">
+            <span class="cell-link-validator">This doesn't look like a valid link</span>
+        </div>
+    </div>
     <div class="grid-container">
         <div class="grid-stack"></div>
         <div class="edit-panel">
@@ -23,7 +47,7 @@
             <button id="add-cell" class="edit-panel-element">
                 <img src="/static/assets/add.svg" alt="add">
             </button>
-            <div id="trash" class="edit-panel-element">
+            <div id="trash" class="edit-panel-element" title="Move cells here to delete them">
                 <img src="/static/assets/delete.svg" alt="delete">
             </div>
         </div>
