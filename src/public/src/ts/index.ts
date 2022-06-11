@@ -1,6 +1,23 @@
 import { GridStack } from "gridstack"
 import "gridstack/dist/h5/gridstack-dd-native"
 
+function getLuminance(hex: string) {
+    // hexToRgb: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+    const color = result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null
+
+    if (!color) return -1
+
+    // https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color
+    return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b
+}
+
+const LUMINANCE_THRESHOLD = 236
+
 async function main() {
     let initialGrid = await fetch("/grid").then(r => r.json())
 
@@ -99,6 +116,12 @@ async function main() {
     const createCellModal = document.querySelector(".add-modal")
     const searchIconsInput = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
     const iconSearchResultsBox = document.querySelector(".add-modal__icons")
+    const suggestedColor = document.querySelector<HTMLElement>(".add-modal__suggested-color")
+    const colorPicker = <HTMLInputElement>document.getElementById("add-modal__color-picker")
+    const linkInp = <HTMLInputElement>document.getElementById("add-modal__link-inp")
+    const linkValidation = document.querySelector(".add-modal__link-validator")
+    const preview = document.querySelector<HTMLElement>(".add-modal__preview")
+    const previewImg = preview?.querySelector("img")
 
     // TODO: check if cell can fit
     addButton?.addEventListener("click", () => {
@@ -110,47 +133,57 @@ async function main() {
             createCellModal?.classList.remove("active")
     })
 
+    type hex = string
+
     interface Icon {
         title: string,
         slug: string,
         source: string,
-        hex: string
+        hex: hex
     }
+
+    interface FriendlyIcon extends Icon {
+        url: string
+    }
+
+    const isDark = (c: hex) => getLuminance(c) < LUMINANCE_THRESHOLD
 
     async function searchForIcon(q: string, l: number): Promise<Icon[]> {
         return await fetch(`/grid/search_icon?q=${q}&l=${l}`).then(r => r.json())
     }
 
-    function getLuminance(hex: string) {
-        // hexToRgb: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-        const color = result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null
-
-        if (!color) return -1
-
-        // https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color
-        return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b
+    function changePreviewColor(color: hex) {
+        preview!.style.backgroundColor = color
+        previewImg?.classList.toggle("white", isDark(color))
     }
 
-    const LUMINANCE_THRESHOLD = 236
+    function onIconClick(e: Event, icon: FriendlyIcon) {
+        previewImg!.src = icon.url
+        suggestedColor!.style.backgroundColor = icon.hex
+        suggestedColor!.dataset.hex = icon.hex
+        changePreviewColor(icon.hex)
+    }
 
-    function createIconEl(icon: Icon) {
+    suggestedColor?.addEventListener("click", () => {
+        const color = suggestedColor.dataset.hex
+        if (color) changePreviewColor(color)
+    })
+
+    function createIconEl(icon: FriendlyIcon) {
         let iconEl = document.createElement("div")
         iconEl.classList.add("icon-wrapper")
-        iconEl.style.backgroundColor = "#" + icon.hex
+        iconEl.style.backgroundColor = icon.hex
 
         let img = document.createElement("img")
-        img.src = `https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/${icon.slug}.svg`
+        img.src = icon.url
         img.title = icon.title
 
-        if (getLuminance(icon.hex) < LUMINANCE_THRESHOLD)
+        if (isDark(icon.hex))
             img.classList.add("white")
 
         iconEl.appendChild(img)
+        iconEl.addEventListener("click", e => onIconClick(e, icon))
+
         return iconEl
     }
 
@@ -161,10 +194,28 @@ async function main() {
             const icons = await searchForIcon(searchIconsInput.value, 30)
             iconSearchResultsBox!.innerHTML = ""
             for (const icon of icons) {
-                const iconEl = createIconEl(icon)
+                const iconEl = createIconEl({
+                    ...icon,
+                    url: `https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/${icon.slug}.svg`,
+                    hex: "#" + icon.hex
+                })
                 iconSearchResultsBox?.appendChild(iconEl)
             }
         }, 500)
+    })
+
+    colorPicker.addEventListener("click", () => {
+        changePreviewColor(colorPicker.value)
+    })
+
+    colorPicker?.addEventListener("input", () => {
+        changePreviewColor(colorPicker.value)
+    })
+
+    const validUrl = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+    linkInp.addEventListener("input", () => {
+        const valid = linkInp.value == "" || validUrl.test(linkInp.value)
+        linkValidation?.classList.toggle("active", !valid)
     })
 }
 
