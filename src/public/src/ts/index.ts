@@ -95,7 +95,10 @@ async function main() {
         }
     })
 
+    // Creating Cells
     const createCellModal = document.getElementById("add-cell-modal")
+    const searchIconsInput = <HTMLInputElement>document.getElementById("cell-icon")
+    const iconSearchResultsBox = document.querySelector("#add-cell-modal .icons")
 
     // TODO: check if cell can fit
     addButton?.addEventListener("click", () => {
@@ -105,6 +108,63 @@ async function main() {
     window.addEventListener("click", e => {
         if (e.target == createCellModal)
             createCellModal?.classList.remove("active")
+    })
+
+    interface Icon {
+        title: string,
+        slug: string,
+        source: string,
+        hex: string
+    }
+
+    async function searchForIcon(q: string, l: number): Promise<Icon[]> {
+        return await fetch(`/grid/search_icon?q=${q}&l=${l}`).then(r => r.json())
+    }
+
+    function getLuminance(hex: string) {
+        // hexToRgb: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+        const color = result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null
+
+        if (!color) return -1
+
+        // https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color
+        return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b
+    }
+
+    const LUMINANCE_THRESHOLD = 236
+
+    function createIconEl(icon: Icon) {
+        let iconEl = document.createElement("div")
+        iconEl.classList.add("icon-wrapper")
+        iconEl.style.backgroundColor = "#" + icon.hex
+
+        let img = document.createElement("img")
+        img.src = `https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/${icon.slug}.svg`
+        img.title = icon.title
+
+        if (getLuminance(icon.hex) < LUMINANCE_THRESHOLD)
+            img.classList.add("white")
+
+        iconEl.appendChild(img)
+        return iconEl
+    }
+
+    let searchTimeout: any
+    searchIconsInput?.addEventListener("input", () => {
+        clearTimeout(searchTimeout)
+        searchTimeout = setTimeout(async () => {
+            const icons = await searchForIcon(searchIconsInput.value, 30)
+            iconSearchResultsBox!.innerHTML = ""
+            for (const icon of icons) {
+                const iconEl = createIconEl(icon)
+                iconSearchResultsBox?.appendChild(iconEl)
+            }
+        }, 500)
     })
 }
 

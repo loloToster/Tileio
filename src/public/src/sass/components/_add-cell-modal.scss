@@ -1,3 +1,4 @@
+@use "sass:math";
 @use "../colors" as c;
 @use "../utils" as u;
 
@@ -19,14 +20,17 @@
 }
 
 $content-width: 320px;
-$num-of-icon-in-row: 7;
+$num-of-icon-in-row: 6;
+$icon-margin: 6px;
 
-.modal-content {
+$cell-width: math.div(($content-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row);
+
+#add-cell-modal .modal-content {
     width: $content-width;
     padding: 32px;
 
     background-color: white;
-    border-radius: 1rem;
+    border-radius: 16px;
 
     h1 {
         margin-top: 0;
@@ -34,6 +38,8 @@ $num-of-icon-in-row: 7;
 
     input {
         border: none;
+        padding: 0;
+
         border-bottom: 1px c.$light-grey solid;
         margin-bottom: 8px;
         font-size: 1.2rem;
@@ -49,10 +55,28 @@ $num-of-icon-in-row: 7;
         width: $content-width;
         display: flex;
         flex-wrap: wrap;
+        gap: $icon-margin;
 
-        img {
-            width: 100% / $num-of-icon-in-row;
-            height: $content-width / $num-of-icon-in-row;
+        .icon-wrapper {
+            width: $cell-width;
+            height: $cell-width;
+            border-radius: 4px;
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            img {
+                box-sizing: border-box;
+                padding: 4px;
+
+                width: 100%;
+                height: 100%;
+
+                &.white {
+                    filter: invert(1);
+                }
+            }
         }
     }
 
