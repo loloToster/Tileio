@@ -1,5 +1,7 @@
 import express from "express"
-import User, { IUser, Grid } from "../models/user"
+
+import { Grid, Icon } from "../types/types"
+import User, { IUser } from "../models/user"
 
 import Fuse from "fuse.js"
 import { SimpleIcon } from "simple-icons"
@@ -38,14 +40,7 @@ router.put("/update", async (req, res) => {
     res.send()
 })
 
-interface SimplerIcon {
-    title: string,
-    slug: string,
-    source: string,
-    hex: string
-}
-
-const simpleIcons: SimplerIcon[] = []
+const simpleIcons: Icon[] = []
 
 for (const key in si) {
     // @ts-ignore

@@ -1,21 +1,6 @@
 import { GridStack, GridStackWidget } from "gridstack"
 
-export type hex = string
-
-export interface SerializedCellContent {
-    iconUrl: string,
-    bgColor?: hex,
-    link: string
-}
-
-export interface SerializedCell {
-    x?: number,
-    y?: number,
-    w?: number,
-    h?: number,
-    content?: SerializedCellContent
-}
-
+import { hex, SerializedCell, SerializedCellContent } from "@backend-types/types"
 
 const dummyClass = "dummy-cell"
 const LUMINANCE_THRESHOLD = 236

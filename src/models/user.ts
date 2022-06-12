@@ -1,24 +1,6 @@
 import { Schema, model } from "mongoose"
 
-interface SerializedCellContent {
-    iconUrl: string,
-    bgColor?: string,
-    link: string
-}
-
-export interface Cell {
-    w?: number,
-    h?: number,
-    x?: number,
-    y?: number,
-    content?: SerializedCellContent
-}
-
-export interface Grid {
-    col: number,
-    row: number,
-    cells: Cell[]
-}
+import { Grid } from "../types/types"
 
 export interface IUser {
     name: string,

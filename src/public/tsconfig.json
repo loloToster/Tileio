@@ -1,8 +1,17 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@backend-types/*": [
+        "../types/*"
+      ]
+    },
+    "rootDirs": [
+      "./src/ts",
+      "../types"
+    ],
     "target": "es5",
     "module": "es6",
-    "rootDir": "./src/ts",
     "moduleResolution": "node",
     "outDir": "./static/js",
     "forceConsistentCasingInFileNames": true,

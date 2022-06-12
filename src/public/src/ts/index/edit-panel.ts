@@ -1,6 +1,7 @@
 import { GridStack } from "gridstack"
 
-import { fillGridWithDummies, removeDummies, createWidgetFromSerializedCell, isDark, hex, SerializedCellContent } from "./grid-utils"
+import { hex, SerializedCellContent, Icon } from "@backend-types/types"
+import { fillGridWithDummies, removeDummies, createWidgetFromSerializedCell, isDark } from "./grid-utils"
 
 export const trashSelector = "#grid__trash"
 
@@ -93,13 +94,6 @@ export default (grid: GridStack) => {
 
         createCellModal?.classList.remove("active")
     })
-
-    interface Icon {
-        title: string,
-        slug: string,
-        source: string,
-        hex: hex
-    }
 
     interface FriendlyIcon extends Icon {
         url: string
