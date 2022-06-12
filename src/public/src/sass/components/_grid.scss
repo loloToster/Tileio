@@ -1,12 +1,30 @@
 @use "../colors" as c;
+@use "../utils" as u;
 
 .grid-stack-item-content {
     background-color: c.$cell-color;
     border-radius: 10px;
+    overflow: hidden !important;
 
     &:hover {
         filter: opacity(70%);
         transform: scale(1.03);
         cursor: pointer;
+    }
+
+    &__link {
+        @include u.flexCenter();
+
+        width: 100%;
+        height: 100%;
+    }
+
+    &__icon {
+        width: 5rem;
+        height: 5rem;
+
+        &.white {
+            filter: invert(1);
+        }
     }
 }

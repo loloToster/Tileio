@@ -1,16 +1,23 @@
 import { Schema, model } from "mongoose"
 
+interface SerializedCellContent {
+    iconUrl: string,
+    bgColor?: string,
+    link: string
+}
+
 export interface Cell {
     w?: number,
     h?: number,
     x?: number,
-    y?: number
+    y?: number,
+    content?: SerializedCellContent
 }
 
 export interface Grid {
     col: number,
     row: number,
-    cells: Array<Cell>
+    cells: Cell[]
 }
 
 export interface IUser {
@@ -33,7 +40,12 @@ const userSchema = new Schema<IUser>({
             w: Number,
             h: Number,
             x: Number,
-            y: Number
+            y: Number,
+            content: {
+                iconUrl: String,
+                bgColor: String,
+                link: String
+            }
         }]
     }
 })

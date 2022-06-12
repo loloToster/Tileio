@@ -1,4 +1,4 @@
-import { GridStack } from "gridstack"
+import { GridStack, GridStackWidget } from "gridstack"
 import "gridstack/dist/h5/gridstack-dd-native"
 
 function getLuminance(hex: string) {
@@ -17,6 +17,9 @@ function getLuminance(hex: string) {
 }
 
 const LUMINANCE_THRESHOLD = 236
+
+type hex = string
+const isDark = (c: hex) => getLuminance(c) < LUMINANCE_THRESHOLD
 
 async function main() {
     let initialGrid = await fetch("/grid").then(r => r.json())
@@ -60,8 +63,59 @@ async function main() {
         }
     }
 
+    interface SerializedCellContent {
+        iconUrl: string,
+        bgColor?: hex,
+        link: string
+    }
+
+    interface SerializedCell {
+        x?: number,
+        y?: number,
+        w?: number,
+        h?: number,
+        content?: SerializedCellContent
+    }
+
+    function unserializeContent(c: SerializedCellContent) {
+        const a = document.createElement("a")
+
+        a.classList.add("grid-stack-item-content__link")
+        a.href = c.link
+        a.target = "_blank"
+        if (c.bgColor)
+            a.style.backgroundColor = c.bgColor
+
+        const img = document.createElement("img")
+        if (typeof c.bgColor == "undefined" || isDark(c.bgColor))
+            img.classList.add("white")
+        img.classList.add("grid-stack-item-content__icon")
+        img.src = c.iconUrl
+
+        a.appendChild(img)
+        a.dataset.serialized = JSON.stringify(c)
+
+        let content = a.outerHTML
+        a.remove()
+        return content
+    }
+
+    function createWidgetFromSerializedCell(cell: SerializedCell) {
+        let widget: GridStackWidget = {
+            x: cell.x,
+            y: cell.y,
+            w: cell.w,
+            h: cell.h
+        }
+
+        if (cell.content)
+            widget.content = unserializeContent(cell.content)
+
+        return grid.addWidget(widget)
+    }
+
     for (const cell of initialGrid.cells) {
-        grid.addWidget(cell)
+        createWidgetFromSerializedCell(cell)
     }
 
     fillGridWithDummies()
@@ -73,11 +127,20 @@ async function main() {
 
         const newCells = []
         for (const cell of cells) {
+            let content: SerializedCellContent | undefined
+            if (cell.content) {
+                let doc = new DOMParser().parseFromString(cell.content, "text/html")
+                const firstEl = doc.querySelector("body > *")
+                if (firstEl instanceof HTMLElement && firstEl.dataset.serialized)
+                    content = JSON.parse(firstEl.dataset.serialized)
+            }
+
             newCells.push({
                 w: cell.w,
                 h: cell.h,
                 x: cell.x,
-                y: cell.y
+                y: cell.y,
+                content
             })
         }
 
@@ -122,6 +185,14 @@ async function main() {
     const linkValidation = document.querySelector(".add-modal__link-validator")
     const preview = document.querySelector<HTMLElement>(".add-modal__preview")
     const previewImg = preview?.querySelector("img")
+    const finishBtn = document.querySelector<HTMLElement>(".add-modal__finish")
+
+    const defaultStateOfCell = (): SerializedCellContent => JSON.parse(JSON.stringify({
+        iconUrl: "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",
+        link: "/"
+    }))
+
+    let stateOfCell: SerializedCellContent = defaultStateOfCell()
 
     // TODO: check if cell can fit
     addButton?.addEventListener("click", () => {
@@ -129,11 +200,10 @@ async function main() {
     })
 
     window.addEventListener("click", e => {
-        if (e.target == createCellModal)
-            createCellModal?.classList.remove("active")
-    })
+        if (e.target != createCellModal) return
 
-    type hex = string
+        createCellModal?.classList.remove("active")
+    })
 
     interface Icon {
         title: string,
@@ -146,8 +216,6 @@ async function main() {
         url: string
     }
 
-    const isDark = (c: hex) => getLuminance(c) < LUMINANCE_THRESHOLD
-
     async function searchForIcon(q: string, l: number): Promise<Icon[]> {
         return await fetch(`/grid/search_icon?q=${q}&l=${l}`).then(r => r.json())
     }
@@ -155,12 +223,14 @@ async function main() {
     function changePreviewColor(color: hex) {
         preview!.style.backgroundColor = color
         previewImg?.classList.toggle("white", isDark(color))
+        stateOfCell.bgColor = color
     }
 
     function onIconClick(e: Event, icon: FriendlyIcon) {
         previewImg!.src = icon.url
         suggestedColor!.style.backgroundColor = icon.hex
         suggestedColor!.dataset.hex = icon.hex
+        stateOfCell.iconUrl = icon.url
         changePreviewColor(icon.hex)
     }
 
@@ -216,6 +286,13 @@ async function main() {
     linkInp.addEventListener("input", () => {
         const valid = linkInp.value == "" || validUrl.test(linkInp.value)
         linkValidation?.classList.toggle("active", !valid)
+        stateOfCell.link = linkInp.value
+    })
+
+    finishBtn?.addEventListener("click", () => {
+        createWidgetFromSerializedCell({ content: stateOfCell })
+        stateOfCell = defaultStateOfCell()
+        createCellModal?.classList.remove("active")
     })
 }
 
