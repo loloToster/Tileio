@@ -27,6 +27,19 @@ async function main() {
     fillGridWithDummies(grid)
 
     setupEditPanel(grid)
+
+    const profile = document.querySelector(".profile")
+    const profileBtn = document.getElementById("grid__menu__profile")
+
+    profileBtn?.addEventListener("click",
+        () => profile?.classList.toggle("active")
+    )
+
+    window.addEventListener("click", e => {
+        // @ts-ignore
+        if (e.composedPath().includes(profile) || e.composedPath().includes(profileBtn)) return
+        profile?.classList.remove("active")
+    })
 }
 
 main()

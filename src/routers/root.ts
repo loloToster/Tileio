@@ -3,8 +3,17 @@ import path from "path"
 
 const router = express.Router()
 
+const strategyIdToName: Record<string, string> = {
+    "ggl": "Google",
+    "dsc": "Discord",
+    "git": "Github"
+}
+
 router.get("/", async (req, res) => {
-    res.render("index", { user: req.user })
+    if (!req.user) return res.redirect("/auth")
+    // @ts-ignore
+    const strategy: string = req.user.strategyId.slice(0, 3)
+    res.render("index", { user: req.user, strategy: strategyIdToName[strategy] })
 })
 
 router.get(/\/gridstack\.min\.css|\/gridstack-extra\.min\.css/,
