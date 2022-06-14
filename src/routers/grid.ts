@@ -35,7 +35,7 @@ router.put("/update", async (req, res) => {
         return res.status(403).send()
 
     // @ts-ignore
-    await User.updateOne({ id: req.user.id }, { grid: newGrid })
+    await User.findByIdAndUpdate(req.user.id, { grid: newGrid })
 
     res.send()
 })
