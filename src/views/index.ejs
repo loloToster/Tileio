@@ -61,23 +61,25 @@
         </div>
     </div>
     <div class="grid">
+        <div class="grid__border"></div>
         <div class="grid-stack"></div>
         <div class="grid__menu">
-            <button id="grid__menu__profile" class="grid__menu__item">
+            <button title="Profile" id="grid__menu__profile" class="grid__menu__item">
                 <img src="/static/assets/person.svg" alt="profile">
             </button>
-            <button id="grid__menu__settings" class="grid__menu__item">
+            <button title="Settings" id="grid__menu__settings" class="grid__menu__item">
                 <img src="/static/assets/settings.svg" alt="settings">
             </button>
             <div class="grid__menu__edit-panel">
-                <button id="grid__menu__edit" class="grid__menu__item">
+                <button title="Edit Cells" id="grid__menu__edit" class="grid__menu__item">
                     <img class="edit-icon" src="/static/assets/edit.svg" alt="edit">
                     <img class="save-icon" src="/static/assets/cloud_upload.svg" alt="edit">
                 </button>
-                <button id="grid__menu__add" class="green grid__menu__item">
+                <button title="Add Cell" id="grid__menu__add" class="green grid__menu__item">
                     <img class="invert-1" src="/static/assets/add.svg" alt="add">
                 </button>
-                <div id="grid__menu__trash" class="red grid__menu__item grid__menu__item--no-margin">
+                <div title="Drag cells here to delete them" id="grid__menu__trash"
+                    class="red grid__menu__item grid__menu__item--no-margin">
                     <img class="invert-1" src="/static/assets/delete.svg" alt="delete">
                 </div>
             </div>

@@ -2,6 +2,25 @@
 @use "../abstracts/mixins" as m;
 @use "../abstracts/constants" as const;
 
+.grid {
+    position: relative;
+
+    min-width: 1400px;
+    min-height: 700px;
+
+    &__border {
+        box-sizing: border-box;
+        position: absolute;
+
+        width: 100%;
+        height: 100%;
+
+        border: const.$grid-margin gray dashed;
+        border-radius: const.$cell-border-radius;
+        opacity: 0;
+    }
+}
+
 .grid-stack-item-content {
     background-color: c.$cell-color;
     border-radius: const.$cell-border-radius;

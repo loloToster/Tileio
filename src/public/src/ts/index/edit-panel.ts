@@ -49,6 +49,7 @@ export default (grid: GridStack) => {
     }
 
     const editButton = document.getElementById("grid__menu__edit")
+    const gridBorder = document.querySelector<HTMLElement>(".grid__border")
 
     let editing = false
     editButton?.addEventListener("click", async () => {
@@ -58,10 +59,14 @@ export default (grid: GridStack) => {
         if (editing) {
             grid.enable()
             removeDummies(grid)
+            editButton.title = "Save Cells"
+            gridBorder!.style.opacity = "1"
         } else {
             grid.disable()
             await saveGrid()
             fillGridWithDummies(grid)
+            editButton.title = "Edit Cells"
+            gridBorder!.style.opacity = "0"
         }
     })
 
