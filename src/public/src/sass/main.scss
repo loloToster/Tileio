@@ -1,12 +1,12 @@
-@use "./colors" as c;
-@use "./utils" as u;
+@use "./abstracts/colors" as c;
+@use "./abstracts/mixins" as m;
 
 @forward "./components/grid";
 @forward "./components/grid-menu";
 @forward "./components/add-cell-modal";
 
 body {
-    @include u.flexCenter();
+    @include m.flexCenter();
 
     font-family: basic-sans, sans-serif;
     background-color: c.$bg-color;

@@ -1,20 +1,20 @@
 @use "sass:math" as math;
 
-@use "../colors" as c;
-@use "../utils" as u;
+@use "../abstracts/colors" as c;
+@use "../abstracts/mixins" as u;
+@use "../abstracts/constants" as const;
 
-$grid-margin: 5px;
-$edit-el-size: 2.7rem;
+$menu-el-size: 2.7rem;
 $num-of-edit-panel-elems: 3;
 
 .grid__menu {
     position: absolute;
 
-    top: $grid-margin;
-    right: -$grid-margin;
+    top: const.$grid-margin;
+    right: -#{const.$grid-margin};
     transform: translateX(100%);
 
-    width: $edit-el-size;
+    width: $menu-el-size;
 
     border-radius: 100vw;
     color: white;
@@ -22,8 +22,8 @@ $num-of-edit-panel-elems: 3;
     &__item {
         @include u.flexCenter();
 
-        width: $edit-el-size;
-        height: $edit-el-size;
+        width: $menu-el-size;
+        height: $menu-el-size;
 
         padding: 0;
         margin-bottom: .3rem;
@@ -56,7 +56,7 @@ $num-of-edit-panel-elems: 3;
         background-color: c.$light-grey;
         border-radius: 100vw;
 
-        max-height: $num-of-edit-panel-elems * $edit-el-size;
+        max-height: $num-of-edit-panel-elems * $menu-el-size;
     }
 
     .edit-icon {
@@ -90,11 +90,11 @@ $num-of-edit-panel-elems: 3;
     #grid__menu__trash {
         transition: 200ms linear;
         transition-property: width, height;
-        border-top-left-radius: math.div($edit-el-size, 2);
+        border-top-left-radius: math.div($menu-el-size, 2);
     }
 
     #grid__menu__trash.active {
-        width: $edit-el-size * 3;
-        height: $edit-el-size * 3;
+        width: $menu-el-size * 3;
+        height: $menu-el-size * 3;
     }
 }

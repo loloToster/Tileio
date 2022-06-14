@@ -1,8 +1,10 @@
 @use "sass:math";
-@use "../colors" as c;
-@use "../utils" as u;
+
+@use "../abstracts/colors" as c;
+@use "../abstracts/mixins" as m;
 
 $col-width: 320px;
+$narrow-col-width: 150px;
 $num-of-icon-in-row: 6;
 $icon-margin: 6px;
 
@@ -11,7 +13,7 @@ $preview-size: 280px;
 $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row );
 
 .add-modal {
-    @include u.flexCenter();
+    @include m.flexCenter();
     display: none;
 
     position: fixed;
@@ -37,6 +39,32 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
 
     &__col {
         width: $col-width;
+    }
+
+    &__col--narrow {
+        width: $narrow-col-width;
+    }
+
+    &__menu {
+        display: flex;
+        height: 100%;
+
+        flex-direction: column;
+        justify-content: space-around;
+
+        &__item {
+            box-sizing: border-box;
+
+            padding: $narrow-col-width * .1;
+
+            font-size: .9rem;
+            font-weight: 600;
+
+            img {
+                width: $narrow-col-width - $narrow-col-width * .2;
+                height: $narrow-col-width - $narrow-col-width * .2;
+            }
+        }
     }
 
     h1 {

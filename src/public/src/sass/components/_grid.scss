@@ -1,9 +1,10 @@
-@use "../colors" as c;
-@use "../utils" as u;
+@use "../abstracts/colors" as c;
+@use "../abstracts/mixins" as m;
+@use "../abstracts/constants" as const;
 
 .grid-stack-item-content {
     background-color: c.$cell-color;
-    border-radius: 10px;
+    border-radius: const.$cell-border-radius;
     overflow: hidden !important;
 
     &:hover {
@@ -13,7 +14,7 @@
     }
 
     &__link {
-        @include u.flexCenter();
+        @include m.flexCenter();
 
         width: 100%;
         height: 100%;
