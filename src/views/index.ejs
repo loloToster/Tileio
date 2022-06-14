@@ -50,16 +50,24 @@
     </div>
     <div class="grid">
         <div class="grid-stack"></div>
-        <div class="grid__edit-panel">
-            <button id="grid__edit" class="grid__edit-panel__item">
-                <img class="edit-icon" src="/static/assets/edit.svg" alt="edit">
-                <img class="save-icon" src="/static/assets/cloud_upload.svg" alt="edit">
+        <div class="grid__menu">
+            <button id="grid__menu__profile" class="grid__menu__item">
+                <img src="/static/assets/person.svg" alt="profile">
             </button>
-            <button id="grid__add" class="grid__edit-panel__item">
-                <img src="/static/assets/add.svg" alt="add">
+            <button id="grid__menu__settings" class="grid__menu__item">
+                <img src="/static/assets/settings.svg" alt="settings">
             </button>
-            <div id="grid__trash" class="grid__edit-panel__item" title="Move cells here to delete them">
-                <img src="/static/assets/delete.svg" alt="delete">
+            <div class="grid__menu__edit-panel">
+                <button id="grid__menu__edit" class="grid__menu__item">
+                    <img class="edit-icon" src="/static/assets/edit.svg" alt="edit">
+                    <img class="save-icon" src="/static/assets/cloud_upload.svg" alt="edit">
+                </button>
+                <button id="grid__menu__add" class="green grid__menu__item">
+                    <img class="invert-1" src="/static/assets/add.svg" alt="add">
+                </button>
+                <div id="grid__menu__trash" class="red grid__menu__item grid__menu__item--no-margin">
+                    <img class="invert-1" src="/static/assets/delete.svg" alt="delete">
+                </div>
             </div>
         </div>
     </div>

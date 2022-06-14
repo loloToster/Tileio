@@ -1,0 +1,100 @@
+@use "sass:math" as math;
+
+@use "../colors" as c;
+@use "../utils" as u;
+
+$grid-margin: 5px;
+$edit-el-size: 2.7rem;
+$num-of-edit-panel-elems: 3;
+
+.grid__menu {
+    position: absolute;
+
+    top: $grid-margin;
+    right: -$grid-margin;
+    transform: translateX(100%);
+
+    width: $edit-el-size;
+
+    border-radius: 100vw;
+    color: white;
+
+    &__item {
+        @include u.flexCenter();
+
+        width: $edit-el-size;
+        height: $edit-el-size;
+
+        padding: 0;
+        margin-bottom: .3rem;
+
+        background-color: c.$cell-color;
+        border: none;
+        border-radius: 50%;
+
+        img {
+            width: 70%;
+            height: 70%;
+
+            filter: invert(.6);
+        }
+
+        img.invert-1 {
+            filter: invert(1);
+        }
+    }
+
+    button#{&}__item {
+        cursor: pointer;
+    }
+
+    &__item--no-margin {
+        margin: 0;
+    }
+
+    &__edit-panel {
+        background-color: c.$light-grey;
+        border-radius: 100vw;
+
+        max-height: $num-of-edit-panel-elems * $edit-el-size;
+    }
+
+    .edit-icon {
+        display: block;
+    }
+
+    .save-icon {
+        display: none;
+    }
+
+    #grid__menu__add,
+    #grid__menu__trash {
+        display: none;
+    }
+
+    &__edit-panel.active {
+        .edit-icon {
+            display: none;
+        }
+
+        .save-icon {
+            display: block;
+        }
+
+        #grid__menu__add,
+        #grid__menu__trash {
+            display: flex;
+        }
+    }
+
+    #grid__menu__trash {
+        transition: 200ms linear;
+        transition-property: width, height;
+        border-top-left-radius: math.div($edit-el-size, 2);
+    }
+
+    #grid__menu__trash.active {
+        width: $edit-el-size * 3;
+        height: $edit-el-size * 3;
+    }
+}

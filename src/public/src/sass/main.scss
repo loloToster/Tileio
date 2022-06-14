@@ -2,7 +2,7 @@
 @use "./utils" as u;
 
 @forward "./components/grid";
-@forward "./components/edit-panel";
+@forward "./components/grid-menu";
 @forward "./components/add-cell-modal";
 
 body {
@@ -17,4 +17,12 @@ body {
 .grid {
     min-width: 1400px;
     position: relative;
+}
+
+.green {
+    background-color: c.$green;
+}
+
+.red {
+    background-color: c.$red;
 }

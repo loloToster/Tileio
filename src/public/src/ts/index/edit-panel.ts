@@ -3,10 +3,11 @@ import { GridStack } from "gridstack"
 import { hex, SerializedCellContent, Icon } from "@backend-types/types"
 import { fillGridWithDummies, removeDummies, createWidgetFromSerializedCell, isDark } from "./grid-utils"
 
-export const trashSelector = "#grid__trash"
+export const trashSelector = "#grid__menu__trash"
 
 export default (grid: GridStack) => {
     const trash = document.querySelector(trashSelector)
+
     grid.on("dragstart", () => trash?.classList.add("active"))
     grid.on("dragstop", () => trash?.classList.remove("active"))
 
@@ -47,7 +48,7 @@ export default (grid: GridStack) => {
         }) // .then(r => r.json())
     }
 
-    const editButton = document.getElementById("grid__edit")
+    const editButton = document.getElementById("grid__menu__edit")
 
     let editing = false
     editButton?.addEventListener("click", async () => {
@@ -65,7 +66,7 @@ export default (grid: GridStack) => {
     })
 
     // Creating Cells
-    const addButton = document.getElementById("grid__add")
+    const addButton = document.getElementById("grid__menu__add")
     const createCellModal = document.querySelector(".add-modal")
     const searchIconsInput = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
     const iconSearchResultsBox = document.querySelector(".add-modal__icons")
