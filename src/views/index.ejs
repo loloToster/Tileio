@@ -16,13 +16,13 @@
     <div class="add-modal">
         <div class="add-modal__content">
             <nav class="add-modal__menu">
-                <div class="add-modal__menu__item active">
+                <div id="add-modal__link-cell" class="add-modal__menu__item active">
                     <div class="add-modal__menu__content">
                         <img src="https://dummyimage.com/300x300/000/fff" alt="Link Cell">
                         <span>Link Cell</span>
                     </div>
                 </div>
-                <div class="add-modal__menu__item">
+                <div id="add-modal__dynamic-cell" class="add-modal__menu__item">
                     <div class="add-modal__menu__content">
                         <img src="https://dummyimage.com/300x300/000/fff" alt="Built-in Widget">
                         <span>Dynamic Cell</span>
@@ -30,10 +30,10 @@
                 </div>
             </nav>
             <div class="add-modal__tabs">
-                <div class="add-modal__tab">
+                <div id="add-modal__link-cell-tab" class="add-modal__tab active">
                     <div class="add-modal__column add-modal__column--scroll">
                         <h1>
-                            Create Cell
+                            Create Link Cell
                         </h1>
                         <h2>
                             Choose Icon
@@ -57,7 +57,21 @@
                         <span class="add-modal__link-validator">This doesn't look like a valid link to me</span>
                     </div>
                 </div>
-                <div class="add-modal__tab"></div>
+                <div id="add-modal__dynamic-cell-tab" class="add-modal__tab">
+                    <div class="add-modal__column add-modal__column--scroll">
+                        <h1>
+                            Create Dynamic Cell
+                        </h1>
+                        <h2>Built-in Cells</h2>
+                        <div class="add-modal__icons">
+                            <div class="icon-wrapper icon-wrapper--no-padding">
+                                <img src="https://dummyimage.com/64x64/000/fff">
+                            </div>
+                        </div>
+                        <h2>Custom iframe href</h2>
+                        <input type="text" placeholder="Type href here">
+                    </div>
+                </div>
             </div>
             <div class="add-modal__column">
                 <h1>Preview</h1>

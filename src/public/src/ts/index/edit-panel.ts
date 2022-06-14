@@ -71,6 +71,19 @@ export default (grid: GridStack) => {
     })
 
     // Creating Cells
+    const menuItems = Array.from(document.getElementsByClassName("add-modal__menu__item"))
+    const menuTabs = Array.from(document.getElementsByClassName("add-modal__tab"))
+
+    for (const item of menuItems) {
+        item.addEventListener("click", () => {
+            menuItems.forEach(i => i.classList.remove("active"))
+            item.classList.add("active")
+
+            menuTabs.forEach(i => i.classList.remove("active"))
+            document.getElementById(item.id + "-tab")?.classList.add("active")
+        })
+    }
+
     const addButton = document.getElementById("grid__menu__add")
     const createCellModal = document.querySelector(".add-modal")
     const searchIconsInput = <HTMLInputElement>document.getElementById("add-modal__icon-inp")

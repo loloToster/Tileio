@@ -82,22 +82,26 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
         background-color: c.$light-grey;
     }
 
-    /* &__tab {} */
+    &__tab {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
 
     &__column {
         float: left;
 
         width: 340px;
         height: $modal-height;
-        padding-left: 32px;
+        padding: 0 32px;
 
         background-color: c.$light-grey;
 
         &--scroll {
             overflow-x: hidden;
             overflow-y: scroll;
-
-            padding-right: 32px;
         }
     }
 
@@ -147,6 +151,10 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
                 &.white {
                     filter: invert(1);
                 }
+            }
+
+            &--no-padding img {
+                padding: 0;
             }
         }
     }
