@@ -1,27 +1,30 @@
-@use "sass:math";
+@use "sass:math" as math;
 
 @use "../abstracts/colors" as c;
 @use "../abstracts/mixins" as m;
 
-$col-width: 320px;
-$narrow-col-width: 150px;
+$modal-height: 600px;
+$main-border-radius: 16px;
+
+$col-width: 340px;
 $num-of-icon-in-row: 6;
 $icon-margin: 6px;
-
 $preview-size: 280px;
 
 $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row );
 
 .add-modal {
     @include m.flexCenter();
-    display: none;
 
+    display: none;
     position: fixed;
+
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     z-index: 1;
+
     background-color: rgba(c.$bg-color, 50%);
 
     &.active {
@@ -30,54 +33,87 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
 
     &__content {
         display: flex;
-        gap: 32px;
-        padding: 32px;
+        overflow: hidden;
 
-        background-color: white;
-        border-radius: 16px;
-    }
-
-    &__col {
-        width: $col-width;
-    }
-
-    &__col--narrow {
-        width: $narrow-col-width;
+        background-color: lighten(c.$bg-color, 10%);
+        border-radius: $main-border-radius;
+        color: white;
     }
 
     &__menu {
         display: flex;
-        height: 100%;
-
         flex-direction: column;
-        justify-content: space-around;
+
+        height: $modal-height;
+
 
         &__item {
-            box-sizing: border-box;
+            @include m.flexCenter();
 
-            padding: $narrow-col-width * .1;
+            width: 200px;
+            flex-grow: 1;
 
-            font-size: .9rem;
-            font-weight: 600;
+            border-top-left-radius: $main-border-radius;
+            border-bottom-left-radius: $main-border-radius;
+            cursor: pointer;
+
+            * {
+                display: block;
+            }
 
             img {
-                width: $narrow-col-width - $narrow-col-width * .2;
-                height: $narrow-col-width - $narrow-col-width * .2;
+                width: 8rem;
+                height: 8rem;
             }
+
+            span {
+                margin-top: 6px;
+            }
+        }
+
+        &__item.active {
+            background-color: c.$light-grey;
         }
     }
 
-    h1 {
-        margin-top: 0;
+    &__tabs {
+        float: left;
+
+        background-color: c.$light-grey;
+    }
+
+    /* &__tab {} */
+
+    &__column {
+        float: left;
+
+        width: 340px;
+        height: $modal-height;
+        padding-left: 32px;
+
+        background-color: c.$light-grey;
+
+        &--scroll {
+            overflow-x: hidden;
+            overflow-y: scroll;
+
+            padding-right: 32px;
+        }
+    }
+
+    ::placeholder {
+        color: #d4d4d4;
     }
 
     input {
         border: none;
+        background: none;
         padding: 0;
 
-        border-bottom: 1px c.$light-grey solid;
+        border-bottom: 1px white solid;
         margin-bottom: 8px;
         font-size: 1.2rem;
+        color: white;
 
         width: 100%;
 
@@ -173,7 +209,6 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
 
         width: $preview-size;
         height: $preview-size;
-        margin-left: math.div($col-width - $preview-size, 2);
 
         background-color: c.$cell-color;
         border-radius: 16px;
@@ -187,7 +222,7 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
         width: $preview-size;
         height: 2em;
         margin-top: 16px;
-        margin-left: math.div($col-width - $preview-size, 2);
+        margin-bottom: 8px;
 
         border: none;
         border-radius: 100vh;

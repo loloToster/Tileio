@@ -15,6 +15,19 @@ body {
     margin: 0;
 }
 
+::-webkit-scrollbar {
+    width: 10px;
+
+    &-track {
+        background: none;
+    }
+
+    &-thumb {
+        background: #676767;
+        border-radius: 5px;
+    }
+}
+
 .green {
     background-color: c.$green;
 }
