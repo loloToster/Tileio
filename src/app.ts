@@ -31,7 +31,7 @@ function loadRouters(dir: string, prefix: string = "") {
             const fullPath = path.join(dir, x)
             if (fs.lstatSync(fullPath).isDirectory())
                 loadRouters(fullPath, `${prefix}/${x}`)
-            else if (x.endsWith(".ts")) {
+            else if (x.match(/\.(js|ts)$/)) {
                 let name = x.slice(0, -3)
                 if (name == "root") name = ""
                 app.use(`${prefix}/${name}`, require(fullPath))
