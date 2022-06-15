@@ -34,7 +34,7 @@ function loadRouters(dir: string, prefix: string = "") {
             else if (x.endsWith(".ts")) {
                 let name = x.slice(0, -3)
                 if (name == "root") name = ""
-                app.use(`/${prefix}/${name}`, require(fullPath))
+                app.use(`${prefix}/${name}`, require(fullPath))
             }
         })
 }
