@@ -70,11 +70,16 @@ export function unserializeContent(c: SerializedCellContent) {
 
         return content
     } else if (isDynamic(c)) {
+        const editingCover = document.createElement("div")
+        editingCover.classList.add("editing-cover")
+
         const iframe = document.createElement("iframe")
         iframe.src = c.src
         iframe.dataset.serialized = JSON.stringify(c)
 
-        let content = iframe.outerHTML
+        let content = iframe.outerHTML + editingCover.outerHTML
+
+        editingCover.remove()
         iframe.remove()
 
         return content

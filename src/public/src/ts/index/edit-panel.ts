@@ -55,6 +55,7 @@ export default (grid: GridStack) => {
     editButton?.addEventListener("click", async () => {
         editing = !editing
         editButton.parentElement?.classList.toggle("active", editing)
+        grid.el.classList.toggle("editing", editing)
 
         if (editing) {
             grid.enable()
