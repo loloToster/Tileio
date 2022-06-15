@@ -3,6 +3,8 @@ import express from "express"
 import cookieSession from "cookie-session"
 import passport from "passport"
 import mongoose from "mongoose"
+import fs from "fs"
+import path from "path"
 
 dotenv.config()
 
@@ -23,9 +25,21 @@ app.use(passport.session())
 
 app.use(express.json())
 
-app.use("/", require(__dirname + "/routers/root"))
-app.use("/auth", require(__dirname + "/routers/auth"))
-app.use("/grid", require(__dirname + "/routers/grid"))
+function loadRouters(dir: string, prefix: string = "") {
+    fs.readdirSync(dir)
+        .forEach((x) => {
+            const fullPath = path.join(dir, x)
+            if (fs.lstatSync(fullPath).isDirectory())
+                loadRouters(fullPath, `${prefix}/${x}`)
+            else if (x.endsWith(".ts")) {
+                let name = x.slice(0, -3)
+                if (name == "root") name = ""
+                app.use(`/${prefix}/${name}`, require(fullPath))
+            }
+        })
+}
+
+loadRouters(__dirname + "/routers")
 
 mongoose.connect(process.env.MONGO!)
 
