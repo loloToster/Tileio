@@ -1,6 +1,6 @@
 import { GridStack, GridStackWidget } from "gridstack"
 
-import { hex, SerializedCell, SerializedCellContent } from "@backend-types/types"
+import { hex, SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
 
 const dummyClass = "dummy-cell"
 const LUMINANCE_THRESHOLD = 236
@@ -38,27 +38,49 @@ export function removeDummies(grid: GridStack) {
     }
 }
 
+function isLink(c: SerializedCellContent): c is SerializedLinkCellContent {
+    return c.type == "l"
+}
+
+function isDynamic(c: SerializedCellContent): c is SerializedDynamicCellContent {
+    return c.type == "d"
+}
+
 export function unserializeContent(c: SerializedCellContent) {
-    const a = document.createElement("a")
+    if (isLink(c)) {
+        const a = document.createElement("a")
 
-    a.classList.add("grid-stack-item-content__link")
-    a.href = c.link
-    a.target = "_blank"
-    if (c.bgColor)
-        a.style.backgroundColor = c.bgColor
+        a.classList.add("grid-stack-item-content__link")
+        a.href = c.link
+        a.target = "_blank"
+        if (c.bgColor)
+            a.style.backgroundColor = c.bgColor
 
-    const img = document.createElement("img")
-    if (typeof c.bgColor == "undefined" || isDark(c.bgColor))
-        img.classList.add("white")
-    img.classList.add("grid-stack-item-content__icon")
-    img.src = c.iconUrl
+        const img = document.createElement("img")
+        if (typeof c.bgColor == "undefined" || isDark(c.bgColor))
+            img.classList.add("white")
+        img.classList.add("grid-stack-item-content__icon")
+        img.src = c.iconUrl
 
-    a.appendChild(img)
-    a.dataset.serialized = JSON.stringify(c)
+        a.appendChild(img)
+        a.dataset.serialized = JSON.stringify(c)
 
-    let content = a.outerHTML
-    a.remove()
-    return content
+        let content = a.outerHTML
+        a.remove()
+
+        return content
+    } else if (isDynamic(c)) {
+        const iframe = document.createElement("iframe")
+        iframe.src = c.src
+        iframe.dataset.serialized = JSON.stringify(c)
+
+        let content = iframe.outerHTML
+        iframe.remove()
+
+        return content
+    } else {
+        console.error("Unknown cell type")
+    }
 }
 
 export function createWidgetFromSerializedCell(grid: GridStack, cell: SerializedCell) {
@@ -72,5 +94,9 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
     if (cell.content)
         widget.content = unserializeContent(cell.content)
 
-    return grid.addWidget(widget)
+    let element = grid.addWidget(widget)
+
+    if (cell.content?.type == "d") element.classList.add("dynamic-cell")
+
+    return element
 }

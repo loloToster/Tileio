@@ -1,10 +1,18 @@
 export type hex = string
 
-export interface SerializedCellContent {
+export interface SerializedLinkCellContent {
+    type: "l",
     iconUrl: string,
     bgColor?: string,
     link: string
 }
+
+export interface SerializedDynamicCellContent {
+    type: "d",
+    src: string
+}
+
+export type SerializedCellContent = SerializedLinkCellContent | SerializedDynamicCellContent
 
 export interface SerializedCell {
     x?: number,

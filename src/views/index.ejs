@@ -45,16 +45,23 @@
                             Choose Color
                         </h2>
                         <span class="add-modal__choose-color">
-                            Based on icon:
-                            <div class="add-modal__suggested-color color"></div>
+                            Select:
+                            <input type="color" id="add-modal__color-picker" class="color" value="#3e3e3e">
                         </span>
                         <span class="add-modal__choose-color">
-                            Or your own:
-                            <input type="color" id="add-modal__color-picker" class="color" value="#3e3e3e">
+                            Copy from icon:
+                            <div class="add-modal__suggested-color color"></div>
                         </span>
                         <h2>Choose link</h2>
                         <input id="add-modal__link-inp" type="text" placeholder="Type your link here">
                         <span class="add-modal__link-validator">This doesn't look like a valid link to me</span>
+                    </div>
+                    <div class="add-modal__column">
+                        <h1>Preview</h1>
+                        <div class="add-modal__preview">
+                            <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="preview">
+                        </div>
+                        <button class="add-modal__finish">Finish</button>
                     </div>
                 </div>
                 <div id="add-modal__dynamic-cell-tab" class="add-modal__tab">
@@ -69,16 +76,16 @@
                             </div>
                         </div>
                         <h2>Custom iframe href</h2>
-                        <input type="text" placeholder="Type href here">
+                        <input id="add-modal__iframe-src-inp" type="text" placeholder="Type source here">
+                    </div>
+                    <div class="add-modal__column">
+                        <h1>Preview</h1>
+                        <div class="add-modal__preview">
+                            <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="preview">
+                        </div>
+                        <button class="add-modal__finish">Finish</button>
                     </div>
                 </div>
-            </div>
-            <div class="add-modal__column">
-                <h1>Preview</h1>
-                <div class="add-modal__preview">
-                    <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="preview">
-                </div>
-                <button class="add-modal__finish">Finish</button>
             </div>
         </div>
     </div>

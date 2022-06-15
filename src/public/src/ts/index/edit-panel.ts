@@ -84,35 +84,30 @@ export default (grid: GridStack) => {
         })
     }
 
+    const addModal = document.querySelector(".add-modal")
     const addButton = document.getElementById("grid__menu__add")
-    const createCellModal = document.querySelector(".add-modal")
+
+    // TODO: check if cell can fit
+    addButton?.addEventListener("click", () => {
+        addModal?.classList.add("active")
+    })
+
+    window.addEventListener("click", e => {
+        if (e.target != addModal) return
+
+        addModal?.classList.remove("active")
+    })
+
+    // Creating Link Cells
     const searchIconsInput = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
     const iconSearchResultsBox = document.querySelector(".add-modal__icons")
     const suggestedColor = document.querySelector<HTMLElement>(".add-modal__suggested-color")
     const colorPicker = <HTMLInputElement>document.getElementById("add-modal__color-picker")
     const linkInp = <HTMLInputElement>document.getElementById("add-modal__link-inp")
     const linkValidation = document.querySelector(".add-modal__link-validator")
-    const preview = document.querySelector<HTMLElement>(".add-modal__preview")
-    const previewImg = preview?.querySelector("img")
-    const finishBtn = document.querySelector<HTMLElement>(".add-modal__finish")
-
-    const defaultStateOfCell = (): SerializedCellContent => JSON.parse(JSON.stringify({
-        iconUrl: "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",
-        link: "/"
-    }))
-
-    let stateOfCell = defaultStateOfCell()
-
-    // TODO: check if cell can fit
-    addButton?.addEventListener("click", () => {
-        createCellModal?.classList.add("active")
-    })
-
-    window.addEventListener("click", e => {
-        if (e.target != createCellModal) return
-
-        createCellModal?.classList.remove("active")
-    })
+    const linkIconPreview = document.querySelector<HTMLElement>("#add-modal__link-cell-tab .add-modal__preview")
+    const linkIconPreviewImg = linkIconPreview?.querySelector<HTMLImageElement>("img")
+    const linkCellFinishBtn = document.querySelector<HTMLElement>("#add-modal__link-cell-tab .add-modal__finish")
 
     interface FriendlyIcon extends Icon {
         url: string
@@ -123,23 +118,17 @@ export default (grid: GridStack) => {
     }
 
     function changePreviewColor(color: hex) {
-        preview!.style.backgroundColor = color
-        previewImg?.classList.toggle("white", isDark(color))
-        stateOfCell.bgColor = color
+        linkIconPreview!.style.backgroundColor = color
+        linkIconPreviewImg?.classList.toggle("white", isDark(color))
     }
 
     function onIconClick(e: Event, icon: FriendlyIcon) {
-        previewImg!.src = icon.url
         suggestedColor!.style.backgroundColor = icon.hex
         suggestedColor!.dataset.hex = icon.hex
-        stateOfCell.iconUrl = icon.url
+        colorPicker.value = icon.hex
+        linkIconPreviewImg!.src = icon.url
         changePreviewColor(icon.hex)
     }
-
-    suggestedColor?.addEventListener("click", () => {
-        const color = suggestedColor.dataset.hex
-        if (color) changePreviewColor(color)
-    })
 
     function createIconEl(icon: FriendlyIcon) {
         let iconEl = document.createElement("div")
@@ -176,25 +165,48 @@ export default (grid: GridStack) => {
         }, 500)
     })
 
-    colorPicker.addEventListener("click", () => {
-        changePreviewColor(colorPicker.value)
-    })
+    colorPicker.addEventListener("input", () => changePreviewColor(colorPicker.value))
+    colorPicker.addEventListener("click", () => changePreviewColor(colorPicker.value))
 
-    colorPicker?.addEventListener("input", () => {
-        changePreviewColor(colorPicker.value)
+    suggestedColor?.addEventListener("click", () => {
+        const color = suggestedColor.dataset.hex
+        if (color) {
+            colorPicker.value = color
+            changePreviewColor(color)
+        }
     })
 
     const validUrl = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
     linkInp.addEventListener("input", () => {
         const valid = linkInp.value == "" || validUrl.test(linkInp.value)
         linkValidation?.classList.toggle("active", !valid)
-        stateOfCell.link = linkInp.value
     })
 
-    finishBtn?.addEventListener("click", () => {
-        createWidgetFromSerializedCell(grid, { content: stateOfCell })
-        stateOfCell = defaultStateOfCell()
-        createCellModal?.classList.remove("active")
+    linkCellFinishBtn?.addEventListener("click", () => {
+        createWidgetFromSerializedCell(grid, {
+            content: {
+                type: "l",
+                iconUrl: linkIconPreviewImg!.src,
+                link: linkInp.value,
+                bgColor: colorPicker.value
+            }
+        })
+        addModal?.classList.remove("active")
     })
 
+    // Creating Dynamic Cells
+    const iframeSrcInput = <HTMLInputElement>document.getElementById("add-modal__iframe-src-inp")
+    const dynamicCellFinishBtn = document.querySelector<HTMLElement>("#add-modal__dynamic-cell-tab .add-modal__finish")
+
+    dynamicCellFinishBtn?.addEventListener("click", () => {
+        createWidgetFromSerializedCell(grid, {
+            w: 2,
+            h: 2,
+            content: {
+                type: "d",
+                src: iframeSrcInput.value
+            }
+        })
+        addModal?.classList.remove("active")
+    })
 }

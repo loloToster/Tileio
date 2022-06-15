@@ -29,9 +29,11 @@ const userSchema = new Schema<IUser>({
             x: Number,
             y: Number,
             content: {
+                type: { type: String },
                 iconUrl: String,
                 bgColor: String,
-                link: String
+                link: String,
+                src: String
             }
         }]
     },
