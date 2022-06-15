@@ -2,12 +2,17 @@ import { Schema, model } from "mongoose"
 
 import { Grid } from "../types/types"
 
+export interface DynamicCellsData {
+    mininote: { text: string }
+}
+
 export interface IUser {
     name: string,
     strategyId: string,
     email: string,
     picture: string,
-    grid: Grid
+    grid: Grid,
+    dynamicCells: Partial<DynamicCellsData>
 }
 
 const userSchema = new Schema<IUser>({
@@ -29,6 +34,11 @@ const userSchema = new Schema<IUser>({
                 link: String
             }
         }]
+    },
+    dynamicCells: {
+        mininote: {
+            text: String
+        }
     }
 })
 
