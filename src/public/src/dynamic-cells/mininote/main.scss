@@ -1,17 +1,42 @@
+$padding: 24px;
+
 body {
-    background-color: #e5e988;
+    box-sizing: border-box;
+    overflow: hidden;
+
     margin: 0;
+    padding: $padding;
+
+    background-color: #e5e988;
 }
 
-#note {
-    box-sizing: border-box;
+::-webkit-scrollbar {
+    width: 10px;
 
-    padding: 24px;
+    cursor: auto;
 
-    width: 100vw;
-    height: 100vh;
+    &-track {
+        background: none;
+    }
+
+    &-thumb {
+        background: #c6c6c6aa;
+        border-radius: 5px;
+    }
+}
+
+.note {
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    width: calc(100vw - $padding * 2);
+    height: calc(100vh - $padding * 2);
 
     font-family: "Indie Flower", serif;
     font-weight: bold;
-    font-size: 1.7rem;
+    font-size: 1.5rem;
+
+    &:focus {
+        outline: none;
+    }
 }

@@ -10,3 +10,10 @@ note?.addEventListener("input", () => {
         body: JSON.stringify({ text })
     })
 })
+
+note?.addEventListener("paste", e => {
+    e.preventDefault()
+    var text = e.clipboardData?.getData("text/plain")
+    text = text?.replace(/\n/g, "<br>")
+    document.execCommand("insertHTML", false, text)
+})
