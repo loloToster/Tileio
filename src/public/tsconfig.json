@@ -7,13 +7,13 @@
       ]
     },
     "rootDirs": [
-      "./src/ts",
+      "./src",
       "../types"
     ],
     "target": "es5",
     "module": "es6",
     "moduleResolution": "node",
-    "outDir": "./static/js",
+    "outDir": "./static",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true

@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "watch-ts": "webpack --config ./src/public/webpack.dev.js",
-    "watch-sass": "sass -w ./src/public/src/sass/:./src/public/static/css --no-source-map",
+    "watch-sass": "sass -w ./src/public/src/sass/:./src/public/static/css ./src/public/src/dynamic-cells/:./src/public/static/dynamic-cells --no-source-map",
     "build-client": "webpack --config ./src/public/webpack.prod.js",
     "build-server": "tsc && xcopy .\\src\\views\\ .\\dist\\views\\ /Y /E && xcopy .\\src\\public\\static\\ .\\dist\\public\\static\\ /Y /E",
     "build": "npm run build-client && npm run build-server",
@@ -41,7 +41,8 @@
     "ts-loader": "^9.3.0",
     "typescript": "^4.4.3",
     "webpack": "^5.73.0",
-    "webpack-cli": "^4.9.2"
+    "webpack-cli": "^4.9.2",
+    "webpack-merge": "^5.8.0"
   },
   "devDependencies": {
     "ts-node": "^10.4.0"
