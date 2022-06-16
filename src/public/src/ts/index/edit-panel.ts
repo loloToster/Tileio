@@ -1,7 +1,7 @@
 import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 
-import { hex, SerializedCellContent, Icon } from "@backend-types/types"
+import { Grid, hex, SerializedCellContent, Icon } from "@backend-types/types"
 import { fillGridWithDummies, removeDummies, createWidgetFromSerializedCell, isDark } from "./grid-utils"
 
 export const trashSelector = "#grid__menu__trash"
@@ -21,10 +21,14 @@ export default (grid: GridStack) => {
         for (const cell of cells) {
             let content: SerializedCellContent | undefined
             if (cell.content) {
+                /**
+                 * Parse cell.content (string) to html and find 
+                 * element that has serialized cell data in its attributes
+                 */
                 let doc = new DOMParser().parseFromString(cell.content, "text/html")
-                const firstEl = doc.querySelector("body > *")
-                if (firstEl instanceof HTMLElement && firstEl.dataset.serialized)
-                    content = JSON.parse(firstEl.dataset.serialized)
+                const elementWithSerializedData = doc.querySelector("[data-serialized]")
+                if (elementWithSerializedData instanceof HTMLElement && elementWithSerializedData.dataset.serialized)
+                    content = JSON.parse(elementWithSerializedData.dataset.serialized)
             }
 
             newCells.push({
@@ -36,22 +40,28 @@ export default (grid: GridStack) => {
             })
         }
 
+        const newGrid: Grid = {
+            col: grid.opts.column! as number,
+            row: grid.opts.row!,
+            cells: newCells
+        }
+
+        // TODO: onerror
         const res = await fetch("/grid/update", {
             method: "PUT",
             headers: {
                 "Content-type": "application/json"
             },
-            body: JSON.stringify({
-                col: grid.opts.column!,
-                row: grid.opts.row!,
-                cells: newCells
-            })
+            body: JSON.stringify(newGrid)
         }) // .then(r => r.json())
     }
 
     const editButton = document.getElementById("grid__menu__edit")
     const gridBorder = document.querySelector<HTMLElement>(".grid__border")
 
+    /**
+     * Toggling editing mode with editButton
+     */
     let editing = false
     editButton?.addEventListener("click", async () => {
         editing = !editing
@@ -74,14 +84,17 @@ export default (grid: GridStack) => {
 
     // Creating Cells
     const menuItems = Array.from(document.getElementsByClassName("add-modal__menu__item"))
-    const menuTabs = Array.from(document.getElementsByClassName("add-modal__tab"))
+    const addModalTabs = Array.from(document.getElementsByClassName("add-modal__tab"))
 
+    /**
+     * by clicking menuItem with id '[name]' a tab with id '[name]-tab' will show
+     */
     for (const item of menuItems) {
         item.addEventListener("click", () => {
             menuItems.forEach(i => i.classList.remove("active"))
             item.classList.add("active")
 
-            menuTabs.forEach(i => i.classList.remove("active"))
+            addModalTabs.forEach(i => i.classList.remove("active"))
             document.getElementById(item.id + "-tab")?.classList.add("active")
         })
     }
@@ -96,7 +109,6 @@ export default (grid: GridStack) => {
 
     window.addEventListener("click", e => {
         if (e.target != addModal) return
-
         addModal?.classList.remove("active")
     })
 

@@ -34,14 +34,20 @@ async function main() {
     const profile = document.querySelector(".profile")
     const profileBtn = document.getElementById("grid__menu__profile")
 
-    profileBtn?.addEventListener("click",
-        () => profile?.classList.toggle("active")
+    if (!profile || !profileBtn)
+        throw new Error("Profile or ProfileBtn element doesnt exist")
+
+    profileBtn.addEventListener("click",
+        () => profile.classList.toggle("active")
     )
 
+    /**
+     * if user clicked anywhere outside of the profile or profile button
+     * remove active class
+     */
     window.addEventListener("click", e => {
-        // @ts-ignore
         if (e.composedPath().includes(profile) || e.composedPath().includes(profileBtn)) return
-        profile?.classList.remove("active")
+        profile.classList.remove("active")
     })
 }
 

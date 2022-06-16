@@ -46,43 +46,48 @@ function isDynamic(c: SerializedCellContent): c is SerializedDynamicCellContent 
     return c.type == "d"
 }
 
-export function unserializeContent(c: SerializedCellContent) {
-    if (isLink(c)) {
+/**
+ * create string with HTML code based on SerializedCell
+ * that can be put in GridStackWidget.content
+ */
+export function unserializeContent(cell: SerializedCell) {
+    const content = cell.content!
+    if (isLink(content)) {
         const a = document.createElement("a")
 
         a.classList.add("grid-stack-item-content__link")
-        a.href = c.link
+        a.href = content.link
         a.target = "_blank"
-        if (c.bgColor)
-            a.style.backgroundColor = c.bgColor
+        if (content.bgColor)
+            a.style.backgroundColor = content.bgColor
 
         const img = document.createElement("img")
-        if (typeof c.bgColor == "undefined" || isDark(c.bgColor))
+        if (typeof content.bgColor == "undefined" || isDark(content.bgColor))
             img.classList.add("white")
         img.classList.add("grid-stack-item-content__icon")
-        img.src = c.iconUrl
+        img.src = content.iconUrl
 
         a.appendChild(img)
-        a.dataset.serialized = JSON.stringify(c)
+        a.dataset.serialized = JSON.stringify(content)
 
-        let content = a.outerHTML
+        let unserializedContent = a.outerHTML
         a.remove()
 
-        return content
-    } else if (isDynamic(c)) {
+        return unserializedContent
+    } else if (isDynamic(content)) {
         const editingCover = document.createElement("div")
         editingCover.classList.add("editing-cover")
 
         const iframe = document.createElement("iframe")
-        iframe.src = c.src
-        iframe.dataset.serialized = JSON.stringify(c)
+        iframe.src = content.src
+        iframe.dataset.serialized = JSON.stringify(content)
 
-        let content = iframe.outerHTML + editingCover.outerHTML
+        let unserializedContent = iframe.outerHTML + editingCover.outerHTML
 
         editingCover.remove()
         iframe.remove()
 
-        return content
+        return unserializedContent
     } else {
         console.error("Unknown cell type")
     }
@@ -97,7 +102,7 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
     }
 
     if (cell.content)
-        widget.content = unserializeContent(cell.content)
+        widget.content = unserializeContent(cell)
 
     let element = grid.addWidget(widget)
 
