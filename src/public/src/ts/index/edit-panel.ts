@@ -1,4 +1,5 @@
 import { GridStack } from "gridstack"
+import ColorPicker from "simple-color-picker"
 
 import { hex, SerializedCellContent, Icon } from "@backend-types/types"
 import { fillGridWithDummies, removeDummies, createWidgetFromSerializedCell, isDark } from "./grid-utils"
@@ -102,13 +103,17 @@ export default (grid: GridStack) => {
     // Creating Link Cells
     const searchIconsInput = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
     const iconSearchResultsBox = document.querySelector(".add-modal__icons")
-    const suggestedColor = document.querySelector<HTMLElement>(".add-modal__suggested-color")
-    const colorPicker = <HTMLInputElement>document.getElementById("add-modal__color-picker")
+    const suggestedColor = document.getElementById("add-modal__suggested-color")
     const linkInp = <HTMLInputElement>document.getElementById("add-modal__link-inp")
     const linkValidation = document.querySelector(".add-modal__link-validator")
     const linkIconPreview = document.querySelector<HTMLElement>("#add-modal__link-cell-tab .add-modal__preview")
     const linkIconPreviewImg = linkIconPreview?.querySelector<HTMLImageElement>("img")
     const linkCellFinishBtn = document.querySelector<HTMLElement>("#add-modal__link-cell-tab .add-modal__finish")
+
+    const colorPicker = new ColorPicker({
+        width: 200,
+        el: "#add-modal__color-picker"
+    })
 
     interface FriendlyIcon extends Icon {
         url: string
@@ -126,7 +131,7 @@ export default (grid: GridStack) => {
     function onIconClick(e: Event, icon: FriendlyIcon) {
         suggestedColor!.style.backgroundColor = icon.hex
         suggestedColor!.dataset.hex = icon.hex
-        colorPicker.value = icon.hex
+        colorPicker.setColor(icon.hex)
         linkIconPreviewImg!.src = icon.url
         changePreviewColor(icon.hex)
     }
@@ -166,13 +171,12 @@ export default (grid: GridStack) => {
         }, 500)
     })
 
-    colorPicker.addEventListener("input", () => changePreviewColor(colorPicker.value))
-    colorPicker.addEventListener("click", () => changePreviewColor(colorPicker.value))
+    colorPicker.onChange(() => changePreviewColor(colorPicker.getHexString()))
 
     suggestedColor?.addEventListener("click", () => {
         const color = suggestedColor.dataset.hex
         if (color) {
-            colorPicker.value = color
+            colorPicker.setColor(color)
             changePreviewColor(color)
         }
     })
@@ -189,7 +193,7 @@ export default (grid: GridStack) => {
                 type: "l",
                 iconUrl: linkIconPreviewImg!.src,
                 link: linkInp.value,
-                bgColor: colorPicker.value
+                bgColor: colorPicker.getHexString()
             }
         })
         addModal?.classList.remove("active")

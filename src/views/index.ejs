@@ -44,14 +44,11 @@
                         <h2>
                             Choose Color
                         </h2>
-                        <span class="add-modal__choose-color">
-                            Select:
-                            <input type="color" id="add-modal__color-picker" class="color" value="#3e3e3e">
-                        </span>
-                        <span class="add-modal__choose-color">
-                            Copy from icon:
-                            <div class="add-modal__suggested-color color"></div>
-                        </span>
+                        <div id="add-modal__color-picker"></div>
+                        <div class="add-modal__suggested-color-wrapper">
+                            <span>Copy from icon:</span>
+                            <div style="background-color: #3e3e3e;" id="add-modal__suggested-color"></div>
+                        </div>
                         <h2>Choose link</h2>
                         <input id="add-modal__link-inp" type="text" placeholder="Type your link here">
                         <span class="add-modal__link-validator">This doesn't look like a valid link to me</span>

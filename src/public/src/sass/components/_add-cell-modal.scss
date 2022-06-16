@@ -160,49 +160,28 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
         }
     }
 
-    &__choose-color {
+    #add-modal__color-picker {
+        margin-bottom: 8px;
+    }
+
+    &__suggested-color-wrapper {
         display: flex;
         align-items: center;
-        margin-bottom: 8px;
-        gap: 10px;
-
-        .color {
-            width: 64px;
-            height: 2rem;
-
-            border-radius: 100vh;
-            overflow: hidden;
-
-            &:hover {
-                cursor: pointer;
-            }
-        }
     }
 
-    &__suggested-color {
-        background-color: c.$cell-color;
+    #add-modal__suggested-color {
+        width: 1.7rem;
+        height: 1.7rem;
+        margin-left: 8px;
 
-        display: inline-block;
-    }
-
-    #add-modal__color-picker {
-        -webkit-appearance: none;
-        border: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    #add-modal__color-picker::-webkit-color-swatch-wrapper {
-        padding: 0;
-    }
-
-    #add-modal__color-picker::-webkit-color-swatch {
-        border: none;
+        border-radius: 50%;
+        cursor: pointer;
     }
 
     &__link-validator {
-        color: c.$red;
+        padding-bottom: .8rem;
 
+        color: c.$red;
         opacity: 0;
         font-size: .8rem;
         font-weight: bold;
