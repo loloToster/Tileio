@@ -8,6 +8,9 @@ async function main() {
     // TODO: on error
     let initialGrid = await fetch("/grid").then(r => r.json())
 
+    const loading = document.querySelector(".grid__loading")
+    loading?.classList.remove("active")
+
     const grid = GridStack.init({
         row: initialGrid.row,
         column: initialGrid.col,
