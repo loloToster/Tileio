@@ -6,7 +6,6 @@ import { Strategy as GithubStrategy } from "passport-github2"
 import User, { IUser } from "../models/user"
 
 passport.serializeUser((user, done) => {
-    // @ts-ignore: Property 'id' does not exist on type 'User'.
     done(null, user.id)
 })
 

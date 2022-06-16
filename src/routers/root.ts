@@ -13,7 +13,6 @@ const strategyIdToName: Record<string, string> = {
 
 router.get("/", async (req, res) => {
     if (!req.user) return res.redirect("/auth")
-    // @ts-ignore
     const strategy: string = req.user.strategyId.slice(0, 3)
     res.render("index", { user: req.user, strategy: strategyIdToName[strategy], dynamicCells })
 })

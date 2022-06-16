@@ -6,6 +6,16 @@ import mongoose from "mongoose"
 import fs from "fs"
 import path from "path"
 
+import { IUser } from "./models/user"
+
+declare global {
+    namespace Express {
+        interface User extends IUser {
+            id?: string
+        }
+    }
+}
+
 dotenv.config()
 
 const app = express()

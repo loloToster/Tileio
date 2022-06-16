@@ -1,7 +1,7 @@
 import express from "express"
 
 import { Grid, Icon } from "../types/types"
-import User, { IUser } from "../models/user"
+import User from "../models/user"
 
 import Fuse from "fuse.js"
 import { SimpleIcon } from "simple-icons"
@@ -18,8 +18,7 @@ router.use((req, res, next) => {
 })
 
 router.get("/", async (req, res) => {
-    // @ts-ignore
-    const user: IUser = req.user!
+    const user = req.user!
     res.json(user.grid)
 })
 
@@ -29,12 +28,13 @@ function validateGrid(grid: any): grid is Grid {
 }
 
 router.put("/update", async (req, res) => {
+    if (!req.user) return res.status(403).send()
+
     const newGrid: any = req.body
 
     if (!validateGrid(newGrid))
         return res.status(403).send()
 
-    // @ts-ignore
     await User.findByIdAndUpdate(req.user.id, { grid: newGrid })
 
     res.send()

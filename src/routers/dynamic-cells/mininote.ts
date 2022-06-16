@@ -1,18 +1,19 @@
 import express from "express"
 
-import User, { IUser } from "../../models/user"
+import User from "../../models/user"
 
 const router = express.Router()
 
 router.get("/", (req, res) => {
-    // @ts-ignore
-    const user: IUser = req.user
+    // TODO: use middleware to check if user exists
+    if (!req.user) return res.status(403).send()
+    const user = req.user
     const note = user.dynamicCells.mininote?.text || ""
     res.render("dynamic-cells/mininote", { note })
 })
 
 router.put("/update", async (req, res) => {
-    // @ts-ignore
+    if (!req.user) return res.status(403).send()
     await User.findByIdAndUpdate(req.user.id, { "dynamicCells.mininote.text": req.body.text })
     res.send()
 })
