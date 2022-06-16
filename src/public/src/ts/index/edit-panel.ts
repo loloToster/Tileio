@@ -196,16 +196,37 @@ export default (grid: GridStack) => {
     })
 
     // Creating Dynamic Cells
+    const builtInCells = Array.from(document.querySelectorAll<HTMLElement>("#add-modal__dynamic-cell-tab .icon-wrapper"))
     const iframeSrcInput = <HTMLInputElement>document.getElementById("add-modal__iframe-src-inp")
+    const dynamicCellPreview = document.querySelector<HTMLIFrameElement>("#add-modal__dynamic-cell-tab .add-modal__preview iframe")
     const dynamicCellFinishBtn = document.querySelector<HTMLElement>("#add-modal__dynamic-cell-tab .add-modal__finish")
 
+    let lastClickedDynIconSrc: string
+
+    function onDynamicIconClick(icon: HTMLElement) {
+        iframeSrcInput.value = ""
+        lastClickedDynIconSrc = icon.dataset.src!
+        dynamicCellPreview!.src = icon.dataset.src!
+    }
+
+    for (const icon of builtInCells)
+        icon.addEventListener("click", () => onDynamicIconClick(icon))
+
+    iframeSrcInput.addEventListener("input", () => {
+        dynamicCellPreview!.src = iframeSrcInput.value
+    })
+
     dynamicCellFinishBtn?.addEventListener("click", () => {
+        let src = iframeSrcInput.value
+        if (src === "" && lastClickedDynIconSrc)
+            src = lastClickedDynIconSrc
+
         createWidgetFromSerializedCell(grid, {
             w: 2,
             h: 2,
             content: {
                 type: "d",
-                src: iframeSrcInput.value
+                src
             }
         })
         addModal?.classList.remove("active")

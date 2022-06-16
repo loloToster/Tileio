@@ -71,17 +71,20 @@
                         </h1>
                         <h2>Built-in Cells</h2>
                         <div class="add-modal__icons">
-                            <div class="icon-wrapper icon-wrapper--no-padding">
-                                <img src="https://dummyimage.com/64x64/000/fff">
-                            </div>
+                            <% dynamicCells.forEach(cell=> { %>
+                                <div data-src="<%- cell.src %>" title="<%= cell.name %>"
+                                    class="icon-wrapper icon-wrapper--no-padding">
+                                    <img src="<%- cell.icon %>">
+                                </div>
+                                <% }) %>
                         </div>
-                        <h2>Custom iframe href</h2>
+                        <h2>Custom iframe src</h2>
                         <input id="add-modal__iframe-src-inp" type="text" placeholder="Type source here">
                     </div>
                     <div class="add-modal__column">
                         <h1>Preview</h1>
-                        <div class="add-modal__preview">
-                            <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="preview">
+                        <div class="add-modal__preview add-modal__preview--no-padding">
+                            <iframe src=""></iframe>
                         </div>
                         <button class="add-modal__finish">Finish</button>
                     </div>
