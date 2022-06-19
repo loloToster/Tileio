@@ -6,6 +6,8 @@ import { fillGridWithDummies, removeDummies, createWidgetFromSerializedCell, isD
 
 export const trashSelector = "#grid__menu__trash"
 
+const defaultColor = "#3e3e3e"
+
 export default (grid: GridStack) => {
     const trash = document.querySelector(trashSelector)
 
@@ -113,7 +115,7 @@ export default (grid: GridStack) => {
     })
 
     // Creating Link Cells
-    const searchIconsInput = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
+    const searchIconsInp = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
     const iconSearchResultsBox = document.querySelector(".add-modal__icons")
     const suggestedColor = document.getElementById("add-modal__suggested-color")
     const linkInp = <HTMLInputElement>document.getElementById("add-modal__link-inp")
@@ -124,7 +126,8 @@ export default (grid: GridStack) => {
 
     const colorPicker = new ColorPicker({
         width: 200,
-        el: "#add-modal__color-picker"
+        el: "#add-modal__color-picker",
+        color: defaultColor
     })
 
     interface FriendlyIcon extends Icon {
@@ -167,10 +170,10 @@ export default (grid: GridStack) => {
     }
 
     let searchTimeout: any
-    searchIconsInput?.addEventListener("input", () => {
+    searchIconsInp?.addEventListener("input", () => {
         clearTimeout(searchTimeout)
         searchTimeout = setTimeout(async () => {
-            const icons = await searchForIcon(searchIconsInput.value, 30)
+            const icons = await searchForIcon(searchIconsInp.value, 30)
             iconSearchResultsBox!.innerHTML = ""
             for (const icon of icons) {
                 const iconEl = createIconEl({
@@ -209,18 +212,19 @@ export default (grid: GridStack) => {
             }
         })
         addModal?.classList.remove("active")
+        resetModal()
     })
 
     // Creating Dynamic Cells
     const builtInCells = Array.from(document.querySelectorAll<HTMLElement>("#add-modal__dynamic-cell-tab .icon-wrapper"))
-    const iframeSrcInput = <HTMLInputElement>document.getElementById("add-modal__iframe-src-inp")
+    const iframeSrcInp = <HTMLInputElement>document.getElementById("add-modal__iframe-src-inp")
     const dynamicCellPreview = document.querySelector<HTMLIFrameElement>("#add-modal__dynamic-cell-tab .add-modal__preview iframe")
     const dynamicCellFinishBtn = document.querySelector<HTMLElement>("#add-modal__dynamic-cell-tab .add-modal__finish")
 
     let lastClickedDynIconSrc: string
 
     function onDynamicIconClick(icon: HTMLElement) {
-        iframeSrcInput.value = ""
+        iframeSrcInp.value = ""
         lastClickedDynIconSrc = icon.dataset.src!
         dynamicCellPreview!.src = icon.dataset.src!
     }
@@ -228,12 +232,12 @@ export default (grid: GridStack) => {
     for (const icon of builtInCells)
         icon.addEventListener("click", () => onDynamicIconClick(icon))
 
-    iframeSrcInput.addEventListener("input", () => {
-        dynamicCellPreview!.src = iframeSrcInput.value
+    iframeSrcInp.addEventListener("input", () => {
+        dynamicCellPreview!.src = iframeSrcInp.value
     })
 
     dynamicCellFinishBtn?.addEventListener("click", () => {
-        let src = iframeSrcInput.value
+        let src = iframeSrcInp.value
         if (src === "" && lastClickedDynIconSrc)
             src = lastClickedDynIconSrc
 
@@ -246,5 +250,21 @@ export default (grid: GridStack) => {
             }
         })
         addModal?.classList.remove("active")
+        resetModal()
     })
+
+    function resetModal() {
+        // reset inputs
+        searchIconsInp.value = ""
+        iconSearchResultsBox!.innerHTML = ""
+        colorPicker.setColor(defaultColor)
+        suggestedColor!.style.backgroundColor = defaultColor
+        linkInp!.value = ""
+        iframeSrcInp.value = ""
+
+        // reset previews
+        linkIconPreview!.style.backgroundColor = defaultColor
+        linkIconPreviewImg!.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+        dynamicCellPreview!.src = ""
+    }
 }
