@@ -1,0 +1,114 @@
+body {
+    box-sizing: border-box;
+
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 12px;
+
+    font-family: "Roboto Mono", monospace;
+    color: white;
+}
+
+.location {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    height: 10%;
+
+    font-size: 1.2rem;
+
+    &__line {
+        flex-grow: 1;
+        height: 2px;
+        background-color: white;
+        margin: 0 6px;
+    }
+}
+
+.weather {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    height: 50%;
+
+    // reduced icon margin
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        overflow: hidden;
+
+        height: 128px;
+        width: 128px;
+
+        img {
+            width: 120%;
+            height: 120%;
+        }
+    }
+
+    &__temp {
+        font-size: 4rem;
+    }
+
+    &__min-max>* {
+        float: left;
+        font-size: 1.5rem;
+    }
+
+    &__min {
+        color: #bcb5aa;
+    }
+
+    &__max {
+        margin-left: 8px;
+        color: #e8e6e3;
+    }
+
+    .degrees {
+        display: inline-block;
+        font-size: .5em;
+        transform: translateY(-50%);
+    }
+}
+
+.days {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    height: 40%;
+
+    &__day {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-direction: column;
+
+        width: 60px;
+        height: 84px;
+
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover,
+        &.active {
+            background-color: #4c4c4c;
+        }
+
+        img {
+            width: 50px;
+            height: 50px;
+        }
+
+        &__name {
+            padding-bottom: 6px;
+            font-size: 1rem;
+        }
+    }
+}

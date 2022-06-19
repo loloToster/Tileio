@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <link rel="stylesheet" href="/static/dynamic-cells/weather/main.css">
+    <script src="/static/dynamic-cells/weather/index.js"></script>
+</head>
+
+<body>
+    <header class="location">
+        City (day): <div class="location__line"></div>
+    </header>
+    <main class="weather">
+        <div class="weather__icon">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+        </div>
+        <div class="weather__temps">
+            <div class="weather__temp">--<span class="degrees">°C</span></div>
+            <div class="weather__min-max">
+                <div class="weather__min">⇓--<span class="degrees">°C</span></div>
+                <div class="weather__max">⇑--<span class="degrees">°C</span></div>
+            </div>
+        </div>
+        <div style="flex-grow: 1;"></div>
+        <div style="text-align: right;">
+            <div>Rain: --m/h</div>
+            <div>Humidity: --%</div>
+            <div>Wind Speed: --km/h</div>
+            <div>Visibility: --km</div>
+        </div>
+    </main>
+    <nav class="days">
+        <div class="days__day active">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+            <div class="days__day__name">Today</div>
+        </div>
+        <div class="days__day">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+            <div class="days__day__name">Mon</div>
+        </div>
+        <div class="days__day">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+            <div class="days__day__name">Tue</div>
+        </div>
+        <div class="days__day">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+            <div class="days__day__name">Wed</div>
+        </div>
+        <div class="days__day">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+            <div class="days__day__name">Thu</div>
+        </div>
+        <div class="days__day">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+            <div class="days__day__name">Fri</div>
+        </div>
+        <div class="days__day">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+            <div class="days__day__name">Sat</div>
+        </div>
+        <div class="days__day">
+            <img
+                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+            <div class="days__day__name">Sun</div>
+        </div>
+    </nav>
+</body>
+
+</html>
