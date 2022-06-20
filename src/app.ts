@@ -35,21 +35,27 @@ app.use(passport.session())
 
 app.use(express.json())
 
-function loadRouters(dir: string, prefix: string = "") {
-    fs.readdirSync(dir)
-        .forEach((x) => {
-            const fullPath = path.join(dir, x)
-            if (fs.lstatSync(fullPath).isDirectory())
-                loadRouters(fullPath, `${prefix}/${x}`)
-            else if (x.match(/\.(js|ts)$/)) {
-                let name = x.slice(0, -3)
-                if (name == "root") name = ""
-                app.use(`${prefix}/${name}`, require(fullPath))
-            }
-        })
+function loadRouters(app: express.Application, dir: string, prefix = "") {
+    let fullPath = path.join(dir, "root.js")
+    if (fs.existsSync(fullPath))
+        app.use(`${prefix}/`, require(fullPath))
+    fullPath = path.join(dir, "root.ts")
+    if (fs.existsSync(fullPath))
+        app.use(`${prefix}/`, require(fullPath))
+    fs.readdirSync(dir).forEach((x) => {
+        if (x.startsWith("_")) return
+        fullPath = path.join(dir, x)
+        if (fs.lstatSync(fullPath).isDirectory()) {
+            loadRouters(app, fullPath, `${prefix}/${x}`)
+        } else if (x.match(/\.(js|ts)$/)) {
+            let name = x.slice(0, -3)
+            if (name == "root") return
+            app.use(`${prefix}/${name}`, require(fullPath))
+        }
+    })
 }
 
-loadRouters(__dirname + "/routers")
+loadRouters(app, __dirname + "/routers")
 
 mongoose.connect(process.env.MONGO!)
 
