@@ -46,8 +46,8 @@ body {
         width: 128px;
 
         img {
-            width: 120%;
-            height: 120%;
+            width: 110%;
+            height: 110%;
         }
     }
 
@@ -73,6 +73,10 @@ body {
         display: inline-block;
         font-size: .5em;
         transform: translateY(-50%);
+    }
+
+    &__additional-stats {
+        text-align: right;
     }
 }
 

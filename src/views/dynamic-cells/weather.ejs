@@ -7,12 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather</title>
     <link rel="stylesheet" href="/static/dynamic-cells/weather/main.css">
-    <script src="/static/dynamic-cells/weather/index.js"></script>
+    <script defer src="/static/dynamic-cells/weather/index.js"></script>
 </head>
 
 <body>
     <header class="location">
-        City (day): <div class="location__line"></div>
+        <span class="location__city">City</span>(<span class="location__day">Currently</span>):
+        <div class="location__line"></div>
     </header>
     <main class="weather">
         <div class="weather__icon">
@@ -20,18 +21,18 @@
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
         </div>
         <div class="weather__temps">
-            <div class="weather__temp">--<span class="degrees">°C</span></div>
+            <div class="weather__temp"><span class="data">--</span><span class="degrees">°C</span></div>
             <div class="weather__min-max">
-                <div class="weather__min">⇓--<span class="degrees">°C</span></div>
-                <div class="weather__max">⇑--<span class="degrees">°C</span></div>
+                <div class="weather__min">⇓<span class="data">--</span><span class="degrees">°C</span></div>
+                <div class="weather__max">⇑<span class="data">--</span><span class="degrees">°C</span></div>
             </div>
         </div>
         <div style="flex-grow: 1;"></div>
-        <div style="text-align: right;">
-            <div>Rain: --m/h</div>
-            <div>Humidity: --%</div>
-            <div>Wind Speed: --km/h</div>
-            <div>Visibility: --km</div>
+        <div class="weather__additional-stats">
+            <div class="weather__rain">Rain: <span class="data">--</span>mm</div>
+            <div class="weather__humidity">Humidity: <span class="data">--</span>%</div>
+            <div class="weather__wind">Wind Speed: <span class="data">--</span>km/h</div>
+            <div class="weather__pressure">Pressure: <span class="data">--</span>hPa</div>
         </div>
     </main>
     <nav class="days">
@@ -43,37 +44,37 @@
         <div class="days__day">
             <img
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">Mon</div>
+            <div class="days__day__name">-</div>
         </div>
         <div class="days__day">
             <img
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">Tue</div>
+            <div class="days__day__name">-</div>
         </div>
         <div class="days__day">
             <img
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">Wed</div>
+            <div class="days__day__name">-</div>
         </div>
         <div class="days__day">
             <img
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">Thu</div>
+            <div class="days__day__name">-</div>
         </div>
         <div class="days__day">
             <img
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">Fri</div>
+            <div class="days__day__name">-</div>
         </div>
         <div class="days__day">
             <img
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">Sat</div>
+            <div class="days__day__name">-</div>
         </div>
         <div class="days__day">
             <img
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">Sun</div>
+            <div class="days__day__name">-</div>
         </div>
     </nav>
 </body>
