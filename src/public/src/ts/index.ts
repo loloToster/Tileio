@@ -31,6 +31,22 @@ async function main() {
 
     setupEditPanel(grid)
 
+    grid.on("resizestop", (e, el) => {
+        if (!(el instanceof HTMLElement)) return
+        if (!el.classList.contains("dynamic-cell")) return
+
+        const width = parseInt(el.getAttribute("gs-w") || "0")
+        const height = parseInt(el.getAttribute("gs-h") || "0")
+
+        const serializedCell = JSON.parse(el.querySelector<HTMLElement>("[data-serialized]")!.dataset.serialized!)
+        const iframe = el.querySelector("iframe")!
+
+        const newSrc = serializedCell.src + `?w=${width}&h=${height}`
+
+        if (newSrc != iframe.src)
+            iframe.src = newSrc
+    })
+
     const profile = document.querySelector(".profile")
     const profileBtn = document.getElementById("grid__menu__profile")
 

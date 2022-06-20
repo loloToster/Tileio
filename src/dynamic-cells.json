@@ -1,12 +1,17 @@
 [
     {
+        "id": "mininote",
         "name": "Mininote",
         "src": "/dynamic-cells/mininote",
         "icon": "/static/assets/note.png"
     },
     {
+        "id": "weather",
         "name": "Weather",
         "src": "/dynamic-cells/weather",
-        "icon": "/static/assets/weather.png"
+        "icon": "/static/assets/weather.png",
+        "sizes": [
+            "4x2"
+        ]
     }
 ]

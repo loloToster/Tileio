@@ -79,7 +79,7 @@ export function unserializeContent(cell: SerializedCell) {
         editingCover.classList.add("editing-cover")
 
         const iframe = document.createElement("iframe")
-        iframe.src = content.src
+        iframe.src = content.src + `?w=${cell.w || "1"}&h=${cell.h}`
         iframe.dataset.serialized = JSON.stringify(content)
 
         let unserializedContent = iframe.outerHTML + editingCover.outerHTML
