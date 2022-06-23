@@ -11,6 +11,7 @@ const dayNames = [
     { long: "Sunday", short: "Sun" },
 ]
 
+const locationCity = document.querySelector<HTMLSpanElement>(".location__city")
 const locationDay = document.querySelector<HTMLSpanElement>(".location__day")
 
 const weatherIcon = document.querySelector<HTMLImageElement>(".weather__icon img")
@@ -27,6 +28,7 @@ const days = document.querySelectorAll(".days__day")
 const getIcon = (i: string) => `https://cdn.jsdelivr.net/npm/@bybas/weather-icons@2.0.0/production/fill/openweathermap/${i}.svg`
 
 function drawWeather(tab: number, data: any) {
+    locationCity!.innerText = data.name || "Your Location"
     const currentDay = new Date().getDay()
 
     days.forEach((day, i) => {
@@ -67,7 +69,7 @@ function drawWeather(tab: number, data: any) {
     })
 }
 
-function getWeather() {
+function getWeather(): Promise<any> {
     return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const data = await fetch(
@@ -79,9 +81,10 @@ function getWeather() {
     })
 }
 
+let curTab = 0
 async function main() {
     let weather = await getWeather()
-    drawWeather(0, weather)
+    drawWeather(curTab, weather)
 
     days.forEach((day, i) => {
         day.addEventListener("click", () => {
@@ -93,6 +96,7 @@ async function main() {
 
     setInterval(async () => {
         weather = await getWeather()
+        drawWeather(curTab, weather)
     }, 5 * 60 * 1000)
 }
 

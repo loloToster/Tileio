@@ -3,7 +3,12 @@ import { Schema, model } from "mongoose"
 import { Grid } from "../types/types"
 
 export interface DynamicCellsData {
-    mininote: { text: string }
+    mininote: { text: string },
+    weather: {
+        lat: number,
+        lon: number,
+        name: string
+    }
 }
 
 export interface IUser {
@@ -40,6 +45,11 @@ const userSchema = new Schema<IUser>({
     dynamicCells: {
         mininote: {
             text: String
+        },
+        weather: {
+            lat: Number,
+            lon: Number,
+            name: String
         }
     }
 })
