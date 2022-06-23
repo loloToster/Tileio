@@ -1,7 +1,7 @@
 import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 
-import { Grid, hex, SerializedCellContent, Icon } from "@backend-types/types"
+import { Grid, hex, IconResponse, SerializedCellContent } from "@backend-types/types"
 import { fillGridWithDummies, removeDummies, createWidgetFromSerializedCell, isDark } from "./grid-utils"
 
 export const trashSelector = "#grid__menu__trash"
@@ -116,7 +116,8 @@ export default (grid: GridStack) => {
 
     // Creating Link Cells
     const searchIconsInp = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
-    const iconSearchResultsBox = document.querySelector(".add-modal__icons")
+    const iconSearchResultsSi = document.querySelector(".add-modal__brand-icons")
+    const iconSearchResultsFa = document.querySelector(".add-modal__normal-icons")
     const suggestedColor = document.getElementById("add-modal__suggested-color")
     const linkInp = <HTMLInputElement>document.getElementById("add-modal__link-inp")
     const linkValidation = document.querySelector(".add-modal__link-validator")
@@ -130,11 +131,13 @@ export default (grid: GridStack) => {
         color: defaultColor
     })
 
-    interface FriendlyIcon extends Icon {
-        url: string
+    interface FriendlyIcon {
+        title: string,
+        url: string,
+        hex: hex
     }
 
-    async function searchForIcon(q: string, l: number): Promise<Icon[]> {
+    async function searchForIcon(q: string, l: number): Promise<IconResponse> {
         return await fetch(`/grid/search_icon?q=${q}&l=${l}`).then(r => r.json())
     }
 
@@ -173,15 +176,26 @@ export default (grid: GridStack) => {
     searchIconsInp?.addEventListener("input", () => {
         clearTimeout(searchTimeout)
         searchTimeout = setTimeout(async () => {
-            const icons = await searchForIcon(searchIconsInp.value, 30)
-            iconSearchResultsBox!.innerHTML = ""
-            for (const icon of icons) {
+            const res = await searchForIcon(searchIconsInp.value, 15)
+            iconSearchResultsSi!.innerHTML = ""
+            iconSearchResultsFa!.innerHTML = ""
+
+            for (const icon of res.si) {
                 const iconEl = createIconEl({
-                    ...icon,
+                    title: icon.title,
                     url: `https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/${icon.slug}.svg`,
                     hex: "#" + icon.hex
                 })
-                iconSearchResultsBox?.appendChild(iconEl)
+                iconSearchResultsSi?.appendChild(iconEl)
+            }
+
+            for (const icon of res.fa) {
+                const iconEl = createIconEl({
+                    title: icon.name,
+                    url: `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@6.1.1/svgs/solid/${icon.name}.svg`,
+                    hex: defaultColor
+                })
+                iconSearchResultsFa?.appendChild(iconEl)
             }
         }, 500)
     })
@@ -256,7 +270,8 @@ export default (grid: GridStack) => {
     function resetModal() {
         // reset inputs
         searchIconsInp.value = ""
-        iconSearchResultsBox!.innerHTML = ""
+        iconSearchResultsSi!.innerHTML = ""
+        iconSearchResultsFa!.innerHTML = ""
         colorPicker.setColor(defaultColor)
         suggestedColor!.style.backgroundColor = defaultColor
         linkInp!.value = ""

@@ -10,6 +10,7 @@ $col-width: 340px;
 $num-of-icon-in-row: 6;
 $icon-margin: 6px;
 $preview-size: 280px;
+$preview-icon-size: $preview-size - 96px;
 
 $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row );
 
@@ -192,15 +193,19 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
     }
 
     &__preview {
-        box-sizing: border-box;
+        @include m.flexCenter();
         overflow: hidden;
 
         width: $preview-size;
         height: $preview-size;
-        padding: 48px;
 
         background-color: c.$cell-color;
         border-radius: 16px;
+
+        img {
+            max-width: $preview-icon-size;
+            max-height: $preview-icon-size;
+        }
 
         img.white {
             filter: invert(1);

@@ -28,9 +28,18 @@ export interface Grid {
     cells: SerializedCell[]
 }
 
-export interface Icon {
+export interface SIIcon {
     title: string,
     slug: string,
     source: string,
     hex: hex
+}
+
+export interface FAIcon {
+    name: string
+}
+
+export interface IconResponse {
+    si: SIIcon[],
+    fa: FAIcon[]
 }

@@ -1,11 +1,12 @@
 import express from "express"
 
-import { Grid, Icon } from "../types/types"
+import { Grid, IconResponse, SIIcon } from "../types/types"
 import User from "../models/user"
 
 import Fuse from "fuse.js"
 import { SimpleIcon } from "simple-icons"
 import si from "simple-icons/icons"
+import fa from "../fa-icons.json"
 
 const MAX_SEARCH_LIMIT = 64
 
@@ -40,7 +41,7 @@ router.put("/update", async (req, res) => {
     res.send()
 })
 
-const simpleIcons: Icon[] = []
+const simpleIcons: SIIcon[] = []
 
 for (const key in si) {
     // @ts-ignore
@@ -53,8 +54,12 @@ for (const key in si) {
     })
 }
 
-const fuse = new Fuse(simpleIcons, {
+const SIfuse = new Fuse(simpleIcons, {
     keys: ["title"]
+})
+
+const FAfuse = new Fuse(fa, {
+    keys: ["name"]
 })
 
 router.get("/search_icon", (req, res) => {
@@ -68,11 +73,17 @@ router.get("/search_icon", (req, res) => {
     if (!/^-?\d+$/.test(limit))
         return res.status(400).send()
 
-    let searchResults = fuse.search(searchQuery, {
+    let SIsearchResults = SIfuse.search(searchQuery, {
         limit: parseInt(limit) % MAX_SEARCH_LIMIT
     }).map(r => r.item)
 
-    res.json(searchResults)
+    let FAsearchResults = FAfuse.search(searchQuery, {
+        limit: parseInt(limit) % MAX_SEARCH_LIMIT
+    }).map(r => r.item)
+
+    const resp: IconResponse = { si: SIsearchResults, fa: FAsearchResults }
+
+    res.json(resp)
 })
 
 export = router
