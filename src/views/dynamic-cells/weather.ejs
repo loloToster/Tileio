@@ -12,7 +12,14 @@
 
 <body>
     <header class="location">
-        <span class="location__city">City</span>&nbsp;(<span class="location__day">Currently</span>):
+        <span class="location__city">City</span>
+        <div class="location__search-wrapper">
+            <input class="location__search-input" type="text">
+            <div class="location__suggestions">
+            </div>
+        </div>
+        <img class="location__search" src="/static/assets/travel_explore.svg" alt="search for location">
+        (<span class="location__day">Currently</span>):
         <div class="location__line"></div>
     </header>
     <main class="weather">

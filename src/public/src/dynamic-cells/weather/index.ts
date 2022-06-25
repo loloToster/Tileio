@@ -1,4 +1,4 @@
-import { CurrentWeather, DailyWeather } from "openweather-api-node/typings"
+import { CurrentWeather, DailyWeather, Location } from "openweather-api-node/typings"
 
 const dayNames = [
     { long: "Currently", short: "Today" },
@@ -11,7 +11,11 @@ const dayNames = [
     { long: "Sunday", short: "Sun" },
 ]
 
+const location = document.querySelector<HTMLElement>(".location")
 const locationCity = document.querySelector<HTMLSpanElement>(".location__city")
+const searchLocation = document.querySelector<HTMLImageElement>(".location__search")
+const searchLocationInp = document.querySelector<HTMLInputElement>(".location__search-input")
+const searchSuggestions = document.querySelector<HTMLDivElement>(".location__suggestions")
 const locationDay = document.querySelector<HTMLSpanElement>(".location__day")
 
 const weatherIcon = document.querySelector<HTMLImageElement>(".weather__icon img")
@@ -69,21 +73,46 @@ function drawWeather(tab: number, data: any) {
     })
 }
 
-function getWeather(): Promise<any> {
-    return new Promise((resolve) => {
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-            const data = await fetch(
-                `/dynamic-cells/weather/data?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
-            ).then(r => r.json())
+async function getWeather() {
+    const data = await fetch(
+        `/dynamic-cells/weather/data`
+    ).then(r => r.json())
 
-            resolve(data)
-        })
-    })
+    return data
 }
 
-let curTab = 0
 async function main() {
+    let curTab = 0
     let weather = await getWeather()
+
+    searchLocation?.addEventListener("click", () => {
+        location?.classList.toggle("searching")
+    })
+
+    searchLocationInp?.addEventListener("input", async () => {
+        if (searchLocationInp.value == "") {
+            searchSuggestions!.innerHTML = ""
+            return
+        }
+        const res = await fetch("/dynamic-cells/weather/search?q=" + encodeURIComponent(searchLocationInp!.value))
+        const data: Location[] = await res.json()
+
+        searchSuggestions!.innerHTML = ""
+        data.forEach(l => {
+            let suggestion = document.createElement("div")
+            suggestion.classList.add("location__suggestion")
+            const name = `${l.name}, ${l.country}`
+            suggestion.innerText = name
+            suggestion.addEventListener("click", async () => {
+                location?.classList.remove("searching")
+                await fetch(`/dynamic-cells/weather/set-location?name=${encodeURIComponent(name)}&lat=${l.lat}&lon=${l.lon}`)
+                weather = await getWeather()
+                drawWeather(curTab, weather)
+            })
+            searchSuggestions?.appendChild(suggestion)
+        })
+    })
+
     drawWeather(curTab, weather)
 
     days.forEach((day, i) => {

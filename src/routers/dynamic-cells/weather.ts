@@ -8,34 +8,48 @@ const weather = new OpenWeatherAPI({
 
 const router = express.Router()
 
+// check if logged in
+
 router.get("/", (req, res) => {
     res.render("dynamic-cells/weather")
 })
 
 router.get("/data", async (req, res) => {
-    if (typeof req.query.lat != "string" || typeof req.query.lon != "string")
-        return res.status(400).send()
-
     const user = req.user!
 
-    let locationName = user.dynamicCells.weather?.name
-    const lat = parseFloat(req.query.lat)
-    const lon = parseFloat(req.query.lon)
-
-    if (lat != user.dynamicCells.weather?.lat || lon != user.dynamicCells.weather?.lon) {
-        const location = await weather.getLocation({
-            coordinates: { lat, lon }
-        })
-        locationName = location?.name
-        await User.findByIdAndUpdate(user.id, { "dynamicCells.weather": { lat, lon, name: locationName } })
-    }
-
     const data = await weather.getEverything({
-        coordinates: { lat, lon },
+        coordinates: { lat: user.dynamicCells.weather?.lat || 51.5, lon: user.dynamicCells.weather?.lon || -0.11 },
         units: "metric"
     })
 
-    res.json({ ...data, name: locationName })
+    res.json({ ...data, name: user.dynamicCells.weather?.name || "London, GB" })
+})
+
+router.get("/set-location", async (req, res) => {
+    let name = req.query.name
+    const lat = req.query.lat
+    const lon = req.query.lon
+
+    if (typeof name != "string" || typeof lat != "string" || typeof lon != "string")
+        return res.status(400).send()
+
+    name = decodeURIComponent(name)
+    const latitude = parseFloat(lat)
+    const longitude = parseFloat(lon)
+
+    if (name.length > 128 || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
+        return res.status(400).send()
+
+    await User.findByIdAndUpdate(req.user?.id, { "dynamicCells.weather": { lat: latitude, lon: longitude, name } })
+    res.send()
+})
+
+router.get("/search", async (req, res) => {
+    if (typeof req.query.q != "string") return res.status(400).send()
+
+    const data = await weather.getAllLocations(req.query.q)
+
+    res.json(data)
 })
 
 export = router

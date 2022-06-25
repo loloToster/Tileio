@@ -31,7 +31,7 @@
     "fuse.js": "^6.6.2",
     "gridstack": "^5.1.0",
     "mongoose": "^6.3.5",
-    "openweather-api-node": "^1.4.0",
+    "openweather-api-node": "^1.4.1",
     "passport": "^0.5.3",
     "passport-discord": "^0.1.4",
     "passport-github2": "^0.1.12",
