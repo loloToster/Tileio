@@ -150,6 +150,28 @@
                 </div>
             </div>
         </div>
+        <div class="settings">
+            <div class="settings__content">
+                <h1>Settings</h1>
+                <div class="settings__row">
+                    Background color: <div class="settings__bg-color settings__color"></div>
+                </div>
+                <div class="settings__row">
+                    Cell color: <div class="settings__cell-color settings__color"></div>
+                </div>
+                <div class="settings__row">
+                    <label for="settings__grid-w">Grid width:</label>
+                    <input min="7" max="12" id="settings__grid-w" type="range">
+                    <span id="settings__grid-w-value">10</span>
+                </div>
+                <div class="settings__row">
+                    <label for="settings__grid-h">Grid height:</label>
+                    <input min="3" max="7" id="settings__grid-h" type="range">
+                    <span id="settings__grid-h-value">5</span>
+                </div>
+                <button class="settings__save">Save</button>
+            </div>
+        </div>
     </div>
 </body>
 

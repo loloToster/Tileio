@@ -3,7 +3,8 @@
 
 @forward "./components/grid";
 @forward "./components/grid-menu";
-@forward "./components/profile";
+@forward "./components/profile" as p-*;
+@forward "./components/settings" as s-*;
 @forward "./components/add-cell-modal";
 
 body {

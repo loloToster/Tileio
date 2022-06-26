@@ -1,0 +1,93 @@
+@use "../abstracts/colors" as c;
+@use "../abstracts/constants" as const;
+
+$content-dimensions-w: const.$cell-width * 4 + const.$grid-margin * 6;
+$content-dimensions-h: const.$cell-width * 3 + const.$grid-margin * 4;
+
+.settings {
+    position: absolute;
+    overflow: hidden;
+
+    width: 0;
+    height: $content-dimensions-h;
+    top: 0;
+    right: 0;
+    margin: const.$grid-margin;
+
+    background-color: c.$cell-color;
+    border-radius: const.$cell-border-radius;
+    color: white;
+
+    transition: width 150ms linear;
+
+    &.active {
+        width: $content-dimensions-w;
+    }
+
+    &__content {
+        box-sizing: border-box;
+        position: relative;
+
+        width: $content-dimensions-w;
+        height: $content-dimensions-h;
+        padding: 16px;
+
+        h1 {
+            margin-top: 0;
+        }
+    }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 1.2rem;
+    }
+
+    &__color {
+        width: 2rem;
+        height: 2rem;
+
+        border-radius: 50%;
+        background-color: #343434;
+        cursor: pointer;
+    }
+
+    input {
+        appearance: none;
+        width: 150px;
+        height: 7px;
+
+        border-radius: 100vh;
+        cursor: pointer;
+
+        &::-webkit-slider-thumb {
+            appearance: none;
+
+            width: 11px;
+            height: 18px;
+            background-color: c.$light-grey;
+        }
+    }
+
+    &__save {
+        position: absolute;
+        padding: 12px 16px;
+        right: 16px;
+        bottom: 16px;
+
+        background-color: darken(c.$green, 20%);
+        border-radius: 4px;
+        color: inherit;
+        font-weight: bold;
+        font-size: 1.3rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 100ms linear;
+
+        &:hover {
+            background-color: darken(c.$green, 30%);
+        }
+    }
+}

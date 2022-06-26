@@ -49,12 +49,21 @@ async function main() {
 
     const profile = document.querySelector(".profile")
     const profileBtn = document.getElementById("grid__menu__profile")
+    const settings = document.querySelector(".settings")
+    const settingsBtn = document.getElementById("grid__menu__settings")
 
     if (!profile || !profileBtn)
         throw new Error("Profile or ProfileBtn element doesnt exist")
 
+    if (!settings || !settingsBtn)
+        throw new Error("Settings or SettingsBtn element doesnt exist")
+
     profileBtn.addEventListener("click",
         () => profile.classList.toggle("active")
+    )
+
+    settingsBtn.addEventListener("click",
+        () => settings.classList.toggle("active")
     )
 
     /**
@@ -62,8 +71,11 @@ async function main() {
      * remove active class
      */
     window.addEventListener("click", e => {
-        if (e.composedPath().includes(profile) || e.composedPath().includes(profileBtn)) return
-        profile.classList.remove("active")
+        if (!e.composedPath().includes(profile) && !e.composedPath().includes(profileBtn))
+            profile.classList.remove("active")
+
+        if (!e.composedPath().includes(settings) && !e.composedPath().includes(settingsBtn))
+            settings.classList.remove("active")
     })
 }
 
