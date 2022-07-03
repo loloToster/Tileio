@@ -153,11 +153,25 @@
         <div class="settings">
             <div class="settings__content">
                 <h1>Settings</h1>
-                <div class="settings__row">
-                    Background color: <div class="settings__bg-color settings__color"></div>
+                <div class="settings__row settings__bg-color">
+                    Background color:
+                    <div class="settings__color"></div>
+                    <div class="settings__color-box">
+                        <div class="settings__arrow"></div>
+                        <div class="settings__color-picker">
+                            <div id="settings__bg-color-picker"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="settings__row">
-                    Cell color: <div class="settings__cell-color settings__color"></div>
+                <div class="settings__row settings__cell-color">
+                    Cell color:
+                    <div class="settings__color"></div>
+                    <div class="settings__color-box">
+                        <div class="settings__arrow"></div>
+                        <div class="settings__color-picker">
+                            <div id="settings__cell-color-picker"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="settings__row">
                     <label for="settings__grid-w">Grid width:</label>

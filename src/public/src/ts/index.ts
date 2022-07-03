@@ -1,8 +1,10 @@
 import { GridStack } from "gridstack"
 import "gridstack/dist/h5/gridstack-dd-native"
 
+import { onClickOutside } from "./utlis/utils"
 import { fillGridWithDummies, createWidgetFromSerializedCell } from "./index/grid-utils"
 import setupEditPanel, { trashSelector } from "./index/edit-panel"
+import setupSettings from "./index/settings"
 
 async function main() {
     // TODO: on error
@@ -29,6 +31,7 @@ async function main() {
 
     fillGridWithDummies(grid)
 
+    setupSettings(grid)
     setupEditPanel(grid)
 
     grid.on("resizestop", (e, el) => {
@@ -49,33 +52,16 @@ async function main() {
 
     const profile = document.querySelector(".profile")
     const profileBtn = document.getElementById("grid__menu__profile")
-    const settings = document.querySelector(".settings")
-    const settingsBtn = document.getElementById("grid__menu__settings")
 
     if (!profile || !profileBtn)
         throw new Error("Profile or ProfileBtn element doesnt exist")
-
-    if (!settings || !settingsBtn)
-        throw new Error("Settings or SettingsBtn element doesnt exist")
 
     profileBtn.addEventListener("click",
         () => profile.classList.toggle("active")
     )
 
-    settingsBtn.addEventListener("click",
-        () => settings.classList.toggle("active")
-    )
-
-    /**
-     * if user clicked anywhere outside of the profile or profile button
-     * remove active class
-     */
-    window.addEventListener("click", e => {
-        if (!e.composedPath().includes(profile) && !e.composedPath().includes(profileBtn))
-            profile.classList.remove("active")
-
-        if (!e.composedPath().includes(settings) && !e.composedPath().includes(settingsBtn))
-            settings.classList.remove("active")
+    onClickOutside([profile, profileBtn], () => {
+        profile.classList.remove("active")
     })
 }
 

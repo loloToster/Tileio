@@ -54,6 +54,38 @@ $content-dimensions-h: const.$cell-width * 3 + const.$grid-margin * 4;
         cursor: pointer;
     }
 
+    &__color-box {
+        overflow: hidden;
+        width: 0;
+        max-height: 40px;
+        z-index: 1;
+
+        &.active {
+            overflow: unset;
+            width: auto;
+        }
+    }
+
+    &__arrow {
+        float: left;
+        height: 0;
+        width: 0;
+        margin: 12px 0;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-right: 8px solid #343434;
+    }
+
+    &__color-picker {
+        box-sizing: border-box;
+        float: left;
+        width: 190px;
+        height: 150px;
+        padding: 10px;
+        background-color: #343434;
+        border-radius: 8px;
+    }
+
     input {
         appearance: none;
         width: 150px;
@@ -61,6 +93,7 @@ $content-dimensions-h: const.$cell-width * 3 + const.$grid-margin * 4;
 
         border-radius: 100vh;
         cursor: pointer;
+        background: linear-gradient(to right, c.$green 0%, c.$green calc(var(--val) * 1%), #a4a4a4 calc(var(--val) * 1%), #a4a4a4 100%);
 
         &::-webkit-slider-thumb {
             appearance: none;
