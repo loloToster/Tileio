@@ -9,9 +9,11 @@
 
 body {
     @include m.flexCenter();
+    --bg-color: #{c.$bg-color};
+    --cell-color: #{c.$cell-color};
 
     font-family: basic-sans, sans-serif;
-    background-color: c.$bg-color;
+    background-color: var(--bg-color);
     min-height: 100vh;
     margin: 0;
 }

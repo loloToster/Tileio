@@ -15,9 +15,9 @@ export default (grid: GridStack) => {
     })
 
     /* Grid colors */
-    const bgColorBtn = document.querySelector(".settings__bg-color .settings__color")
+    const bgColorBtn = document.querySelector<HTMLDivElement>(".settings__bg-color .settings__color")
     const bgColorBox = document.querySelector(".settings__bg-color .settings__color-box")
-    const cellColorBtn = document.querySelector(".settings__cell-color .settings__color")
+    const cellColorBtn = document.querySelector<HTMLDivElement>(".settings__cell-color .settings__color")
     const cellColorBox = document.querySelector(".settings__cell-color .settings__color-box")
 
     const bgColorPicker = new ColorPicker({
@@ -26,10 +26,8 @@ export default (grid: GridStack) => {
         height: 130
     })
 
-    const cellColorPicker = new ColorPicker({
-        el: "#settings__cell-color-picker",
-        width: 170,
-        height: 130
+    bgColorPicker.onChange(() => {
+        bgColorBtn!.style.backgroundColor = bgColorPicker.getHexString()
     })
 
     bgColorBtn?.addEventListener("click", () => {
@@ -38,6 +36,16 @@ export default (grid: GridStack) => {
 
     onClickOutside([bgColorBtn, bgColorBox], () => {
         bgColorBox?.classList.remove("active")
+    })
+
+    const cellColorPicker = new ColorPicker({
+        el: "#settings__cell-color-picker",
+        width: 170,
+        height: 130
+    })
+
+    cellColorPicker.onChange(() => {
+        cellColorBtn!.style.backgroundColor = cellColorPicker.getHexString()
     })
 
     cellColorBtn?.addEventListener("click", () => {
@@ -66,5 +74,28 @@ export default (grid: GridStack) => {
     gridHeightInp.addEventListener("input", () => {
         gridHeightSpan.innerText = gridHeightInp.value
         gridHeightInp.style.setProperty("--val", (((parseInt(gridHeightInp.value) - gridHeightMin) / gridHeightDiff) * 100).toString())
+    })
+
+    /* Saving */
+    const saveBtn = document.querySelector<HTMLButtonElement>(".settings__save")
+
+    saveBtn?.addEventListener("click", async () => {
+        const values = {
+            bgColor: bgColorPicker.getHexString(),
+            cellColor: cellColorPicker.getHexString(),
+            col: parseInt(gridWidthInp.value),
+            row: parseInt(gridHeightInp.value)
+        }
+
+        await fetch("/grid/update-settings", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(values)
+        })
+
+        document.body.style.setProperty("--bg-color", values.bgColor)
+        document.body.style.setProperty("--cell-color", values.cellColor)
     })
 }

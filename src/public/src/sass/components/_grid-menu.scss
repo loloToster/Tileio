@@ -28,7 +28,7 @@ $num-of-edit-panel-elems: 3;
         padding: 0;
         margin-bottom: .3rem;
 
-        background-color: c.$cell-color;
+        background-color: var(--cell-color);
         border: none;
         border-radius: 50%;
 

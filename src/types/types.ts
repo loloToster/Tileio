@@ -25,6 +25,8 @@ export interface SerializedCell {
 export interface Grid {
     col: number,
     row: number,
+    bg?: string,
+    cell?: string,
     cells: SerializedCell[]
 }
 

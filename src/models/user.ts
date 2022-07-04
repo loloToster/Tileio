@@ -28,6 +28,8 @@ const userSchema = new Schema<IUser>({
     grid: {
         col: { type: Number, default: 10 },
         row: { type: Number, default: 5 },
+        bg: String,
+        cell: String,
         cells: [{
             w: Number,
             h: Number,

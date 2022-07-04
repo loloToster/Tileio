@@ -1,6 +1,7 @@
 import { GridStack } from "gridstack"
 import "gridstack/dist/h5/gridstack-dd-native"
 
+import { Grid } from "@backend-types/types"
 import { onClickOutside } from "./utlis/utils"
 import { fillGridWithDummies, createWidgetFromSerializedCell } from "./index/grid-utils"
 import setupEditPanel, { trashSelector } from "./index/edit-panel"
@@ -8,10 +9,13 @@ import setupSettings from "./index/settings"
 
 async function main() {
     // TODO: on error
-    let initialGrid = await fetch("/grid").then(r => r.json())
+    let initialGrid: Grid = await fetch("/grid").then(r => r.json())
 
     const loading = document.querySelector(".grid__loading")
     loading?.classList.remove("active")
+
+    document.body.style.setProperty("--bg-color", initialGrid.bg || "#212121")
+    document.body.style.setProperty("--cell-color", initialGrid.cell || "#343434")
 
     const grid = GridStack.init({
         row: initialGrid.row,
@@ -34,6 +38,7 @@ async function main() {
     setupSettings(grid)
     setupEditPanel(grid)
 
+    /* Update iframe src on cell resize */
     grid.on("resizestop", (e, el) => {
         if (!(el instanceof HTMLElement)) return
         if (!el.classList.contains("dynamic-cell")) return

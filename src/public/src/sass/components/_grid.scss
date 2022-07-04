@@ -67,7 +67,7 @@ $loading-items: 5;
 }
 
 .grid-stack-item-content {
-    background-color: c.$cell-color;
+    background-color: var(--cell-color);
     border-radius: const.$cell-border-radius;
     overflow: hidden !important;
 
