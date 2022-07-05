@@ -1,9 +1,10 @@
+import { Grid } from "@backend-types/types"
 import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 import { onClickOutside } from "../utlis/utils"
-import { dummyClass } from "./grid-utils"
+import { dummyClass, removeDummies, fillGridWithDummies } from "./grid-utils"
 
-export default (grid: GridStack) => {
+export default (grid: GridStack, initialGrid: Grid) => {
     const settings = document.querySelector(".settings")
     const settingsBtn = document.getElementById("grid__menu__settings")
 
@@ -23,8 +24,7 @@ export default (grid: GridStack) => {
 
     const bgColorPicker = new ColorPicker({
         el: "#settings__bg-color-picker",
-        // TODO: load with user value
-        color: "#212121",
+        color: initialGrid.bg || "#212121",
         width: 170,
         height: 130
     })
@@ -43,7 +43,7 @@ export default (grid: GridStack) => {
 
     const cellColorPicker = new ColorPicker({
         el: "#settings__cell-color-picker",
-        color: "#343434",
+        color: initialGrid.cell || "#343434",
         width: 170,
         height: 130
     })
@@ -70,14 +70,24 @@ export default (grid: GridStack) => {
     const gridHeightDiff = parseInt(gridHeightInp.max) - gridHeightMin
     const gridHeightSpan = <HTMLSpanElement>document.getElementById("settings__grid-h-value")
 
+    const setWidthInpBg = () => gridWidthInp.style.setProperty("--val", (((parseInt(gridWidthInp.value) - gridWidthMin) / gridWidthDiff) * 100).toString())
+    const setHeightInpBg = () => gridHeightInp.style.setProperty("--val", (((parseInt(gridHeightInp.value) - gridHeightMin) / gridHeightDiff) * 100).toString())
+
+    gridWidthInp.value = initialGrid.col.toString()
+    gridHeightInp.value = initialGrid.row.toString()
+    gridWidthSpan.innerText = initialGrid.col.toString()
+    gridHeightSpan.innerText = initialGrid.row.toString()
+    setWidthInpBg()
+    setHeightInpBg()
+
     gridWidthInp.addEventListener("input", () => {
         gridWidthSpan.innerText = gridWidthInp.value
-        gridWidthInp.style.setProperty("--val", (((parseInt(gridWidthInp.value) - gridWidthMin) / gridWidthDiff) * 100).toString())
+        setWidthInpBg()
     })
 
     gridHeightInp.addEventListener("input", () => {
         gridHeightSpan.innerText = gridHeightInp.value
-        gridHeightInp.style.setProperty("--val", (((parseInt(gridHeightInp.value) - gridHeightMin) / gridHeightDiff) * 100).toString())
+        setHeightInpBg()
     })
 
     /* Saving */
@@ -92,7 +102,7 @@ export default (grid: GridStack) => {
         }
 
         let cellsCollide = false
-        if (values.col < grid.opts.column! || values.row < grid.opts.row!) {
+        if (values.col < grid.opts.column! || values.row < grid.opts.maxRow!) {
             for (const cell of grid.getGridItems()) {
                 if (cell.classList.contains(dummyClass))
                     continue
@@ -125,6 +135,9 @@ export default (grid: GridStack) => {
 
         document.body.style.setProperty("--bg-color", values.bgColor)
         document.body.style.setProperty("--cell-color", values.cellColor)
+        removeDummies(grid)
+        grid.column(values.col)
+        fillGridWithDummies(grid)
         settings?.classList.remove("active")
     })
 }

@@ -35,7 +35,7 @@ async function main() {
 
     fillGridWithDummies(grid)
 
-    setupSettings(grid)
+    setupSettings(grid, initialGrid)
     setupEditPanel(grid)
 
     /* Update iframe src on cell resize */
