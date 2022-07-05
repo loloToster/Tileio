@@ -108,6 +108,26 @@ $loading-items: 5;
 
         border: none;
     }
+
+    @keyframes red-outline {
+        0% {
+            outline-color: #ff0000ff;
+        }
+
+        40% {
+            outline-color: #ff0000ff;
+        }
+
+        100% {
+            outline-color: #ff000000;
+        }
+    }
+
+    &.red-outline {
+        outline-width: 4px;
+        outline-style: solid;
+        animation: red-outline 4000ms forwards;
+    }
 }
 
 .editing .editing-cover {

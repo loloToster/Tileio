@@ -1,6 +1,7 @@
 import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 import { onClickOutside } from "../utlis/utils"
+import { dummyClass } from "./grid-utils"
 
 export default (grid: GridStack) => {
     const settings = document.querySelector(".settings")
@@ -22,6 +23,8 @@ export default (grid: GridStack) => {
 
     const bgColorPicker = new ColorPicker({
         el: "#settings__bg-color-picker",
+        // TODO: load with user value
+        color: "#212121",
         width: 170,
         height: 130
     })
@@ -40,6 +43,7 @@ export default (grid: GridStack) => {
 
     const cellColorPicker = new ColorPicker({
         el: "#settings__cell-color-picker",
+        color: "#343434",
         width: 170,
         height: 130
     })
@@ -87,6 +91,30 @@ export default (grid: GridStack) => {
             row: parseInt(gridHeightInp.value)
         }
 
+        let cellsCollide = false
+        if (values.col < grid.opts.column! || values.row < grid.opts.row!) {
+            for (const cell of grid.getGridItems()) {
+                if (cell.classList.contains(dummyClass))
+                    continue
+
+                const x = parseInt(cell.getAttribute("gs-x") || "0")
+                const y = parseInt(cell.getAttribute("gs-y") || "0")
+                const w = parseInt(cell.getAttribute("gs-w") || "0")
+                const h = parseInt(cell.getAttribute("gs-h") || "0")
+
+                if (x + w > values.col || y + h > values.row) {
+                    cellsCollide = true
+                    const content = cell.querySelector<HTMLDivElement>(".grid-stack-item-content")
+                    content?.classList.remove("red-outline")
+                    // neccessary for the animation to work (https://stackoverflow.com/questions/22093141/adding-class-via-js-wont-trigger-css-animation)
+                    void content?.offsetWidth
+                    content?.classList.add("red-outline")
+                }
+            }
+        }
+
+        if (cellsCollide) return settings?.classList.remove("active")
+
         await fetch("/grid/update-settings", {
             method: "PUT",
             headers: {
@@ -97,5 +125,6 @@ export default (grid: GridStack) => {
 
         document.body.style.setProperty("--bg-color", values.bgColor)
         document.body.style.setProperty("--cell-color", values.cellColor)
+        settings?.classList.remove("active")
     })
 }

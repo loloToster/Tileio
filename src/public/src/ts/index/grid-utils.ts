@@ -2,7 +2,7 @@ import { GridStack, GridStackWidget } from "gridstack"
 
 import { hex, SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
 
-const dummyClass = "dummy-cell"
+export const dummyClass = "dummy-cell"
 const LUMINANCE_THRESHOLD = 236
 
 function getLuminance(hex: hex) {
@@ -30,9 +30,9 @@ export function fillGridWithDummies(grid: GridStack) {
 }
 
 export function removeDummies(grid: GridStack) {
-    const allDummies = grid.getGridItems()
+    const allCells = grid.getGridItems()
 
-    for (const cell of allDummies) {
+    for (const cell of allCells) {
         if (cell.classList.contains(dummyClass))
             grid.removeWidget(cell, true, false)
     }
