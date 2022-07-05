@@ -89,19 +89,22 @@ router.get("/search_icon", (req, res) => {
 const hexColorRegex = /^#(?:[0-9a-fA-F]{3}){1,2}$/
 router.put("/update-settings", async (req, res) => {
     const values = req.body
+
     if (!values ||
         typeof values.bgColor != "string" ||
-        values.bgColor.match(hexColorRegex) ||
+        !hexColorRegex.test(values.bgColor) ||
         typeof values.cellColor != "string" ||
-        values.cellColor.match(hexColorRegex) ||
+        !hexColorRegex.test(values.cellColor) ||
         typeof values.col != "number" ||
         typeof values.row != "number")
-        res.status(403).send()
+        return res.status(403).send()
+
     await User.findByIdAndUpdate(req.user!.id,
         {
             $set: { "grid.bg": values.bgColor, "grid.cell": values.cellColor, "grid.col": values.col, "grid.row": values.row },
         }
     )
+
     res.send()
 })
 
