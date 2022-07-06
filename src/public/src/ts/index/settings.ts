@@ -136,7 +136,11 @@ export default (grid: GridStack, initialGrid: Grid) => {
         document.body.style.setProperty("--bg-color", values.bgColor)
         document.body.style.setProperty("--cell-color", values.cellColor)
         removeDummies(grid)
-        grid.column(values.col)
+        grid.column(values.col, "none")
+        grid.opts.maxRow = values.col
+        grid.engine.maxRow = values.row
+        grid.el.parentElement!.style.width = `${140 * values.col}px`
+        grid.el.parentElement!.style.height = `${140 * values.row}px`
         fillGridWithDummies(grid)
         settings?.classList.remove("active")
     })
