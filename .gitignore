@@ -4,3 +4,4 @@
 /src/public/static/*
 !/src/public/static/assets/
 .env
+TODO.md
