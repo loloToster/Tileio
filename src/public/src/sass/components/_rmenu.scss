@@ -1,0 +1,16 @@
+@use "../abstracts/colors" as c;
+
+.rmenu {
+    position: absolute;
+    display: none;
+
+    width: 100px;
+    height: 100px;
+
+    background-color: #1f1f1f;
+    border-radius: 3px;
+
+    &.active {
+        display: block;
+    }
+}

@@ -1,6 +1,7 @@
 import { GridStack, GridStackWidget } from "gridstack"
 
 import { hex, SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
+import { onClickOutside } from "../utlis/utils"
 
 export const dummyClass = "dummy-cell"
 const LUMINANCE_THRESHOLD = 236
@@ -93,6 +94,12 @@ export function unserializeContent(cell: SerializedCell) {
     }
 }
 
+const rmenu = document.querySelector<HTMLDivElement>(".rmenu")!
+
+onClickOutside([rmenu], () => {
+    rmenu.classList.remove("active")
+})
+
 export function createWidgetFromSerializedCell(grid: GridStack, cell: SerializedCell) {
     let widget: GridStackWidget = {
         x: cell.x,
@@ -107,6 +114,13 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
     let element = grid.addWidget(widget)
 
     if (cell.content?.type == "d") element.classList.add("dynamic-cell")
+
+    element.querySelector<HTMLDivElement>(".grid-stack-item-content")!.addEventListener("contextmenu", e => {
+        e.preventDefault()
+        rmenu.classList.add("active")
+        rmenu.style.left = `${e.pageX}px`
+        rmenu.style.top = `${e.pageY}px`
+    })
 
     return element
 }

@@ -6,6 +6,7 @@
 @forward "./components/profile" as p-*;
 @forward "./components/settings" as s-*;
 @forward "./components/add-cell-modal";
+@forward "./components/rmenu";
 
 body {
     @include m.flexCenter();
