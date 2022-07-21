@@ -1,4 +1,4 @@
-import { GridStack, GridStackWidget } from "gridstack"
+import { GridItemHTMLElement, GridStack, GridStackWidget } from "gridstack"
 
 import { hex, SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
 import { onClickOutside } from "../utlis/utils"
@@ -94,11 +94,51 @@ export function unserializeContent(cell: SerializedCell) {
     }
 }
 
-const rmenu = document.querySelector<HTMLDivElement>(".rmenu")!
+const contextMenuBtns = [
+    {
+        class: "edit", innerText: "Edit",
+        onclick: () => {
+            console.log("edit")
+        }
+    },
+    {
+        class: "resize", innerText: "Resize",
+        onclick: () => {
+            console.log("resize")
+        }
+    },
+    {
+        class: "delete", innerText: "Delete",
+        onclick: () => {
+            console.log("delete")
+        }
+    }
+]
 
-onClickOutside([rmenu], () => {
-    rmenu.classList.remove("active")
-})
+function customContextmenu(e: MouseEvent, el: GridItemHTMLElement, cell: SerializedCell) {
+    console.log(el)
+    e.preventDefault()
+    document.querySelectorAll(".rmenu").forEach(x => x.remove())
+
+    let rmenu = document.createElement("div")
+    rmenu.classList.add("rmenu")
+    rmenu.style.left = `${e.pageX}px`
+    rmenu.style.top = `${e.pageY}px`
+
+    onClickOutside([rmenu], () => {
+        rmenu.remove()
+    })
+
+    contextMenuBtns.forEach(btn => {
+        let el = document.createElement("button")
+        el.classList.add("rmenu__btn", `rmenu__${btn.class}`)
+        el.innerText = btn.innerText
+        el.addEventListener("click", btn.onclick)
+        rmenu.appendChild(el)
+    })
+
+    document.body.appendChild(rmenu)
+}
 
 export function createWidgetFromSerializedCell(grid: GridStack, cell: SerializedCell) {
     let widget: GridStackWidget = {
@@ -115,12 +155,8 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
 
     if (cell.content?.type == "d") element.classList.add("dynamic-cell")
 
-    element.querySelector<HTMLDivElement>(".grid-stack-item-content")!.addEventListener("contextmenu", e => {
-        e.preventDefault()
-        rmenu.classList.add("active")
-        rmenu.style.left = `${e.pageX}px`
-        rmenu.style.top = `${e.pageY}px`
-    })
+    element.querySelector<HTMLDivElement>(".grid-stack-item-content")!
+        .addEventListener("contextmenu", e => customContextmenu(e, element, cell))
 
     return element
 }

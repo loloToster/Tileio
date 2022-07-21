@@ -2,15 +2,46 @@
 
 .rmenu {
     position: absolute;
-    display: none;
+    display: block;
+    flex-direction: column;
 
-    width: 100px;
-    height: 100px;
+    padding: 4px;
 
     background-color: #1f1f1f;
     border-radius: 3px;
 
-    &.active {
+    &__btn {
         display: block;
+
+        width: 100px;
+        padding: 4px;
+        margin: 0;
+        margin-bottom: 4px;
+
+        background-color: transparent;
+        border: none;
+        outline: none;
+        color: white;
+        font-size: 1.2rem;
+        text-align: left;
+        border-radius: 2px;
+        cursor: pointer;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &:hover {
+            background-color: c.$light-grey;
+        }
+    }
+
+    &__delete {
+        color: c.$red;
+
+        &:hover {
+            color: white;
+            background-color: c.$red;
+        }
     }
 }
