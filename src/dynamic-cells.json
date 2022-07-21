@@ -13,5 +13,14 @@
         "sizes": [
             "4x2"
         ]
+    },
+    {
+        "id": "spotify",
+        "name": "Spotify",
+        "src": "/dynamic-cells/spotify",
+        "icon": "/static/assets/spotify.png",
+        "sizes": [
+            "2x2"
+        ]
     }
 ]

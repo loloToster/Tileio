@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/dynamic-cells/spotify/main.css">
+    <title>Document</title>
+    <script defer src="/static/dynamic-cells/spotify/index.js"></script>
+</head>
+
+<body>
+    <div class="main-tab menu">
+        <header class="header">
+            <a href="https://open.spotify.com/" target="_blank">
+                <img class="header__logo" src="/static/assets/spotify.png" alt="Spotify Logo">
+            </a>
+            <div style="flex-grow: 1;"></div>
+            <div class="header__name">name</div>
+            <img class="header__avatar" src="https://dummyimage.com/32x32/fff/000&text=avatar" alt="avatar">
+        </header>
+        <ul class="playlists">
+            <li class="playlists__playlist">
+                <img class="playlists__playlist-img" src="https://dummyimage.com/256x256/000/fff">
+                <div class="playlists__playlist-name">Playlist</div>
+            </li>
+        </ul>
+        <nav class="nav">
+            <button class="nav__btn active">
+                <svg height="20" width="20" viewBox="0 0 24 24">
+                    <path
+                        d="M14.5 2.134a1 1 0 011 0l6 3.464a1 1 0 01.5.866V21a1 1 0 01-1 1h-6a1 1 0 01-1-1V3a1 1 0 01.5-.866zM16 4.732V20h4V7.041l-4-2.309zM3 22a1 1 0 01-1-1V3a1 1 0 012 0v18a1 1 0 01-1 1zm6 0a1 1 0 01-1-1V3a1 1 0 012 0v18a1 1 0 01-1 1z">
+                    </path>
+                </svg>
+            </button>
+            <button class="nav__btn">
+                <svg height="20" width="20" viewBox="0 0 24 24">
+                    <path
+                        d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 101.414-1.414l-4.344-4.344a9.157 9.157 0 002.077-5.816c0-5.14-4.226-9.28-9.407-9.28zm-7.407 9.279c0-4.006 3.302-7.28 7.407-7.28s7.407 3.274 7.407 7.28-3.302 7.279-7.407 7.279-7.407-3.273-7.407-7.28z">
+                    </path>
+                </svg>
+            </button>
+            <button class="nav__btn nav__player">
+                <svg height="20" width="20" viewBox="0 0 24 24">
+                    <path
+                        d="M9.3 16.85 16.85 12 9.3 7.15Zm2.7 6q-2.275 0-4.25-.85t-3.438-2.312Q2.85 18.225 2 16.25q-.85-1.975-.85-4.25T2 7.75q.85-1.975 2.312-3.438Q5.775 2.85 7.75 2q1.975-.85 4.25-.85t4.25.85q1.975.85 3.438 2.312Q21.15 5.775 22 7.75q.85 1.975.85 4.25T22 16.25q-.85 1.975-2.312 3.438Q18.225 21.15 16.25 22q-1.975.85-4.25.85Z" />
+                </svg>
+            </button>
+        </nav>
+    </div>
+    <div class="main-tab player"></div>
+</body>
+
+</html>

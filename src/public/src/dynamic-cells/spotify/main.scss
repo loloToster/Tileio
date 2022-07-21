@@ -1,0 +1,125 @@
+body {
+    color: white;
+    font-family: "Roboto", sans-serif;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #202020;
+}
+
+.main-tab {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vh;
+    height: 100vh;
+}
+
+.menu {
+    background-color: #121212;
+}
+
+.header {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+
+    height: 20vh;
+    padding: 10px;
+
+    &__logo {
+        width: 24px;
+        height: 24px;
+
+        border-radius: 4px;
+    }
+
+    &__name {
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    &__avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+    }
+}
+
+.playlists {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 65vh;
+    padding: 0;
+    margin: 0;
+
+    &__playlist {
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+
+        height: 72px;
+        width: calc(100% - 16px);
+        margin: 0 8px;
+        margin-bottom: 6px;
+
+        background-color: rgba(255, 255, 255, .1);
+        transition: background-color 200ms;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, .3);
+        }
+    }
+
+    &__playlist-img {
+        height: 72px;
+    }
+
+    &__playlist-name {
+        margin-left: 8px;
+        font-weight: bold;
+    }
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 15vh;
+    background-color: #282828;
+
+    &__btn {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+
+        svg {
+            fill: #b3b3b3;
+        }
+
+        &.active svg,
+        &:hover svg {
+            fill: white;
+        }
+    }
+}
+
+.player {
+    display: none;
+    background-color: rebeccapurple;
+
+    &.active {
+        display: block;
+    }
+}
