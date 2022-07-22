@@ -1,5 +1,26 @@
 /// <reference types="@types/spotify-web-playback-sdk" />
 
+function setCookie(name: string, value: string, expire = 365) {
+    const d = new Date()
+    d.setTime(d.getTime() + (expire * 24 * 60 * 60 * 1000))
+    let expires = "expires=" + d.toUTCString()
+    document.cookie = name + "=" + value + ";" + expires + ";path=/"
+}
+
+function getCookie(name: string) {
+    name = name + "="
+    let decodedCookie = decodeURIComponent(document.cookie)
+    let ca = decodedCookie.split(";")
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i]
+        while (c.charAt(0) == " ")
+            c = c.substring(1)
+        if (c.indexOf(name) == 0)
+            return c.substring(name.length, c.length)
+    }
+    return ""
+}
+
 const playerEl = document.querySelector<HTMLDivElement>(".player")!
 
 const switchToPlayer = document.querySelector<HTMLButtonElement>(".nav__player")!
@@ -28,48 +49,77 @@ switchToMenu.addEventListener("click", () => {
 window.onSpotifyWebPlaybackSDKReady = async () => {
     const { SpotifyApi } = await import("./SpotifyPlayer")
 
+    const volumeInput = document.querySelector<HTMLInputElement>(".player__volume input")!
+
+    const titleDiv = document.querySelector<HTMLDivElement>(".player__title")!
+    const artistDiv = document.querySelector<HTMLDivElement>(".player__artist")!
+
+    const shuffleBtn = document.querySelector<HTMLButtonElement>(".player__shuffle")!
+    const prevBtn = document.querySelector<HTMLButtonElement>(".player__prev")!
+    const pauseplay = document.querySelector<HTMLDivElement>(".player__playpause")!
+    const nextBtn = document.querySelector<HTMLButtonElement>(".player__next")!
+    const loopBtn = document.querySelector<HTMLButtonElement>(".player__loop")!
+
     const spotifyApi = new SpotifyApi({
+        name: "Widgetblocks",
         getOAuthToken: async cb => {
             const at = await fetch("/dynamic-cells/spotify/access-token").then(r => r.text())
             cb(at)
-        },
-        name: "Widgetblocks",
-        volume: 0.5
-    })
-
-    spotifyApi.getUser().then(u => {
-        document.querySelector<HTMLDivElement>(".header__name")!.innerText = u.display_name
-        document.querySelector<HTMLImageElement>(".header__avatar")!.src = u.images[0].url
-    })
-
-    const playlistsList = document.querySelector<HTMLUListElement>(".playlists")!
-
-    const playlists: any[] = await spotifyApi.getUserPlaylists()
-
-    playlists.forEach(playlist => {
-        let li = document.createElement("li")
-        li.classList.add("playlists__playlist")
-
-        let img = document.createElement("img")
-        img.classList.add("playlists__playlist-img")
-        img.src = playlist.images[0].url
-        li.appendChild(img)
-
-        let nameDiv = document.createElement("div")
-        nameDiv.classList.add("playlists__playlist-name")
-        nameDiv.innerText = playlist.name
-        li.appendChild(nameDiv)
-
-        playlistsList.appendChild(li)
+        }
     })
 
     spotifyApi.addListener("ready", async ({ device_id }) => {
-        console.log(device_id)
+        let vol = getCookie("spotify-cell-vol")
+        if (!vol) {
+            vol = "0.5"
+            setCookie("spotify-cell-vol", vol)
+        }
+
+        let volFloat = parseFloat(vol)
+        spotifyApi.setVolume(volFloat)
+        volumeInput.value = (volFloat * 100).toString()
+        updateSpotifySlider(volumeInput)
+
+        const user = await spotifyApi.getUser()
+        document.querySelector<HTMLDivElement>(".header__name")!.innerText = user.display_name
+        document.querySelector<HTMLImageElement>(".header__avatar")!.src = user.images[0].url
+
+        const playlistsList = document.querySelector<HTMLUListElement>(".playlists")!
+
+        document.querySelector(".playlists__playlist")?.addEventListener("click", () => {
+            spotifyApi.play(`spotify:user:${user.id}:collection`)
+            playerEl.classList.add("active")
+        })
+
+        const playlists: any[] = await spotifyApi.getUserPlaylists()
+
+        playlists.forEach(playlist => {
+            let li = document.createElement("li")
+            li.classList.add("playlists__playlist")
+
+            let img = document.createElement("img")
+            img.classList.add("playlists__playlist-img")
+            img.src = playlist.images[0].url
+            li.appendChild(img)
+
+            let nameDiv = document.createElement("div")
+            nameDiv.classList.add("playlists__playlist-name")
+            nameDiv.innerText = playlist.name
+            li.appendChild(nameDiv)
+
+            li.addEventListener("click", () => {
+                spotifyApi.play("spotify:playlist:" + playlist.id)
+                playerEl.classList.add("active")
+            })
+
+            playlistsList.appendChild(li)
+        })
+
         const allDevices: any[] = await spotifyApi.getDevices()
         if (!allDevices.some(d => d.id == device_id ? false : d.is_active)) {
             console.log("transfering")
             // todo: make retries on device not found error
-            await new Promise(r => setTimeout(r, 1000))
+            await new Promise(r => setTimeout(r, 2000))
             await spotifyApi.transferPlayback(device_id)
         }
     })
@@ -90,15 +140,11 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         console.error("account_error", message)
     })
 
-    const playerEl = document.querySelector<HTMLDivElement>(".player")!
-    const titleDiv = document.querySelector<HTMLDivElement>(".player__title")!
-    const artistDiv = document.querySelector<HTMLDivElement>(".player__artist")!
-
-    const shuffleBtn = document.querySelector<HTMLButtonElement>(".player__shuffle")!
-    const prevBtn = document.querySelector<HTMLButtonElement>(".player__prev")!
-    const pauseplay = document.querySelector<HTMLDivElement>(".player__playpause")!
-    const nextBtn = document.querySelector<HTMLButtonElement>(".player__next")!
-    const loopBtn = document.querySelector<HTMLButtonElement>(".player__loop")!
+    volumeInput.addEventListener("input", () => {
+        const newVol = parseInt(volumeInput.value) / 100
+        spotifyApi.setVolume(newVol)
+        setCookie("spotify-cell-vol", newVol.toString())
+    })
 
     shuffleBtn.addEventListener("click", () => {
         spotifyApi.toggleShuffle()

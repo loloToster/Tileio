@@ -51,6 +51,20 @@ export class SpotifyApi extends Spotify.Player {
         return await this.getJson("/me/player", "PUT", JSON.stringify({ device_ids: [deviceId] }))
     }
 
+    async play(spotify_uri: string) {
+        let context_uri: string | undefined = undefined
+        let uris: string[] | undefined = undefined
+
+        if (spotify_uri.startsWith("spotify:track:"))
+            uris = [spotify_uri]
+        else
+            context_uri = spotify_uri
+
+        this.fetchApi("/me/player/play", "PUT", JSON.stringify({
+            context_uri, uris
+        }))
+    }
+
     async toggleShuffle() {
         const state = await this.getCurrentState()
         if (!state) return
