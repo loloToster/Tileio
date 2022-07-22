@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/static/dynamic-cells/spotify/main.css">
-    <title>Document</title>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script defer src="/static/dynamic-cells/spotify/index.js"></script>
 </head>
 
@@ -18,13 +18,20 @@
                 <img class="header__logo" src="/static/assets/spotify.png" alt="Spotify Logo">
             </a>
             <div style="flex-grow: 1;"></div>
-            <div class="header__name">name</div>
+            <a class="header__logout" href="/dynamic-cells/spotify/logout">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24">
+                    <path
+                        d="M5 21q-.825 0-1.413-.587Q3 19.825 3 19V5q0-.825.587-1.413Q4.175 3 5 3h7v2H5v14h7v2Zm11-4-1.375-1.45 2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5Z" />
+                </svg>
+            </a>
+            <div class="header__name"> name</div>
             <img class="header__avatar" src="https://dummyimage.com/32x32/fff/000&text=avatar" alt="avatar">
         </header>
         <ul class="playlists">
             <li class="playlists__playlist">
-                <img class="playlists__playlist-img" src="https://dummyimage.com/256x256/000/fff">
-                <div class="playlists__playlist-name">Playlist</div>
+                <img class="playlists__playlist-img"
+                    src="https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png">
+                <div class="playlists__playlist-name">Liked Songs</div>
             </li>
         </ul>
         <nav class="nav">
@@ -119,10 +126,16 @@
                     </svg>
                 </button>
                 <button class="player__loop">
-                    <svg height="16" width="16" viewBox="0 0 16 16">
+                    <svg class="player__loop-icon" height="16" width="16" viewBox="0 0 16 16">
                         <path
                             d="M0 4.75A3.75 3.75 0 013.75 1h8.5A3.75 3.75 0 0116 4.75v5a3.75 3.75 0 01-3.75 3.75H9.81l1.018 1.018a.75.75 0 11-1.06 1.06L6.939 12.75l2.829-2.828a.75.75 0 111.06 1.06L9.811 12h2.439a2.25 2.25 0 002.25-2.25v-5a2.25 2.25 0 00-2.25-2.25h-8.5A2.25 2.25 0 001.5 4.75v5A2.25 2.25 0 003.75 12H5v1.5H3.75A3.75 3.75 0 010 9.75v-5z">
                         </path>
+                    </svg>
+                    <svg class="player__loop-icon-1" height="16" width="16" viewBox="0 0 16 16">
+                        <path
+                            d="M0 4.75A3.75 3.75 0 013.75 1h.75v1.5h-.75A2.25 2.25 0 001.5 4.75v5A2.25 2.25 0 003.75 12H5v1.5H3.75A3.75 3.75 0 010 9.75v-5zM12.25 2.5h-.75V1h.75A3.75 3.75 0 0116 4.75v5a3.75 3.75 0 01-3.75 3.75H9.81l1.018 1.018a.75.75 0 11-1.06 1.06L6.939 12.75l2.829-2.828a.75.75 0 111.06 1.06L9.811 12h2.439a2.25 2.25 0 002.25-2.25v-5a2.25 2.25 0 00-2.25-2.25z">
+                        </path>
+                        <path d="M9.12 8V1H7.787c-.128.72-.76 1.293-1.787 1.313V3.36h1.57V8h1.55z"></path>
                     </svg>
                 </button>
             </div>

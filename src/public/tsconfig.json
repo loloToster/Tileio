@@ -11,7 +11,7 @@
       "../types"
     ],
     "target": "es5",
-    "module": "es6",
+    "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "./static",
     "forceConsistentCasingInFileNames": true,

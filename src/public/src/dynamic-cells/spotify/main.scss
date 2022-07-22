@@ -76,6 +76,15 @@ button {
         border-radius: 4px;
     }
 
+    &__logout {
+        height: 24px;
+        margin-right: 3px;
+
+        svg {
+            fill: red;
+        }
+    }
+
     &__name {
         font-weight: bold;
         margin-right: 8px;
@@ -147,11 +156,14 @@ button {
 }
 
 .player {
+    --image: url("https://dummyimage.com/600x600/0af7bc/fff");
+
     overflow: hidden;
     display: none;
     background-size: cover;
-    background-image: linear-gradient(to top, rgba(45, 45, 45, 0.9), rgba(45, 45, 45, 0.9) 30%, rgba(0, 0, 0, 0) 60%),
-        url(https://dummyimage.com/600x600/0af7bc/fff);
+    background-image:
+        linear-gradient(to top, rgba(45, 45, 45, 0.9), rgba(45, 45, 45, 0.9) 30%, rgba(0, 0, 0, 0) 60%),
+        var(--image);
 
     &.active {
         display: block;
@@ -277,6 +289,17 @@ button {
         }
     }
 
+    &__shuffle.active,
+    &__loop.active {
+        svg {
+            fill: #1db954;
+        }
+
+        &:hover svg {
+            fill: #1ed760;
+        }
+    }
+
     &__playpause {
         display: flex;
         align-items: center;
@@ -286,6 +309,10 @@ button {
         background-color: white;
         border-radius: 50%;
         margin: 0 12px;
+
+        &:hover {
+            transform: scale(1.1);
+        }
 
         svg {
             fill: black;
@@ -306,6 +333,22 @@ button {
         }
     }
 
+    &__loop {
+        .player__loop-icon-1 {
+            display: none;
+        }
+
+        &.loop-1 {
+            .player__loop-icon {
+                display: none;
+            }
+
+            .player__loop-icon-1 {
+                display: block;
+            }
+        }
+    }
+
     &__progress {
         display: flex;
         align-items: center;
@@ -322,7 +365,7 @@ button {
     }
 
     &__device {
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         position: relative;
@@ -334,6 +377,10 @@ button {
         background-color: #1db954;
         font-size: 70%;
         font-weight: bold;
+
+        &.active {
+            display: flex;
+        }
 
         &::before {
             bottom: 100%;
