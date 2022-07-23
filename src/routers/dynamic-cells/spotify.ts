@@ -43,9 +43,7 @@ let users: {
 } = {}
 
 router.get("/", (req, res) => {
-    if (!req.user) return res.status(403).send()
-
-    const spotifyUser = req.user.dynamicCells.spotify?.at
+    const spotifyUser = req.user!.dynamicCells.spotify?.at
 
     if (spotifyUser)
         res.render("dynamic-cells/spotify")
@@ -54,28 +52,22 @@ router.get("/", (req, res) => {
 })
 
 router.get("/login", (req, res) => {
-    if (!req.user) return res.status(403).send()
-
     res.redirect(spotifyApi.createAuthorizeURL(scopes, "some status", true))
 })
 
 router.get("/logout", async (req, res) => {
-    if (!req.user) return res.status(403).send()
-
-    await User.findByIdAndUpdate(req.user.id, { $unset: { "dynamicCells.spotify": 1 } })
+    await User.findByIdAndUpdate(req.user!.id, { $unset: { "dynamicCells.spotify": 1 } })
 
     res.redirect("/dynamic-cells/spotify")
 })
 
 router.get("/redirect", async (req, res) => {
-    if (!req.user) return res.status(403).send()
-
     const code = req.query.code
     if (!code) return console.log("No code in callback")
 
     const data = await spotifyApi.authorizationCodeGrant(code.toString())
 
-    await User.findByIdAndUpdate(req.user.id, {
+    await User.findByIdAndUpdate(req.user!.id, {
         "dynamicCells.spotify": {
             at: data.body.access_token,
             rt: data.body.refresh_token,
@@ -87,9 +79,7 @@ router.get("/redirect", async (req, res) => {
 })
 
 router.get("/access-token", async (req, res) => {
-    if (!req.user) return res.status(403).send()
-
-    const spotifyData = req.user.dynamicCells.spotify
+    const spotifyData = req.user!.dynamicCells.spotify
     if (!spotifyData) return res.status(403).send()
 
     if (Date.now() > spotifyData.expires) {
@@ -117,7 +107,7 @@ router.get("/access-token", async (req, res) => {
         spotifyData.at = atResponse.access_token
         spotifyData.expires = Date.now() + atResponse.expires_in * 1000
 
-        await User.findByIdAndUpdate(req.user.id, { "dynamicCells.spotify": spotifyData })
+        await User.findByIdAndUpdate(req.user!.id, { "dynamicCells.spotify": spotifyData })
     }
 
     res.send(spotifyData.at)
