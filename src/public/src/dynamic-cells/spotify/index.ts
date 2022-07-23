@@ -69,6 +69,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     })
 
     spotifyApi.addListener("ready", async ({ device_id }) => {
+        // set volume
         let vol = getCookie("spotify-cell-vol")
         if (!vol) {
             vol = "0.5"
@@ -80,10 +81,12 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         volumeInput.value = (volFloat * 100).toString()
         updateSpotifySlider(volumeInput)
 
+        // update user info
         const user = await spotifyApi.getUser()
         document.querySelector<HTMLDivElement>(".header__name")!.innerText = user.display_name
         document.querySelector<HTMLImageElement>(".header__avatar")!.src = user.images[0].url
 
+        // update playlists
         const playlistsList = document.querySelector<HTMLUListElement>(".playlists")!
 
         document.querySelector(".playlists__playlist")?.addEventListener("click", () => {
@@ -114,14 +117,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
             playlistsList.appendChild(li)
         })
-
-        const allDevices: any[] = await spotifyApi.getDevices()
-        if (!allDevices.some(d => d.id == device_id ? false : d.is_active)) {
-            console.log("transfering")
-            // todo: make retries on device not found error
-            await new Promise(r => setTimeout(r, 2000))
-            await spotifyApi.transferPlayback(device_id)
-        }
     })
 
     spotifyApi.addListener("not_ready", ({ device_id }) => {
@@ -166,21 +161,77 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         spotifyApi.toggleRepeat()
     })
 
+    const playerDeviceEl = document.querySelector<HTMLDivElement>(".player__device")!
+
+    spotifyApi.onGlobalStateChange(state => {
+        if (!state && spotifyApi.deviceId) {
+            console.log("transfering playback here")
+            return spotifyApi.transferPlayback(spotifyApi.deviceId)
+        }
+
+        playerDeviceEl.classList.add("active")
+        playerDeviceEl.innerText = `Listening on ${state.device.name}`
+
+        updateState({
+            currentTrack: {
+                img: state.item.album.images[0].url,
+                name: state.item.name,
+                artist: state.item.artists
+                    .map((e: any) => e.name).join(", "),
+                position: state.progress_ms,
+                duration: state.item.duration_ms
+            },
+            shuffle: state.shuffle_state,
+            paused: state.actions.disallows.pausing,
+            repeatMode: ["off", "context", "track"].indexOf(state.repeat_state)
+        })
+    })
+
     spotifyApi.addListener("player_state_changed", async state => {
         if (!state) return
 
+        playerDeviceEl.classList.remove("active")
+
+        updateState({
+            currentTrack: {
+                img: state.track_window.current_track.album.images[0].url,
+                name: state.track_window.current_track.name,
+                artist: state.track_window.current_track.artists
+                    .map(e => e.name).join(", "),
+                position: state.position,
+                duration: state.duration
+            },
+            shuffle: state.shuffle,
+            paused: state.paused,
+            repeatMode: state.repeat_mode
+        })
+    })
+
+    interface CustomState {
+        currentTrack: {
+            img: string,
+            name: string,
+            artist: string,
+            position: number,
+            duration: number
+        },
+        shuffle: boolean,
+        paused: boolean,
+        repeatMode: number
+    }
+
+    function updateState(state: CustomState) {
         playerEl.style.setProperty(
-            "--image", `url("${state.track_window.current_track.album.images[0].url}")`
+            "--image", `url("${state.currentTrack.img}")`
         )
 
-        titleDiv.innerText = state.track_window.current_track.name
-        artistDiv.innerText = state.track_window.current_track.artists
-            .map(e => e.name).join(", ")
+        titleDiv.innerText = state.currentTrack.name
+        artistDiv.innerText = state.currentTrack.artist
 
         shuffleBtn.classList.toggle("active", state.shuffle)
         pauseplay.classList.toggle("playing", !state.paused)
 
-        switch (state.repeat_mode) {
+        switch (state.repeatMode) {
             case 0:
                 loopBtn.classList.remove("active")
                 loopBtn.classList.remove("loop-1")
@@ -200,8 +251,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 break
         }
 
-        updateDuration(state.position, state.duration, state.paused)
-    })
+        updateDuration(state.currentTrack.position, state.currentTrack.duration, state.paused)
+    }
 
     const durationInput = document.querySelector<HTMLInputElement>(".player__progress-bar")!
     const durationCurTime = document.querySelector<HTMLDivElement>(".player__cur-time")!

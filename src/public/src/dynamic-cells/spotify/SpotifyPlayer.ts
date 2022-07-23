@@ -1,6 +1,27 @@
 /// <reference types="@types/spotify-web-playback-sdk" />
 
+type globalStateListener = (state: any) => void
+
 export class SpotifyApi extends Spotify.Player {
+    playingHere: boolean
+    deviceId: string | null
+    private globalStateListeners: globalStateListener[]
+
+    cachedGlobalState: any
+
+    constructor(options: Spotify.PlayerInit) {
+        super(options)
+
+        this.playingHere = false
+        this.deviceId = null
+        this.addListener("ready", ({ device_id }) => {
+            this.deviceId = device_id
+        })
+
+        this.globalStateListeners = []
+        this.cachedGlobalState = null
+    }
+
     getAccessToken() {
         return new Promise<string>(res => {
             this._options.getOAuthToken(aT => {
@@ -25,11 +46,26 @@ export class SpotifyApi extends Spotify.Player {
     }
 
     async getJson(path: string, method = "GET", body: string | undefined = undefined) {
+        const res = await this.fetchApi(path, method, body)
+
         try {
-            return await this.fetchApi(path, method, body).then(r => r.json())
-        } catch (err) {
-            console.error(err)
-            return undefined
+            return await res.json()
+        } catch {
+            return null
+        }
+    }
+
+    onGlobalStateChange(func: globalStateListener) {
+        this.globalStateListeners.push(func)
+
+        if (this.globalStateListeners.length == 1) {
+            setInterval(async () => {
+                const curState = await this.getGlobalState()
+                this.cachedGlobalState = curState
+                this.playingHere = curState?.device.id == this.deviceId
+                if (this.playingHere) return
+                this.globalStateListeners.forEach(l => l(curState))
+            }, 1000)
         }
     }
 
@@ -45,6 +81,14 @@ export class SpotifyApi extends Spotify.Player {
     async getDevices() {
         const data = await this.getJson("/me/player/devices")
         return data.devices
+    }
+
+    async getGlobalState() {
+        try {
+            return await this.getJson("/me/player")
+        } catch {
+            return this.cachedGlobalState
+        }
     }
 
     async transferPlayback(deviceId: string) {
@@ -65,6 +109,28 @@ export class SpotifyApi extends Spotify.Player {
         }))
     }
 
+    async togglePlay() {
+        if (this.playingHere) return await super.togglePlay()
+
+        const state = await this.getGlobalState()
+        const paused = Boolean(state?.actions.disallows.pausing)
+        const query = paused ? "play" : "pause"
+
+        await this.fetchApi("/me/player/" + query, "PUT")
+    }
+
+    async previousTrack() {
+        if (this.playingHere) return await super.previousTrack()
+
+        await this.fetchApi("/me/player/previous", "POST")
+    }
+
+    async nextTrack() {
+        if (this.playingHere) return await super.nextTrack()
+
+        await this.fetchApi("/me/player/next", "POST")
+    }
+
     async toggleShuffle() {
         const state = await this.getCurrentState()
         if (!state) return
@@ -78,5 +144,11 @@ export class SpotifyApi extends Spotify.Player {
         if (!state) return
         const repeatMode = (state.repeat_mode + 1) % 3
         await this.fetchApi("/me/player/repeat?state=" + REPEAT_MODES[repeatMode], "PUT")
+    }
+
+    async seek(pos: number) {
+        if (this.playingHere) return await super.seek(pos)
+
+        await this.fetchApi("/me/player/seek?position_ms=" + pos, "PUT")
     }
 }
