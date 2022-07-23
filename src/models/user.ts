@@ -8,6 +8,11 @@ export interface DynamicCellsData {
         lat: number,
         lon: number,
         name: string
+    },
+    spotify: {
+        at: string,
+        rt: string,
+        expires: number
     }
 }
 
@@ -52,6 +57,11 @@ const userSchema = new Schema<IUser>({
             lat: Number,
             lon: Number,
             name: String
+        },
+        spotify: {
+            at: String,
+            rt: String,
+            expires: Number
         }
     }
 })
