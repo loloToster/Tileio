@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/dynamic-cells/google-calendar/main.css">
+    <script defer src="/static/dynamic-cells/google-calendar/index.js"></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header__month">Month</div>
+        <div style="flex-grow: 1;"></div>
+        <button class="header__btn--refresh header__btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24">
+                <path
+                    d="M4 20v-2h2.75l-.4-.35q-1.225-1.225-1.788-2.662Q4 13.55 4 12.05q0-2.775 1.662-4.938Q7.325 4.95 10 4.25v2.1Q8.2 7 7.1 8.562 6 10.125 6 12.05q0 1.125.425 2.187Q6.85 15.3 7.75 16.2l.25.25V14h2v6Zm10-.25v-2.1q1.8-.65 2.9-2.212Q18 13.875 18 11.95q0-1.125-.425-2.188Q17.15 8.7 16.25 7.8L16 7.55V10h-2V4h6v2h-2.75l.4.35q1.225 1.225 1.788 2.662Q20 10.45 20 11.95q0 2.775-1.663 4.937Q16.675 19.05 14 19.75Z" />
+            </svg>
+        </button>
+        <button class="header__btn--edit-ical header__btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24">
+                <path
+                    d="M5 22q-.825 0-1.413-.587Q3 20.825 3 20V6q0-.825.587-1.412Q4.175 4 5 4h1V2h2v2h8V2h2v2h1q.825 0 1.413.588Q21 5.175 21 6v6h-2v-2H5v10h7v2Zm17.125-5L20 14.875l.725-.725q.275-.275.7-.275.425 0 .7.275l.725.725q.275.275.275.7 0 .425-.275.7ZM14 23v-2.125l5.3-5.3 2.125 2.125-5.3 5.3Z" />
+            </svg>
+        </button>
+        <a class="header__link" href="https://calendar.google.com/" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="20" width="20">
+                <path
+                    d="M18.316 5.684H24v12.632h-5.684V5.684zM5.684 24h12.632v-5.684H5.684V24zM18.316 5.684V0H1.895A1.894 1.894 0 0 0 0 1.895v16.421h5.684V5.684h12.632zm-7.207 6.25v-.065c.272-.144.5-.349.687-.617s.279-.595.279-.982c0-.379-.099-.72-.3-1.025a2.05 2.05 0 0 0-.832-.714 2.703 2.703 0 0 0-1.197-.257c-.6 0-1.094.156-1.481.467-.386.311-.65.671-.793 1.078l1.085.452c.086-.249.224-.461.413-.633.189-.172.445-.257.767-.257.33 0 .602.088.816.264a.86.86 0 0 1 .322.703c0 .33-.12.589-.36.778-.24.19-.535.284-.886.284h-.567v1.085h.633c.407 0 .748.109 1.02.327.272.218.407.499.407.843 0 .336-.129.614-.387.832s-.565.327-.924.327c-.351 0-.651-.103-.897-.311-.248-.208-.422-.502-.521-.881l-1.096.452c.178.616.505 1.082.977 1.401.472.319.984.478 1.538.477a2.84 2.84 0 0 0 1.293-.291c.382-.193.684-.458.902-.794.218-.336.327-.72.327-1.149 0-.429-.115-.797-.344-1.105a2.067 2.067 0 0 0-.881-.689zm2.093-1.931l.602.913L15 10.045v5.744h1.187V8.446h-.827l-2.158 1.557zM22.105 0h-3.289v5.184H24V1.895A1.894 1.894 0 0 0 22.105 0zm-3.289 23.5l4.684-4.684h-4.684V23.5zM0 22.105C0 23.152.848 24 1.895 24h3.289v-5.184H0v3.289z" />
+            </svg>
+        </a>
+    </header>
+    <main class="days">
+        <section class="days__day">
+            <div class="days__date-wrapper">
+                <div class="days__date active">
+                    <div class="days__date-num">31</div>
+                    <div class="days__date-name">Mon</div>
+                </div>
+            </div>
+            <div class="days__events">
+                <div class="days__event">
+                    <div class="days__event-name">Event</div>
+                </div>
+                <div class="days__event">
+                    <div class="days__event-name">Event</div>
+                    <div class="days__event-time">00:00 - 00:00</div>
+                </div>
+            </div>
+        </section>
+        <section class="days__day">
+            <div class="days__date-wrapper">
+                <div class="days__date">
+                    <div class="days__date-num">1</div>
+                    <div class="days__date-name">Sun</div>
+                </div>
+            </div>
+            <div class="days__events">
+                <div class="days__event">
+                    <div class="days__event-name">Event</div>
+                    <div class="days__event-time">00:00 - 00:00</div>
+                </div>
+                <div class="days__event">
+                    <div class="days__event-name">Event</div>
+                </div>
+            </div>
+        </section>
+        <section class="days__day">
+            <div class="days__date-wrapper">
+                <div class="days__date">
+                    <div class="days__date-num">1</div>
+                    <div class="days__date-name">Sun</div>
+                </div>
+            </div>
+            <div class="days__events">
+                <div class="days__event">
+                    <div class="days__event-name">Event</div>
+                    <div class="days__event-time">00:00 - 00:00</div>
+                </div>
+                <div class="days__event">
+                    <div class="days__event-name">Event</div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div class="input-modal">
+        <h2>Input url to ical file</h2>
+        <input class="input-modal__input" type="text">
+        <button class="input-modal__save">Save</button>
+    </div>
+</body>
+
+</html>

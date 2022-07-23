@@ -23,5 +23,19 @@
         "sizes": [
             "2x2"
         ]
+    },
+    {
+        "id": "google-calendar",
+        "name": "Google Calendar",
+        "src": "/dynamic-cells/google-calendar",
+        "icon": "/static/assets/google-calendar.png",
+        "sizes": [
+            "2x2",
+            "2x3",
+            "2x4",
+            "2x5",
+            "2x6",
+            "2x7"
+        ]
     }
 ]
