@@ -1,6 +1,7 @@
 import express from "express"
 import SpotifyApiNode from "spotify-web-api-node"
-import RefreshAccessTokenResponse from "spotify-web-api-node"
+
+import User from "../../models/user"
 
 const scopes = [
     "ugc-image-upload",
@@ -44,7 +45,7 @@ let users: {
 router.get("/", (req, res) => {
     if (!req.user) return res.status(403).send()
 
-    const spotifyUser = users[req.user.id!]
+    const spotifyUser = req.user.dynamicCells.spotify?.at
 
     if (spotifyUser)
         res.render("dynamic-cells/spotify")
@@ -58,10 +59,10 @@ router.get("/login", (req, res) => {
     res.redirect(spotifyApi.createAuthorizeURL(scopes, "some status", true))
 })
 
-router.get("/logout", (req, res) => {
+router.get("/logout", async (req, res) => {
     if (!req.user) return res.status(403).send()
 
-    delete users[req.user.id!]
+    await User.findByIdAndUpdate(req.user.id, { $unset: { "dynamicCells.spotify": 1 } })
 
     res.redirect("/dynamic-cells/spotify")
 })
@@ -74,11 +75,13 @@ router.get("/redirect", async (req, res) => {
 
     const data = await spotifyApi.authorizationCodeGrant(code.toString())
 
-    users[req.user.id!] = {
-        at: data.body.access_token,
-        rt: data.body.refresh_token,
-        expires: Date.now() + data.body.expires_in * 1000
-    }
+    await User.findByIdAndUpdate(req.user.id, {
+        "dynamicCells.spotify": {
+            at: data.body.access_token,
+            rt: data.body.refresh_token,
+            expires: Date.now() + data.body.expires_in * 1000
+        }
+    })
 
     res.redirect("/")
 })
@@ -86,7 +89,7 @@ router.get("/redirect", async (req, res) => {
 router.get("/access-token", async (req, res) => {
     if (!req.user) return res.status(403).send()
 
-    const spotifyData = users[req.user.id!]
+    const spotifyData = req.user.dynamicCells.spotify
     if (!spotifyData) return res.status(403).send()
 
     if (Date.now() > spotifyData.expires) {
@@ -113,6 +116,8 @@ router.get("/access-token", async (req, res) => {
 
         spotifyData.at = atResponse.access_token
         spotifyData.expires = Date.now() + atResponse.expires_in * 1000
+
+        await User.findByIdAndUpdate(req.user.id, { "dynamicCells.spotify": spotifyData })
     }
 
     res.send(spotifyData.at)
