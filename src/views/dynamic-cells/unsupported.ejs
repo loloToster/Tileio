@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #1b1b1b;
+        }
+
+        h2,
+        h3 {
+            margin: 0;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .sizes {
+            max-width: 80vw;
+        }
+
+        .size {
+            padding: 4px;
+            background-color: #207ada;
+            border-radius: 4px;
+            margin: 4px;
+            float: left;
+        }
+
+    </style>
+
+    <h2>This Size is not supported</h2>
+    <h3>Supported Sizes:</h3>
+    <div class="sizes">
+        <% sizes.forEach(size=> { %>
+            <div class="size">
+                <%= size %>
+            </div>
+            <% }) %>
+    </div>
+</body>
+
+</html>

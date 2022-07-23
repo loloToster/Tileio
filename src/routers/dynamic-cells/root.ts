@@ -11,7 +11,7 @@ router.get("/*", (req, res, next) => {
     if (cell.sizes.includes(size))
         return next()
 
-    res.send("Unsupported Size")
+    res.render("dynamic-cells/unsupported", { sizes: cell.sizes })
 })
 
 export = router

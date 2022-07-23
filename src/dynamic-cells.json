@@ -11,7 +11,8 @@
         "src": "/dynamic-cells/weather",
         "icon": "/static/assets/weather.png",
         "sizes": [
-            "4x2"
+            "4x2",
+            "3x2"
         ]
     },
     {

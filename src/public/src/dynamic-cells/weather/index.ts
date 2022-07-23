@@ -52,19 +52,19 @@ function drawWeather(tab: number, data: any) {
         temp!.innerText = Math.round(current.weather.temp.cur).toString()
         min!.innerText = Math.round(daily[0].weather.temp.min).toString()
         max!.innerText = Math.round(daily[0].weather.temp.max).toString()
-        rain!.innerText = current.weather.rain.toString()
-        humditiy!.innerText = current.weather.humidity.toString()
-        wind!.innerText = current.weather.wind.speed.toString()
-        pressure!.innerText = current.weather.pressure.toString()
+        if (rain) rain.innerText = current.weather.rain.toString()
+        if (humditiy) humditiy.innerText = current.weather.humidity.toString()
+        if (wind) wind.innerText = current.weather.wind.speed.toString()
+        if (pressure) pressure.innerText = current.weather.pressure.toString()
     } else {
         weatherIcon!.src = getIcon(daily[tab].weather.icon.raw)
         temp!.innerText = Math.round(daily[tab].weather.temp.day).toString()
         min!.innerText = Math.round(daily[tab].weather.temp.min).toString()
         max!.innerText = Math.round(daily[tab].weather.temp.max).toString()
-        rain!.innerText = daily[tab].weather.rain.toString()
-        humditiy!.innerText = daily[tab].weather.humidity.toString()
-        wind!.innerText = daily[tab].weather.wind.speed.toString()
-        pressure!.innerText = daily[tab].weather.pressure.toString()
+        if (rain) rain.innerText = daily[tab].weather.rain.toString()
+        if (humditiy) humditiy.innerText = daily[tab].weather.humidity.toString()
+        if (wind) wind.innerText = daily[tab].weather.wind.speed.toString()
+        if (pressure) pressure.innerText = daily[tab].weather.pressure.toString()
     }
 
     days.forEach((day, i) => {

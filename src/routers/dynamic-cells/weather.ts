@@ -11,7 +11,7 @@ const router = express.Router()
 // check if logged in
 
 router.get("/", (req, res) => {
-    res.render("dynamic-cells/weather")
+    res.render("dynamic-cells/weather", { big: req.query.w == "4" })
 })
 
 router.get("/data", async (req, res) => {

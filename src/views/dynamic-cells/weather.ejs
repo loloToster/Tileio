@@ -35,12 +35,14 @@
             </div>
         </div>
         <div style="flex-grow: 1;"></div>
-        <div class="weather__additional-stats">
-            <div class="weather__rain">Rain: <span class="data">--</span>mm</div>
-            <div class="weather__humidity">Humidity: <span class="data">--</span>%</div>
-            <div class="weather__wind">Wind Speed: <span class="data">--</span>km/h</div>
-            <div class="weather__pressure">Pressure: <span class="data">--</span>hPa</div>
-        </div>
+        <% if (big) { %>
+            <div class="weather__additional-stats">
+                <div class="weather__rain">Rain: <span class="data">--</span>mm</div>
+                <div class="weather__humidity">Humidity: <span class="data">--</span>%</div>
+                <div class="weather__wind">Wind Speed: <span class="data">--</span>km/h</div>
+                <div class="weather__pressure">Pressure: <span class="data">--</span>hPa</div>
+            </div>
+            <% } %>
     </main>
     <nav class="days">
         <div class="days__day active">
@@ -73,16 +75,18 @@
                 src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
             <div class="days__day__name">-</div>
         </div>
-        <div class="days__day">
-            <img
-                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">-</div>
-        </div>
-        <div class="days__day">
-            <img
-                src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
-            <div class="days__day__name">-</div>
-        </div>
+        <% if (big) { %>
+            <div class="days__day">
+                <img
+                    src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+                <div class="days__day__name">-</div>
+            </div>
+            <div class="days__day">
+                <img
+                    src="https://raw.githubusercontent.com/basmilius/weather-icons/dev/production/fill/svg/partly-cloudy-day.svg">
+                <div class="days__day__name">-</div>
+            </div>
+            <% } %>
     </nav>
 </body>
 
