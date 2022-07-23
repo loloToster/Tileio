@@ -1,3 +1,11 @@
+$grey: grey;
+$light-grey: white;
+
+$spotify-green: #1db954;
+$spotify-light-green: #1ed760;
+
+$player-menu-size: 38px;
+
 body {
     color: white;
     font-family: "Roboto", sans-serif;
@@ -33,7 +41,7 @@ button {
     background: linear-gradient(to right, var(--color) 0%, var(--color) calc(var(--percentage) * 1%), #535353 calc(var(--percentage) * 1%), #535353 100%);
 
     &:hover {
-        --color: #1db954;
+        --color: #{$spotify-green};
     }
 
     &::-webkit-slider-thumb {
@@ -181,22 +189,23 @@ button {
     }
 
     &__back {
-        width: 38px;
-        height: 38px;
+        width: $player-menu-size;
+        height: $player-menu-size;
         border-radius: 50%;
         background-color: rgba(45, 45, 45, 0.9);
         cursor: pointer;
 
         svg {
-            fill: grey;
+            fill: $grey;
         }
 
         &:hover svg {
-            fill: white;
+            fill: $light-grey;
         }
     }
 
     &__menu-wrapper {
+        position: relative;
         float: right;
 
         .player__vol-icon {
@@ -205,7 +214,7 @@ button {
 
         &:hover {
             .player__menu {
-                border-radius: 0 50% 50% 0;
+                border-radius: 0 50% 0 0;
             }
 
             .player__volume {
@@ -219,6 +228,10 @@ button {
             .player__vol-icon {
                 display: block;
             }
+
+            .player__bottom-menu {
+                display: block;
+            }
         }
     }
 
@@ -226,13 +239,13 @@ button {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 38px;
-        height: 38px;
+        width: $player-menu-size;
+        height: $player-menu-size;
         border-radius: 50%;
         background-color: rgba(45, 45, 45, 0.9);
 
         svg {
-            fill: grey;
+            fill: $grey;
         }
     }
 
@@ -240,13 +253,46 @@ button {
         display: none;
         align-items: center;
         float: left;
-        height: 38px;
+        height: $player-menu-size;
         background-color: rgba(45, 45, 45, 0.9);
         border-radius: 100vh 0 0 100vh;
 
         input {
             width: 35vw;
             margin-left: 10px;
+        }
+    }
+
+    &__bottom-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: $player-menu-size;
+        width: $player-menu-size;
+        background-color: rgba(45, 45, 45, 0.9);
+        border-radius: 0 0 100vh 100vh;
+
+        button {
+            width: $player-menu-size;
+            height: $player-menu-size;
+
+            svg {
+                fill: $grey;
+            }
+
+            &:hover svg {
+                fill: $light-grey;
+            }
+
+            &.active {
+                svg {
+                    fill: $spotify-green;
+                }
+
+                &:hover svg {
+                    fill: $spotify-light-green;
+                }
+            }
         }
     }
 
@@ -280,11 +326,11 @@ button {
             margin: 10px;
 
             svg {
-                fill: grey;
+                fill: $grey;
             }
 
             &:hover svg {
-                fill: white;
+                fill: $light-grey;
             }
         }
     }
@@ -292,11 +338,11 @@ button {
     &__shuffle.active,
     &__loop.active {
         svg {
-            fill: #1db954;
+            fill: $spotify-green;
         }
 
         &:hover svg {
-            fill: #1ed760;
+            fill: $spotify-light-green;
         }
     }
 
@@ -374,7 +420,7 @@ button {
         height: 6vh;
 
         color: black;
-        background-color: #1db954;
+        background-color: $spotify-green;
         font-size: 70%;
         font-weight: bold;
 
@@ -391,7 +437,7 @@ button {
             width: 0;
             position: absolute;
             border-color: rgba(136, 183, 213, 0);
-            border-bottom-color: #1db954;
+            border-bottom-color: $spotify-green;
             border-width: 6px;
             margin-left: -6px;
         }

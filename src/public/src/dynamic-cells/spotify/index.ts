@@ -45,11 +45,12 @@ switchToPlayer.addEventListener("click", () => {
 switchToMenu.addEventListener("click", () => {
     playerEl.classList.remove("active")
 })
-// @ts-ignore
+
 window.onSpotifyWebPlaybackSDKReady = async () => {
     const { SpotifyApi } = await import("./SpotifyPlayer")
 
     const volumeInput = document.querySelector<HTMLInputElement>(".player__volume input")!
+    const transferPlaybackBtn = document.querySelector<HTMLButtonElement>(".player__transfer-playback")!
 
     const titleDiv = document.querySelector<HTMLDivElement>(".player__title")!
     const artistDiv = document.querySelector<HTMLDivElement>(".player__artist")!
@@ -141,6 +142,12 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         setCookie("spotify-cell-vol", newVol.toString())
     })
 
+    transferPlaybackBtn.addEventListener("click", async () => {
+        if (!spotifyApi.deviceId) return
+        await spotifyApi.transferPlayback(spotifyApi.deviceId)
+        transferPlaybackBtn.classList.remove("active")
+    })
+
     shuffleBtn.addEventListener("click", () => {
         spotifyApi.toggleShuffle()
     })
@@ -221,6 +228,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     }
 
     function updateState(state: CustomState) {
+        transferPlaybackBtn.classList.toggle("active", !spotifyApi.playingHere)
+
         playerEl.style.setProperty(
             "--image", `url("${state.currentTrack.img}")`
         )
