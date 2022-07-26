@@ -31,6 +31,7 @@
     "express": "^4.18.1",
     "fuse.js": "^6.6.2",
     "gridstack": "^5.1.0",
+    "kalender-events": "^0.28.1",
     "mongoose": "^6.3.5",
     "openweather-api-node": "^1.4.1",
     "passport": "^0.5.3",

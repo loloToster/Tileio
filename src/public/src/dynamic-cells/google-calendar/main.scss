@@ -82,6 +82,7 @@ $scrollbar-width: 10px;
     &__date-wrapper {
         box-sizing: border-box;
         width: 20vw;
+        height: 20vw;
         padding: 6px;
     }
 
@@ -109,6 +110,7 @@ $scrollbar-width: 10px;
 
     &__events {
         width: calc(80vw - $scrollbar-width - 4px);
+        min-height: 20vw;
     }
 
     &__event {
