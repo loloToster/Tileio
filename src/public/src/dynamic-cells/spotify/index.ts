@@ -118,6 +118,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
             playlistsList.appendChild(li)
         })
+
+        document.querySelector(".loading")?.remove()
     })
 
     spotifyApi.addListener("not_ready", ({ device_id }) => {

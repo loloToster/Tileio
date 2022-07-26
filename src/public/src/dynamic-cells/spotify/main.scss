@@ -443,3 +443,21 @@ button {
         }
     }
 }
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #262626d6;
+
+    img {
+        width: 32px;
+        height: 32px;
+        image-rendering: pixelated;
+    }
+}
