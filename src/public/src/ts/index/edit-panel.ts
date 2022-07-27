@@ -2,7 +2,7 @@ import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 
 import { Grid, hex, IconResponse, SerializedCellContent } from "@backend-types/types"
-import { fillGridWithDummies, removeDummies, createWidgetFromSerializedCell, isDark } from "./grid-utils"
+import { fillGridWithDummies, removeDummies, dummyClass, createWidgetFromSerializedCell, isDark } from "./grid-utils"
 
 export const trashSelector = "#grid__menu__trash"
 
@@ -15,29 +15,23 @@ export default (grid: GridStack) => {
     grid.on("dragstop", () => trash?.classList.remove("active"))
 
     async function saveGrid() {
-        const cells = grid.save()
-
-        if (!Array.isArray(cells)) return console.error("grid.save returned bad type")
+        const cells = grid.getGridItems()
 
         const newCells = []
         for (const cell of cells) {
+            if (cell.classList.contains(dummyClass)) continue
+
             let content: SerializedCellContent | undefined
-            if (cell.content) {
-                /**
-                 * Parse cell.content (string) to html and find 
-                 * element that has serialized cell data in its attributes
-                 */
-                let doc = new DOMParser().parseFromString(cell.content, "text/html")
-                const elementWithSerializedData = doc.querySelector("[data-serialized]")
-                if (elementWithSerializedData instanceof HTMLElement && elementWithSerializedData.dataset.serialized)
-                    content = JSON.parse(elementWithSerializedData.dataset.serialized)
-            }
+            // find element that contains serialized data of the cell
+            const elementWithSerializedData = cell.querySelector("[data-serialized]")
+            if (elementWithSerializedData instanceof HTMLElement && elementWithSerializedData.dataset.serialized)
+                content = JSON.parse(elementWithSerializedData.dataset.serialized)
 
             newCells.push({
-                w: cell.w,
-                h: cell.h,
-                x: cell.x,
-                y: cell.y,
+                w: parseInt(cell.getAttribute("gs-w") || "1"),
+                h: parseInt(cell.getAttribute("gs-h") || "1"),
+                x: parseInt(cell.getAttribute("gs-x") || "0"),
+                y: parseInt(cell.getAttribute("gs-y") || "0"),
                 content
             })
         }
@@ -200,7 +194,7 @@ export default (grid: GridStack) => {
         }, 500)
     })
 
-    colorPicker.onChange(() => changePreviewColor(colorPicker.getHexString()))
+    colorPicker.onChange((c: hex) => changePreviewColor(c))
 
     suggestedColor?.addEventListener("click", () => {
         const color = suggestedColor.dataset.hex

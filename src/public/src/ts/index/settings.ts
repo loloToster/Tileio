@@ -1,4 +1,4 @@
-import { Grid } from "@backend-types/types"
+import { Grid, hex } from "@backend-types/types"
 import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 import { onClickOutside } from "../utlis/utils"
@@ -29,8 +29,8 @@ export default (grid: GridStack, initialGrid: Grid) => {
         height: 130
     })
 
-    bgColorPicker.onChange(() => {
-        bgColorBtn!.style.backgroundColor = bgColorPicker.getHexString()
+    bgColorPicker.onChange((c: hex) => {
+        bgColorBtn!.style.backgroundColor = c
     })
 
     bgColorBtn?.addEventListener("click", () => {
@@ -48,8 +48,8 @@ export default (grid: GridStack, initialGrid: Grid) => {
         height: 130
     })
 
-    cellColorPicker.onChange(() => {
-        cellColorBtn!.style.backgroundColor = cellColorPicker.getHexString()
+    cellColorPicker.onChange((c: hex) => {
+        cellColorBtn!.style.backgroundColor = c
     })
 
     cellColorBtn?.addEventListener("click", () => {
@@ -141,7 +141,7 @@ export default (grid: GridStack, initialGrid: Grid) => {
         grid.engine.maxRow = values.row
         grid.el.parentElement!.style.width = `${140 * values.col}px`
         grid.el.parentElement!.style.height = `${140 * values.row}px`
-        fillGridWithDummies(grid)
+        if (!grid.el.classList.contains("editing")) fillGridWithDummies(grid)
         settings?.classList.remove("active")
     })
 }
