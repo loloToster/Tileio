@@ -11,7 +11,9 @@
     "build": "npm run build-client && npm run build-server",
     "prestart": "npm run build",
     "start": "node ./dist/app.js",
-    "test": "ts-node ./src/app.ts"
+    "test": "ts-node ./src/app.ts",
+    "start-service": "qckwinsvc --name WidgetBlocks --description WidgetBlocks --script ./dist/app.js --startImmediately",
+    "stop-service": "qckwinsvc --uninstall --name WidgetBlocks --script ./dist/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +25,7 @@
     "@types/passport-discord": "^0.1.5",
     "@types/passport-github2": "^1.2.5",
     "@types/passport-google-oauth20": "^2.0.11",
+    "@types/spotify-web-api-node": "^5.0.7",
     "@types/spotify-web-playback-sdk": "^0.1.12",
     "cookie-session": "^2.0.0",
     "css-loader": "^6.7.1",
@@ -50,7 +53,7 @@
     "webpack-merge": "^5.8.0"
   },
   "devDependencies": {
-    "@types/spotify-web-api-node": "^5.0.7",
+    "qckwinsvc": "^1.0.0",
     "ts-node": "^10.4.0"
   }
 }
