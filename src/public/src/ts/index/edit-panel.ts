@@ -110,8 +110,11 @@ export default (grid: GridStack) => {
 
     // Creating Link Cells
     const searchIconsInp = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
-    const iconSearchResultsSi = document.querySelector(".add-modal__brand-icons")
-    const iconSearchResultsFa = document.querySelector(".add-modal__normal-icons")
+    const iconSearchResultsSiHeader = document.querySelector<HTMLElement>(".add-modal__icons-header--brand")
+    const iconSearchResultsSi = document.querySelector(".add-modal__icons--brand")
+    const iconSearchResultsFaHeader = document.querySelector<HTMLElement>(".add-modal__icons-header--normal")
+    const iconSearchResultsFa = document.querySelector(".add-modal__icons--normal")
+    const noIconsResult = document.querySelector<HTMLDivElement>(".add-modal__no-icons")
     const suggestedColor = document.getElementById("add-modal__suggested-color")
     const linkInp = <HTMLInputElement>document.getElementById("add-modal__link-inp")
     const linkValidation = document.querySelector(".add-modal__link-validator")
@@ -174,23 +177,40 @@ export default (grid: GridStack) => {
             iconSearchResultsSi!.innerHTML = ""
             iconSearchResultsFa!.innerHTML = ""
 
-            for (const icon of res.si) {
-                const iconEl = createIconEl({
-                    title: icon.title,
-                    url: `https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/${icon.slug}.svg`,
-                    hex: "#" + icon.hex
-                })
-                iconSearchResultsSi?.appendChild(iconEl)
+            iconSearchResultsFaHeader?.classList.remove("active")
+            iconSearchResultsSiHeader?.classList.remove("active")
+
+            if (!res.si.length && !res.fa.length) {
+                noIconsResult?.classList.add("active")
+                return
             }
 
-            for (const icon of res.fa) {
-                const iconEl = createIconEl({
-                    title: icon.name,
-                    url: `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@6.1.1/svgs/solid/${icon.name}.svg`,
-                    hex: defaultColor
-                })
-                iconSearchResultsFa?.appendChild(iconEl)
+            noIconsResult?.classList.remove("active")
+
+            if (res.si.length) {
+                iconSearchResultsSiHeader?.classList.add("active")
+                for (const icon of res.si) {
+                    const iconEl = createIconEl({
+                        title: icon.title,
+                        url: `https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/${icon.slug}.svg`,
+                        hex: "#" + icon.hex
+                    })
+                    iconSearchResultsSi?.appendChild(iconEl)
+                }
             }
+
+            if (res.fa.length) {
+                iconSearchResultsFaHeader?.classList.add("active")
+                for (const icon of res.fa) {
+                    const iconEl = createIconEl({
+                        title: icon.name,
+                        url: `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@6.1.1/svgs/solid/${icon.name}.svg`,
+                        hex: defaultColor
+                    })
+                    iconSearchResultsFa?.appendChild(iconEl)
+                }
+            }
+
         }, 500)
     })
 
@@ -266,6 +286,9 @@ export default (grid: GridStack) => {
         searchIconsInp.value = ""
         iconSearchResultsSi!.innerHTML = ""
         iconSearchResultsFa!.innerHTML = ""
+        iconSearchResultsFaHeader?.classList.remove("active")
+        iconSearchResultsSiHeader?.classList.remove("active")
+
         colorPicker.setColor(defaultColor)
         suggestedColor!.style.backgroundColor = defaultColor
         linkInp!.value = ""

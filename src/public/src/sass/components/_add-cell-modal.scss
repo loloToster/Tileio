@@ -127,6 +127,20 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
         }
     }
 
+    &__icons-header {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+
+        img {
+            width: 16px;
+            height: 16px;
+            filter: invert(1);
+        }
+    }
+
     &__icons {
         width: $col-width;
         display: flex;
@@ -159,6 +173,19 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
                 padding: 0;
             }
         }
+    }
+
+    &__no-icons {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+
+        width: $col-width;
+        margin: 24px 0;
+        text-align: center;
+        color: #d4d4d4;
     }
 
     #add-modal__color-picker {
