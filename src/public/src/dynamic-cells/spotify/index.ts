@@ -21,11 +21,6 @@ function getCookie(name: string) {
     return ""
 }
 
-const playerEl = document.querySelector<HTMLDivElement>(".player")!
-
-const switchToPlayer = document.querySelector<HTMLButtonElement>(".nav__player")!
-const switchToMenu = document.querySelector<HTMLButtonElement>(".player__back")!
-
 function updateSpotifySlider(i: HTMLInputElement) {
     const v = parseInt(i.value)
     const max = parseInt(i.max)
@@ -38,12 +33,48 @@ document.querySelectorAll<HTMLInputElement>(".spotify-input").forEach(i => {
     })
 })
 
+const playerEl = document.querySelector<HTMLDivElement>(".player")!
+
+const libraryTab = document.querySelector<HTMLDivElement>(".menu__tab--library")!
+const searchTab = document.querySelector<HTMLDivElement>(".menu__tab--search")!
+
+const switchToLibrary = document.querySelector<HTMLButtonElement>(".nav__btn--library")!
+const switchToSearch = document.querySelector<HTMLButtonElement>(".nav__btn--search")!
+const switchToPlayer = document.querySelector<HTMLButtonElement>(".nav__btn--player")!
+const switchToMenu = document.querySelector<HTMLButtonElement>(".player__back")!
+
+switchToLibrary.addEventListener("click", () => {
+    libraryTab.classList.add("active")
+    searchTab.classList.remove("active")
+    switchToLibrary.classList.add("active")
+    switchToSearch.classList.remove("active")
+})
+
+switchToSearch.addEventListener("click", () => {
+    libraryTab.classList.remove("active")
+    searchTab.classList.add("active")
+    switchToLibrary.classList.remove("active")
+    switchToSearch.classList.add("active")
+})
+
 switchToPlayer.addEventListener("click", () => {
     playerEl.classList.add("active")
 })
 
 switchToMenu.addEventListener("click", () => {
     playerEl.classList.remove("active")
+})
+
+const searchInp = document.querySelector<HTMLInputElement>(".search__inp")!
+const clearSearchInp = document.querySelector<HTMLButtonElement>(".search__inp-btn--clear")!
+
+searchInp.addEventListener("input", () => {
+    clearSearchInp.classList.toggle("active", Boolean(searchInp.value))
+})
+
+clearSearchInp.addEventListener("click", () => {
+    searchInp.value = ""
+    clearSearchInp.classList.remove("active")
 })
 
 window.onSpotifyWebPlaybackSDKReady = async () => {
