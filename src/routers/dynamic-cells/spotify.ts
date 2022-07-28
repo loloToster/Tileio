@@ -32,7 +32,7 @@ const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
 const spotifyApi = new SpotifyApiNode({
     clientId,
     clientSecret,
-    redirectUri: process.env.SPOTIFY_CALLBACK
+    redirectUri: process.env.SPOTIFY_CALLBACK?.replace("{PORT}", process.env.PORT || "80")
 })
 
 const router = express.Router()
