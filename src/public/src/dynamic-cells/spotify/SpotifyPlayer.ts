@@ -37,7 +37,7 @@ export class SpotifyApi extends Spotify.Player {
         }
     }
 
-    async fetchApi(path: string, method = "GET", body: string | undefined = undefined) {
+    async fetchApi(path: string, method = "GET", body?: string) {
         return await fetch(`https://api.spotify.com/v1${path}`, {
             headers: await this.defaultHeaders(),
             method,
@@ -45,7 +45,7 @@ export class SpotifyApi extends Spotify.Player {
         })
     }
 
-    async getJson(path: string, method = "GET", body: string | undefined = undefined) {
+    async getJson(path: string, method = "GET", body?: string) {
         const res = await this.fetchApi(path, method, body)
 
         try {
@@ -150,5 +150,11 @@ export class SpotifyApi extends Spotify.Player {
         if (this.playingHere) return await super.seek(pos)
 
         await this.fetchApi("/me/player/seek?position_ms=" + pos, "PUT")
+    }
+
+    async search(query: string, types: string[], market: string, limit = 5) {
+        return await this.getJson(
+            `/search?q=${encodeURIComponent(query)}&type=${types.join(",")}&market=${market}&limit=${limit}`
+        )
     }
 }

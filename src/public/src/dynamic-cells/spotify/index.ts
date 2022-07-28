@@ -67,6 +67,7 @@ switchToMenu.addEventListener("click", () => {
 
 const searchInp = document.querySelector<HTMLInputElement>(".search__inp")!
 const clearSearchInp = document.querySelector<HTMLButtonElement>(".search__inp-btn--clear")!
+const searchResults = document.querySelector<HTMLDivElement>(".search__results")!
 
 searchInp.addEventListener("input", () => {
     clearSearchInp.classList.toggle("active", Boolean(searchInp.value))
@@ -92,6 +93,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     const nextBtn = document.querySelector<HTMLButtonElement>(".player__next")!
     const loopBtn = document.querySelector<HTMLButtonElement>(".player__loop")!
 
+    let userCountry: string
+
     const spotifyApi = new SpotifyApi({
         name: "Widgetblocks",
         getOAuthToken: async cb => {
@@ -115,6 +118,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         // update user info
         const user = await spotifyApi.getUser()
+        userCountry = user.country
         document.querySelector<HTMLDivElement>(".header__name")!.innerText = user.display_name
         document.querySelector<HTMLImageElement>(".header__avatar")!.src = user.images[0].url
 
@@ -167,6 +171,89 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     spotifyApi.addListener("account_error", ({ message }) => {
         console.error("account_error", message)
+    })
+
+    let searchTimeout: any
+    searchInp.addEventListener("input", () => {
+        clearTimeout(searchTimeout)
+        searchTimeout = setTimeout(async () => {
+            if (!searchInp.value) {
+                searchResults.innerHTML = ""
+                return
+            }
+
+            const categories = [
+                "track",
+                "playlist",
+                "album",
+                "show",
+                "episode"
+            ]
+
+            const results = await spotifyApi.search(searchInp.value, categories, userCountry)
+
+            searchResults.innerHTML = ""
+
+            categories.forEach(cat => {
+                const category = cat + "s"
+
+                let categoryEl = document.createElement("details")
+                categoryEl.classList.add("search__result-category")
+                categoryEl.open = true
+
+                let summary = document.createElement("summary")
+                summary.classList.add("search__result-category__name")
+                summary.innerText = category
+                categoryEl.appendChild(summary)
+
+                results[category].items.forEach((item: any) => {
+                    let resultEl = document.createElement("div")
+                    resultEl.classList.add("search__result")
+
+                    resultEl.addEventListener("click", () => {
+                        playerEl.classList.add("active")
+                        spotifyApi.play(item.uri)
+                    })
+
+                    let img = document.createElement("img")
+                    const images = item.images || item.album.images
+                    img.src = images[0].url
+                    resultEl.appendChild(img)
+
+                    let titleAuthorWrapper = document.createElement("div")
+                    titleAuthorWrapper.classList.add("search__result-title-author")
+
+                    let titleEl = document.createElement("div")
+                    titleEl.classList.add("search__result-title")
+                    titleEl.innerText = item.name
+                    titleAuthorWrapper.appendChild(titleEl)
+
+                    let authorEl = document.createElement("div")
+                    authorEl.classList.add("search__result-author")
+
+                    let author: string
+
+                    if (item.artists) {
+                        author = item.artists.map((e: any) => e.name).join(", ")
+                    } else if (item.owner) {
+                        author = item.owner.display_name
+                    } else if (item.publisher) {
+                        author = item.publisher
+                    } else {
+                        author = ""
+                    }
+
+                    authorEl.innerText = author
+                    titleAuthorWrapper.appendChild(authorEl)
+
+                    resultEl.appendChild(titleAuthorWrapper)
+
+                    categoryEl.appendChild(resultEl)
+                })
+
+                searchResults.appendChild(categoryEl)
+            })
+        }, 500)
     })
 
     volumeInput.addEventListener("input", () => {
