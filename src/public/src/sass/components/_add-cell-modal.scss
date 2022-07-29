@@ -14,6 +14,168 @@ $preview-icon-size: $preview-size - 96px;
 
 $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row );
 
+$link-cell-icon-slugs: "facebook",
+    "twitch",
+    "youtube",
+    "reddit",
+    "googlekeep",
+    "spotify";
+
+$link-cell-icon-colors: #1877F2,
+    #9146FF,
+    #FF0000,
+    #FF4500,
+    #FFBB00,
+    #1DB954;
+
+@keyframes icon-animation {
+    @for $i from 0 through length($link-cell-icon-slugs) - 1 {
+        $slug: nth($link-cell-icon-slugs, $i + 1);
+        $color: nth($link-cell-icon-colors, $i + 1);
+
+        #{$i * math.div(100%, length($link-cell-icon-slugs))} {
+            --icon-url: url("https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/#{$slug}.svg");
+            background-color: #{$color};
+        }
+    }
+}
+
+#add-modal__link-cell .add-modal__menu__item__icon {
+    --icon-url: url("https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/facebook.svg");
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1877F2;
+    animation: icon-animation infinite linear (length($link-cell-icon-slugs) * 2s);
+
+    animation-play-state: paused;
+
+    div {
+        width: 60%;
+        height: 60%;
+        background: var(--icon-url);
+        filter: invert(1);
+    }
+}
+
+#add-modal__link-cell.active .add-modal__menu__item__icon {
+    animation-play-state: running;
+}
+
+#add-modal__dynamic-cell .add-modal__menu__item__icon {
+    box-sizing: border-box;
+    padding: 8px;
+    background-color: #323232;
+    color: c.$light-grey;
+    animation-play-state: paused;
+
+    @keyframes spin {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .svg-wrapper {
+        animation-play-state: inherit;
+        float: left;
+        padding-right: 8px;
+    }
+
+    svg {
+        fill: currentColor;
+        animation: spin 12s linear infinite;
+        animation-play-state: inherit;
+    }
+
+    .number {
+        font-size: 32px;
+        animation-play-state: inherit;
+
+        @keyframes numbers {
+            $start: 10;
+            $end: 30;
+
+            @for $i from 0 to $end - $start {
+                #{$i * math.div(100%, ($end - $start - 1))} {
+                    counter-increment: count #{$i + $start};
+                }
+            }
+        }
+
+        &::before {
+            content: counter(count);
+            animation: numbers 10s infinite alternate;
+            animation-play-state: inherit;
+        }
+
+        &::after {
+            content: "°";
+        }
+    }
+
+    .small-straps {
+        padding-top: 12px;
+        padding-bottom: 2px;
+        height: 24px;
+    }
+
+    .small-strap {
+        float: left;
+        height: 2px;
+        background-color: c.$light-grey;
+        margin: 3px;
+
+        &:nth-child(1) {
+            width: 100px;
+        }
+
+        &:nth-child(2) {
+            width: 20px;
+        }
+
+        &:nth-child(3) {
+            width: 60px;
+        }
+
+        &:nth-child(4) {
+            width: 40px;
+        }
+    }
+
+    @keyframes strap-width {
+        from {
+            width: 100%;
+        }
+
+        to {
+            width: 30%;
+        }
+    }
+
+    .strap {
+        height: 6px;
+        width: 100%;
+        border-radius: 100vh;
+        margin: 8px 0;
+        animation: strap-width 1s ease-in-out infinite alternate;
+        animation-play-state: inherit;
+
+        &.first {
+            background-color: #5b7ca7;
+        }
+
+        &.second {
+            background-color: #9e4d4d;
+            animation-delay: .7s;
+        }
+    }
+}
+
+#add-modal__dynamic-cell.active .add-modal__menu__item__icon {
+    animation-play-state: running;
+}
+
 .add-modal {
     @include m.flexCenter();
 
@@ -62,12 +224,15 @@ $cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)),
                 display: block;
             }
 
-            img {
-                width: 8rem;
-                height: 8rem;
+            &__icon {
+                width: 128px;
+                height: 128px;
+                border-radius: 8px;
+                overflow: hidden;
             }
 
             span {
+                font-weight: bold;
                 margin-top: 6px;
             }
         }
