@@ -109,6 +109,45 @@ const daysElement = document.querySelector(".days")!
 function generateCalendar(parsedCalendar: parsedCalendar) {
     daysElement.innerHTML = ""
 
+    // todo: remove repetetive code
+    if (!parsedCalendar[0].today) {
+        const today = new Date()
+
+        let dayEl = document.createElement("div")
+        dayEl.classList.add("days__day")
+
+        let dateWrapper = document.createElement("div")
+        dateWrapper.classList.add("days__date-wrapper")
+
+        let date = document.createElement("div")
+        date.classList.add("active")
+        date.classList.add("days__date")
+
+        let dateNum = document.createElement("div")
+        dateNum.classList.add("days__date-num")
+        dateNum.innerText = today.getDate().toString()
+        date.appendChild(dateNum)
+
+        let dateName = document.createElement("div")
+        dateName.classList.add("days__date-name")
+        dateName.innerText = dayNames[today.getDay() - 1]
+        date.appendChild(dateName)
+
+        dateWrapper.appendChild(date)
+        dayEl.appendChild(dateWrapper)
+
+        let eventsEl = document.createElement("div")
+        eventsEl.classList.add("days__events")
+
+        let noEvents = document.createElement("div")
+        noEvents.classList.add("days__no-events")
+        noEvents.innerText = "Nothing today"
+        eventsEl.appendChild(noEvents)
+
+        dayEl.appendChild(eventsEl)
+        daysElement.appendChild(dayEl)
+    }
+
     parsedCalendar.forEach(day => {
         let dayEl = document.createElement("div")
         dayEl.classList.add("days__day")

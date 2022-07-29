@@ -113,6 +113,14 @@ $scrollbar-width: 10px;
         min-height: 20vw;
     }
 
+    &__no-events {
+        display: flex;
+        align-items: center;
+        height: 20vw;
+        margin-left: 4px;
+        color: grey;
+    }
+
     &__event {
         box-sizing: border-box;
         width: 100%;
@@ -124,6 +132,10 @@ $scrollbar-width: 10px;
 
     &__event-name {
         font-weight: bold;
+    }
+
+    &__event-time {
+        font-size: .9rem;
     }
 }
 
