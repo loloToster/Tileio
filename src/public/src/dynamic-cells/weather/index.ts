@@ -48,7 +48,8 @@ function drawWeather(tab: number, data: any) {
     const daily: DailyWeather[] = data.daily
 
     if (tab == 0) {
-        weatherIcon!.src = getIcon(current.weather.icon.raw)
+        const icon = getIcon(current.weather.icon.raw)
+        if (weatherIcon!.src != icon) weatherIcon!.src = icon
         temp!.innerText = Math.round(current.weather.temp.cur).toString()
         min!.innerText = Math.round(daily[0].weather.temp.min).toString()
         max!.innerText = Math.round(daily[0].weather.temp.max).toString()
@@ -57,7 +58,8 @@ function drawWeather(tab: number, data: any) {
         if (wind) wind.innerText = current.weather.wind.speed.toString()
         if (pressure) pressure.innerText = current.weather.pressure.toString()
     } else {
-        weatherIcon!.src = getIcon(daily[tab].weather.icon.raw)
+        const icon = getIcon(daily[tab].weather.icon.raw)
+        if (weatherIcon!.src != icon) weatherIcon!.src = icon
         temp!.innerText = Math.round(daily[tab].weather.temp.day).toString()
         min!.innerText = Math.round(daily[tab].weather.temp.min).toString()
         max!.innerText = Math.round(daily[tab].weather.temp.max).toString()
@@ -69,7 +71,8 @@ function drawWeather(tab: number, data: any) {
 
     days.forEach((day, i) => {
         const icon = day.querySelector("img")
-        icon!.src = getIcon(daily[i].weather.icon.raw)
+        const iconUrl = getIcon(daily[i].weather.icon.raw)
+        if (icon!.src != iconUrl) icon!.src = iconUrl
     })
 }
 
