@@ -148,7 +148,7 @@ const contextMenuBtns: Array<{
         {
             class: "resize", innerText: "Resize",
             onclick: (e, grid, el, cell) => {
-                console.log("resize")
+                toggleGridEditing(grid, true)
             }
         },
         {
@@ -210,4 +210,31 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
         })
 
     return element
+}
+
+const editButton = document.getElementById("grid__menu__edit")!
+const gridBorder = document.querySelector<HTMLElement>(".grid__border")
+export async function toggleGridEditing(grid: GridStack, force?: boolean) {
+    let editing: boolean
+    if (typeof force === "undefined") {
+        editing = editButton.parentElement!.classList.toggle("active")
+    } else {
+        editing = force
+        editButton.parentElement?.classList.toggle("active", force)
+    }
+
+    grid.el.classList.toggle("editing", editing)
+
+    if (editing) {
+        grid.enable()
+        removeDummies(grid)
+        editButton.title = "Save Cells"
+        gridBorder!.style.opacity = "1"
+    } else {
+        grid.disable()
+        await saveGrid(grid)
+        fillGridWithDummies(grid)
+        editButton.title = "Edit Cells"
+        gridBorder!.style.opacity = "0"
+    }
 }

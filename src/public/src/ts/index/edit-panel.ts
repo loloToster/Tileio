@@ -2,7 +2,7 @@ import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 
 import { hex, IconResponse } from "@backend-types/types"
-import { fillGridWithDummies, removeDummies, saveGrid, createWidgetFromSerializedCell, isDark } from "./grid-utils"
+import { createWidgetFromSerializedCell, isDark, toggleGridEditing } from "./grid-utils"
 
 export const trashSelector = "#grid__menu__trash"
 
@@ -15,30 +15,7 @@ export default (grid: GridStack) => {
     grid.on("dragstop", () => trash?.classList.remove("active"))
 
     const editButton = document.getElementById("grid__menu__edit")
-    const gridBorder = document.querySelector<HTMLElement>(".grid__border")
-
-    /**
-     * Toggling editing mode with editButton
-     */
-    let editing = false
-    editButton?.addEventListener("click", async () => {
-        editing = !editing
-        editButton.parentElement?.classList.toggle("active", editing)
-        grid.el.classList.toggle("editing", editing)
-
-        if (editing) {
-            grid.enable()
-            removeDummies(grid)
-            editButton.title = "Save Cells"
-            gridBorder!.style.opacity = "1"
-        } else {
-            grid.disable()
-            await saveGrid(grid)
-            fillGridWithDummies(grid)
-            editButton.title = "Edit Cells"
-            gridBorder!.style.opacity = "0"
-        }
-    })
+    editButton?.addEventListener("click", () => toggleGridEditing(grid))
 
     // Creating Cells
     const menuItems = Array.from(document.getElementsByClassName("add-modal__menu__item"))
@@ -222,6 +199,7 @@ export default (grid: GridStack) => {
     for (const icon of builtInCells)
         icon.addEventListener("click", () => onDynamicIconClick(icon))
 
+    // update dynamic cell preview
     iframeSrcInp.addEventListener("input", () => {
         dynamicCellPreview!.src = iframeSrcInp.value
     })
