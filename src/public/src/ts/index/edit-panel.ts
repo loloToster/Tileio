@@ -1,8 +1,8 @@
 import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 
-import { Grid, hex, IconResponse, SerializedCellContent } from "@backend-types/types"
-import { fillGridWithDummies, removeDummies, dummyClass, createWidgetFromSerializedCell, isDark } from "./grid-utils"
+import { hex, IconResponse } from "@backend-types/types"
+import { fillGridWithDummies, removeDummies, saveGrid, createWidgetFromSerializedCell, isDark } from "./grid-utils"
 
 export const trashSelector = "#grid__menu__trash"
 
@@ -13,44 +13,6 @@ export default (grid: GridStack) => {
 
     grid.on("dragstart", () => trash?.classList.add("active"))
     grid.on("dragstop", () => trash?.classList.remove("active"))
-
-    async function saveGrid() {
-        const cells = grid.getGridItems()
-
-        const newCells = []
-        for (const cell of cells) {
-            if (cell.classList.contains(dummyClass)) continue
-
-            let content: SerializedCellContent | undefined
-            // find element that contains serialized data of the cell
-            const elementWithSerializedData = cell.querySelector("[data-serialized]")
-            if (elementWithSerializedData instanceof HTMLElement && elementWithSerializedData.dataset.serialized)
-                content = JSON.parse(elementWithSerializedData.dataset.serialized)
-
-            newCells.push({
-                w: parseInt(cell.getAttribute("gs-w") || "1"),
-                h: parseInt(cell.getAttribute("gs-h") || "1"),
-                x: parseInt(cell.getAttribute("gs-x") || "0"),
-                y: parseInt(cell.getAttribute("gs-y") || "0"),
-                content
-            })
-        }
-
-        const newGrid: Grid = {
-            col: grid.opts.column! as number,
-            row: grid.opts.row!,
-            cells: newCells
-        }
-
-        // TODO: onerror
-        const res = await fetch("/grid/update", {
-            method: "PUT",
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify(newGrid)
-        }) // .then(r => r.json())
-    }
 
     const editButton = document.getElementById("grid__menu__edit")
     const gridBorder = document.querySelector<HTMLElement>(".grid__border")
@@ -71,7 +33,7 @@ export default (grid: GridStack) => {
             gridBorder!.style.opacity = "1"
         } else {
             grid.disable()
-            await saveGrid()
+            await saveGrid(grid)
             fillGridWithDummies(grid)
             editButton.title = "Edit Cells"
             gridBorder!.style.opacity = "0"

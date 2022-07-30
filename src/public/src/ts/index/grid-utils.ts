@@ -1,6 +1,6 @@
 import { GridItemHTMLElement, GridStack, GridStackWidget } from "gridstack"
 
-import { hex, SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
+import { Grid, hex, SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
 import { onClickOutside } from "../utlis/utils"
 
 export const dummyClass = "dummy-cell"
@@ -37,6 +37,44 @@ export function removeDummies(grid: GridStack) {
         if (cell.classList.contains(dummyClass))
             grid.removeWidget(cell, true, false)
     }
+}
+
+export async function saveGrid(grid: GridStack) {
+    const cells = grid.getGridItems()
+
+    const newCells = []
+    for (const cell of cells) {
+        if (cell.classList.contains(dummyClass)) continue
+
+        let content: SerializedCellContent | undefined
+        // find element that contains serialized data of the cell
+        const elementWithSerializedData = cell.querySelector("[data-serialized]")
+        if (elementWithSerializedData instanceof HTMLElement && elementWithSerializedData.dataset.serialized)
+            content = JSON.parse(elementWithSerializedData.dataset.serialized)
+
+        newCells.push({
+            w: parseInt(cell.getAttribute("gs-w") || "1"),
+            h: parseInt(cell.getAttribute("gs-h") || "1"),
+            x: parseInt(cell.getAttribute("gs-x") || "0"),
+            y: parseInt(cell.getAttribute("gs-y") || "0"),
+            content
+        })
+    }
+
+    const newGrid: Grid = {
+        col: grid.opts.column! as number,
+        row: grid.opts.row!,
+        cells: newCells
+    }
+
+    // TODO: onerror
+    const res = await fetch("/grid/update", {
+        method: "PUT",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: JSON.stringify(newGrid)
+    }) // .then(r => r.json())
 }
 
 function isLink(c: SerializedCellContent): c is SerializedLinkCellContent {
@@ -94,29 +132,36 @@ export function unserializeContent(cell: SerializedCell) {
     }
 }
 
-const contextMenuBtns = [
-    {
-        class: "edit", innerText: "Edit",
-        onclick: () => {
-            console.log("edit")
-        }
-    },
-    {
-        class: "resize", innerText: "Resize",
-        onclick: () => {
-            console.log("resize")
-        }
-    },
-    {
-        class: "delete", innerText: "Delete",
-        onclick: () => {
-            console.log("delete")
-        }
-    }
-]
+type contextMenuFunc = (e: MouseEvent, grid: GridStack, el: GridItemHTMLElement, cell: SerializedCell) => void
 
-function customContextmenu(e: MouseEvent, el: GridItemHTMLElement, cell: SerializedCell) {
-    console.log(el)
+const contextMenuBtns: Array<{
+    class: string,
+    innerText: string,
+    onclick: contextMenuFunc
+}> = [
+        {
+            class: "edit", innerText: "Edit",
+            onclick: (e, grid, el, cell) => {
+                console.log("edit")
+            }
+        },
+        {
+            class: "resize", innerText: "Resize",
+            onclick: (e, grid, el, cell) => {
+                console.log("resize")
+            }
+        },
+        {
+            class: "delete", innerText: "Delete",
+            onclick: (e, grid, el, cell) => {
+                grid.removeWidget(el)
+                fillGridWithDummies(grid)
+                saveGrid(grid)
+            }
+        }
+    ]
+
+function customContextmenu(e: MouseEvent, grid: GridStack, widgetEl: GridItemHTMLElement, cell: SerializedCell) {
     e.preventDefault()
     document.querySelectorAll(".rmenu").forEach(x => x.remove())
 
@@ -130,11 +175,14 @@ function customContextmenu(e: MouseEvent, el: GridItemHTMLElement, cell: Seriali
     })
 
     contextMenuBtns.forEach(btn => {
-        let el = document.createElement("button")
-        el.classList.add("rmenu__btn", `rmenu__${btn.class}`)
-        el.innerText = btn.innerText
-        el.addEventListener("click", btn.onclick)
-        rmenu.appendChild(el)
+        let btnEl = document.createElement("button")
+        btnEl.classList.add("rmenu__btn", `rmenu__${btn.class}`)
+        btnEl.innerText = btn.innerText
+        btnEl.addEventListener("click", e => {
+            btn.onclick(e, grid, widgetEl, cell)
+            rmenu.remove()
+        })
+        rmenu.appendChild(btnEl)
     })
 
     document.body.appendChild(rmenu)
@@ -156,7 +204,10 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
     if (cell.content?.type == "d") element.classList.add("dynamic-cell")
 
     element.querySelector<HTMLDivElement>(".grid-stack-item-content")!
-        .addEventListener("contextmenu", e => customContextmenu(e, element, cell))
+        .addEventListener("contextmenu", e => {
+            if (grid.el.classList.contains("editing")) return
+            customContextmenu(e, grid, element, cell)
+        })
 
     return element
 }
