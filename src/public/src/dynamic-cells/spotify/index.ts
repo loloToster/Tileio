@@ -21,6 +21,17 @@ function getCookie(name: string) {
     return ""
 }
 
+function getBestImage(size: number, images: Spotify.Image[]) {
+    images = images.reverse()
+
+    for (const img of images) {
+        if (img.width || 0 >= size)
+            return img.url
+    }
+
+    return images.pop()!.url
+}
+
 function updateSpotifySlider(i: HTMLInputElement) {
     const v = parseInt(i.value)
     const max = parseInt(i.max)
@@ -95,10 +106,17 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     let userCountry: string
 
+    let lastAt = ""
     const spotifyApi = new SpotifyApi({
         name: "Widgetblocks",
         getOAuthToken: async cb => {
-            const at = await fetch("/dynamic-cells/spotify/access-token").then(r => r.text())
+            let at: string
+            try {
+                at = await fetch("/dynamic-cells/spotify/access-token").then(r => r.text())
+            } catch {
+                at = lastAt
+            }
+            lastAt = at
             cb(at)
         }
     })
@@ -138,7 +156,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
             let img = document.createElement("img")
             img.classList.add("playlists__playlist-img")
-            img.src = playlist.images[0].url
+            img.src = getBestImage(72, playlist.images)
             li.appendChild(img)
 
             let nameDiv = document.createElement("div")
@@ -217,7 +235,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
                     let img = document.createElement("img")
                     const images = item.images || item.album.images
-                    img.src = images[0].url
+                    img.src = getBestImage(60, images)
                     resultEl.appendChild(img)
 
                     let titleAuthorWrapper = document.createElement("div")
@@ -301,7 +319,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         updateState({
             currentTrack: {
-                img: state.item.album.images[0].url,
+                img: getBestImage(300, state.item.album.images),
                 name: state.item.name,
                 artist: state.item.artists
                     .map((e: any) => e.name).join(", "),
@@ -321,7 +339,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         updateState({
             currentTrack: {
-                img: state.track_window.current_track.album.images[0].url,
+                img: getBestImage(300, state.track_window.current_track.album.images),
                 name: state.track_window.current_track.name,
                 artist: state.track_window.current_track.artists
                     .map(e => e.name).join(", "),
