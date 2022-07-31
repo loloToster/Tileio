@@ -2,6 +2,7 @@ import { Grid, hex } from "@backend-types/types"
 import { GridStack } from "gridstack"
 import ColorPicker from "simple-color-picker"
 import { onClickOutside } from "../utlis/utils"
+import { createError } from "./error"
 import { dummyClass, removeDummies, fillGridWithDummies } from "./grid-utils"
 
 export default (grid: GridStack, initialGrid: Grid) => {
@@ -123,7 +124,11 @@ export default (grid: GridStack, initialGrid: Grid) => {
             }
         }
 
-        if (cellsCollide) return settings?.classList.remove("active")
+        if (cellsCollide) {
+            createError("Some cells does not fit in new size")
+            settings?.classList.remove("active")
+            return
+        }
 
         await fetch("/grid/update-settings", {
             method: "PUT",

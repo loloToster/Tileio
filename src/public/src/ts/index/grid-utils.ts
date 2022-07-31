@@ -3,6 +3,7 @@ import { GridItemHTMLElement, GridStack, GridStackWidget } from "gridstack"
 import { Grid, SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
 import { onClickOutside, isDark } from "../utlis/utils"
 import { openAddModal } from "./add-modal"
+import { createError } from "./error"
 
 export const dummyClass = "dummy-cell"
 
@@ -50,14 +51,18 @@ export async function saveGrid(grid: GridStack) {
         cells: newCells
     }
 
-    // TODO: onerror
-    const res = await fetch("/grid/update", {
-        method: "PUT",
-        headers: {
-            "Content-type": "application/json"
-        },
-        body: JSON.stringify(newGrid)
-    }) // .then(r => r.json())
+    try {
+        const res = await fetch("/grid/update", {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(newGrid)
+        })
+        if (res.status != 200) throw Error("Bad status")
+    } catch {
+        createError("Could not save the grid")
+    }
 }
 
 function isLink(c: SerializedCellContent): c is SerializedLinkCellContent {

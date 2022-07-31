@@ -6,10 +6,16 @@ import { onClickOutside } from "./utlis/utils"
 import { fillGridWithDummies, createWidgetFromSerializedCell } from "./index/grid-utils"
 import setupEditPanel, { trashSelector } from "./index/edit-panel"
 import setupSettings from "./index/settings"
+import { createError } from "./index/error"
 
 async function main() {
-    // TODO: on error
-    let initialGrid: Grid = await fetch("/grid").then(r => r.json())
+    let initialGrid: Grid
+    try {
+        initialGrid = await fetch("/grid").then(r => r.json())
+    } catch {
+        createError("Failed to load grid")
+        return
+    }
 
     const loading = document.querySelector(".grid__loading")
     loading?.classList.remove("active")

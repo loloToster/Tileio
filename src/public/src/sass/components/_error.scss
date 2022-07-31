@@ -1,0 +1,59 @@
+@use "../abstracts/colors" as c;
+
+@keyframes pop-up {
+    0% {
+        transform: translateY(-220px);
+    }
+
+    70% {
+        transform: scale(1.1);
+    }
+
+    80% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.error {
+    z-index: 1;
+
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    top: 110px;
+    width: fit-content;
+    margin: auto;
+    padding: 16px;
+
+    color: white;
+    background-color: c.$red;
+    border-radius: 4px;
+
+    transform: translateY(-220px);
+
+    &.active {
+        animation: pop-up 500ms ease-out forwards;
+    }
+
+    svg {
+        fill: currentColor;
+    }
+
+    &__msg {
+        margin: 0 8px 0 6px;
+        font-size: 1.2rem;
+    }
+
+    &__close {
+        position: absolute;
+        right: 2px;
+        top: 3px;
+        cursor: pointer;
+    }
+}
