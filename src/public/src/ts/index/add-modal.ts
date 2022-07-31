@@ -1,5 +1,5 @@
 import ColorPicker from "simple-color-picker"
-import { isDark } from "./grid-utils"
+import { isDark } from "../utlis/utils"
 import { hex, IconResponse, SerializedCellContent } from "@backend-types/types"
 
 const defaultColor = "#3e3e3e"
