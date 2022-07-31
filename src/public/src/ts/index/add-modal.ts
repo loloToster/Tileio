@@ -41,7 +41,7 @@ function changePreviewColor(color: hex) {
     linkIconPreviewImg?.classList.toggle("white", isDark(color))
 }
 
-function onIconClick(e: Event, icon: FriendlyIcon) {
+function onIconClick(icon: FriendlyIcon) {
     suggestedColor!.style.backgroundColor = icon.hex
     suggestedColor!.dataset.hex = icon.hex
     colorPicker.setColor(icon.hex)
@@ -62,7 +62,7 @@ function createIconEl(icon: FriendlyIcon) {
         img.classList.add("white")
 
     iconEl.appendChild(img)
-    iconEl.addEventListener("click", e => onIconClick(e, icon))
+    iconEl.addEventListener("click", () => onIconClick(icon))
 
     return iconEl
 }
@@ -150,6 +150,19 @@ iframeSrcInp.addEventListener("input", () => {
     dynamicCellPreview!.src = iframeSrcInp.value
 })
 
+function loadPreview(preview: SerializedCellContent) {
+    if (preview.type == "d") {
+        iframeSrcInp.src = preview.src.startsWith("/dynamic-cells/") ? "" : preview.src
+    } else {
+        onIconClick({
+            hex: preview.bgColor || defaultColor,
+            title: "",
+            url: preview.iconUrl
+        })
+        linkInp.value = preview.link
+    }
+}
+
 function resetModal() {
     // reset inputs
     searchIconsInp.value = ""
@@ -170,7 +183,9 @@ function resetModal() {
     dynamicCellPreview!.src = ""
 }
 
-export function openAddModal() {
+export function openAddModal(preview?: SerializedCellContent) {
+    if (preview) loadPreview(preview)
+
     return new Promise<null | SerializedCellContent>(res => {
         addModal.classList.add("active")
 

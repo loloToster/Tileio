@@ -124,8 +124,15 @@ const contextMenuBtns: Array<{
 }> = [
         {
             class: "edit", innerText: "Edit",
-            onclick: (e, grid, el, cell) => {
-                console.log("edit")
+            onclick: async (e, grid, el, cell) => {
+                const content = await openAddModal(cell.content)
+                if (!content) return
+                cell.content = content
+                cell.w = parseInt(el.getAttribute("gs-w") || "0")
+                cell.h = parseInt(el.getAttribute("gs-h") || "0")
+                grid.removeWidget(el)
+                createWidgetFromSerializedCell(grid, cell)
+                saveGrid(grid)
             }
         },
         {
