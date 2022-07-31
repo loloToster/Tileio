@@ -1,13 +1,13 @@
 import { IKalenderEvent } from "kalender-events"
 
 const dayNames = [
+    "Sun",
     "Mon",
     "Tue",
     "Wed",
     "Thu",
     "Fri",
-    "Sat",
-    "Sun"
+    "Sat"
 ]
 
 const months = [
@@ -93,7 +93,7 @@ function parseCalendar(calendar: jsonIKalenderEvent[]) {
         if (dayEvents.length)
             parsed.push({
                 date: d.getDate(),
-                dayName: dayNames[d.getDay() - 1],
+                dayName: dayNames[d.getDay()],
                 today: todayOnlyDate.getTime() == d.getTime(),
                 events: dayEvents
             })
@@ -130,7 +130,7 @@ function generateCalendar(parsedCalendar: parsedCalendar) {
 
         let dateName = document.createElement("div")
         dateName.classList.add("days__date-name")
-        dateName.innerText = dayNames[today.getDay() - 1]
+        dateName.innerText = dayNames[today.getDay()]
         date.appendChild(dateName)
 
         dateWrapper.appendChild(date)
