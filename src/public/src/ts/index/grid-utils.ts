@@ -45,19 +45,13 @@ export async function saveGrid(grid: GridStack) {
         })
     }
 
-    const newGrid: Grid = {
-        col: grid.opts.column! as number,
-        row: grid.opts.row!,
-        cells: newCells
-    }
-
     try {
         const res = await fetch("/grid/update", {
             method: "PUT",
             headers: {
                 "Content-type": "application/json"
             },
-            body: JSON.stringify(newGrid)
+            body: JSON.stringify(newCells)
         })
         if (res.status != 200) throw Error("Bad status")
     } catch {

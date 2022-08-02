@@ -1,6 +1,6 @@
 import express from "express"
 
-import { Grid, IconResponse, SIIcon } from "../types/types"
+import { IconResponse, SerializedCell, SIIcon } from "../types/types"
 import User from "../models/user"
 
 import Fuse from "fuse.js"
@@ -21,24 +21,6 @@ router.use((req, res, next) => {
 router.get("/", async (req, res) => {
     const user = req.user!
     res.json(user.grid)
-})
-
-// TODO: grid validation
-function validateGrid(grid: any): grid is Grid {
-    return true
-}
-
-router.put("/update", async (req, res) => {
-    if (!req.user) return res.status(403).send()
-
-    const newGrid: any = req.body
-
-    if (!validateGrid(newGrid))
-        return res.status(403).send()
-
-    await User.findByIdAndUpdate(req.user.id, { grid: newGrid })
-
-    res.send()
 })
 
 const simpleIcons: SIIcon[] = []
@@ -84,6 +66,27 @@ router.get("/search_icon", (req, res) => {
     const resp: IconResponse = { si: SIsearchResults, fa: FAsearchResults }
 
     res.json(resp)
+})
+
+// TODO: cell validation
+function validateCells(cells: any): SerializedCell[] {
+    return cells
+}
+
+router.put("/update", async (req, res) => {
+    if (!req.user) return res.status(403).send()
+
+    let newCells: any = req.body
+
+    try {
+        newCells = validateCells(newCells)
+    } catch {
+        return res.status(403).send()
+    }
+
+    await User.findByIdAndUpdate(req.user.id, { "grid.cells": newCells })
+
+    res.send()
 })
 
 const hexColorRegex = /^#(?:[0-9a-fA-F]{3}){1,2}$/
