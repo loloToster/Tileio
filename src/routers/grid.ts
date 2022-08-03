@@ -1,7 +1,8 @@
 import express from "express"
 
-import { IconResponse, SerializedCell, SIIcon } from "../types/types"
+import { IconResponse, SerializedCell, SerializedCellContent, SIIcon } from "../types/types"
 import User from "../models/user"
+import GridEmulator from "./_GridEmulator"
 
 import Fuse from "fuse.js"
 import { SimpleIcon } from "simple-icons"
@@ -68,9 +69,60 @@ router.get("/search_icon", (req, res) => {
     res.json(resp)
 })
 
-// TODO: cell validation
-function validateCells(cells: any): SerializedCell[] {
-    return cells
+function validateCells(gridW: number, gridH: number, cells: unknown): SerializedCell[] {
+    if (!Array.isArray(cells)) throw Error("Cells are not an array")
+
+    let validatedCells: SerializedCell[] = []
+    const emul = new GridEmulator(gridW, gridH)
+
+    for (const cell of cells) {
+        let content: undefined | SerializedCellContent
+        if (!cell.content) {
+            content = undefined
+        } else {
+            if (cell.content.type == "d") {
+                if (typeof cell.content.src !== "string") throw Error("Bad type of content.src")
+
+                content = {
+                    type: "d",
+                    src: cell.content.src
+                }
+            } else if (cell.content.type == "l") {
+                if (typeof cell.content.iconUrl !== "string") throw Error("Bad type of content.iconUrl")
+                if (typeof cell.content.link !== "string") throw Error("Bad type of content.link")
+                if (typeof cell.content.bgColor !== "string" && typeof cell.content.bgColor !== "undefined") throw Error("Bad type of content.bgColor")
+
+                content = {
+                    type: "l",
+                    iconUrl: cell.content.iconUrl,
+                    link: cell.content.link,
+                    bgColor: cell.content.bgColor
+                }
+            } else {
+                throw Error("Bad cell content type")
+            }
+        }
+
+        if ((typeof cell.x !== "number" && cell.x !== undefined) ||
+            (typeof cell.y !== "number" && cell.y !== undefined) ||
+            (typeof cell.w !== "number" && cell.w !== undefined) ||
+            (typeof cell.h !== "number" && cell.h !== undefined))
+            throw Error("Bad type of x, y, w or h")
+
+        emul.addWidget(cell.x, cell.y, cell.w, cell.h)
+
+        validatedCells.push({
+            x: cell.x,
+            y: cell.y,
+            w: cell.w,
+            h: cell.h,
+            content
+        })
+    }
+
+    emul.print()
+
+    return validatedCells
 }
 
 router.put("/update", async (req, res) => {
@@ -79,9 +131,10 @@ router.put("/update", async (req, res) => {
     let newCells: any = req.body
 
     try {
-        newCells = validateCells(newCells)
-    } catch {
-        return res.status(403).send()
+        newCells = validateCells(req.user.grid.col, req.user.grid.row, newCells)
+    } catch (error) {
+        console.log(error)
+        return res.status(400).send()
     }
 
     await User.findByIdAndUpdate(req.user.id, { "grid.cells": newCells })
