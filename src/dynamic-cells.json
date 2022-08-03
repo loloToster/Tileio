@@ -37,5 +37,11 @@
             "2x6",
             "2x7"
         ]
+    },
+    {
+        "id": "calculator",
+        "name": "Calculator",
+        "src": "/dynamic-cells/calculator",
+        "icon": "/static/assets/calculator.png"
     }
 ]
