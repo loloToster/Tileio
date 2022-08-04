@@ -1,5 +1,6 @@
 import dotenv from "dotenv"
 import express from "express"
+import sslRedirect from "heroku-ssl-redirect"
 import cookieSession from "cookie-session"
 import passport from "passport"
 import mongoose from "mongoose"
@@ -22,6 +23,8 @@ const app = express()
 
 app.set("view engine", "ejs")
 app.set("views", __dirname + "/views")
+
+app.use(sslRedirect())
 
 require(__dirname + "/config/passport-config")
 
