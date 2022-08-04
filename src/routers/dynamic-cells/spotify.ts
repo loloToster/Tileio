@@ -37,11 +37,6 @@ const spotifyApi = new SpotifyApiNode({
 
 const router = express.Router()
 
-// TODO: move to db
-let users: {
-    [id: string]: { at: string, rt: string, expires: number }
-} = {}
-
 router.get("/", (req, res) => {
     const spotifyUser = req.user!.dynamicCells.spotify?.at
 
@@ -71,7 +66,7 @@ router.get("/redirect", async (req, res) => {
         "dynamicCells.spotify": {
             at: data.body.access_token,
             rt: data.body.refresh_token,
-            expires: Date.now() + data.body.expires_in * 1000
+            expires: Date.now() + ((data.body.expires_in / 2) * 1000) // divide expire time by 2 just in case
         }
     })
 
@@ -83,8 +78,6 @@ router.get("/access-token", async (req, res) => {
     if (!spotifyData) return res.status(403).send()
 
     if (Date.now() > spotifyData.expires) {
-        console.log("refreshing token")
-
         let refresher = new SpotifyApiNode({
             clientId,
             clientSecret,
@@ -110,7 +103,7 @@ router.get("/access-token", async (req, res) => {
         await User.findByIdAndUpdate(req.user!.id, { "dynamicCells.spotify": spotifyData })
     }
 
-    res.send(spotifyData.at)
+    res.json({ expires: new Date(spotifyData.expires), at: spotifyData.at })
 })
 
 export = router

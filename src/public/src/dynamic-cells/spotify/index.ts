@@ -25,7 +25,7 @@ function getBestImage(size: number, images: Spotify.Image[]) {
     images = images.reverse()
 
     for (const img of images) {
-        if (img.width || 0 >= size)
+        if ((img.width || img.height || 0) >= size)
             return img.url
     }
 
@@ -107,12 +107,19 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     let userCountry: string
 
     let lastAt = ""
+    let atExpires = new Date()
     const spotifyApi = new SpotifyApi({
         name: "Widgetblocks",
         getOAuthToken: async cb => {
             let at: string
             try {
-                at = await fetch("/dynamic-cells/spotify/access-token").then(r => r.text())
+                if (!lastAt || new Date() >= atExpires) {
+                    const res = await fetch("/dynamic-cells/spotify/access-token").then(r => r.json())
+                    atExpires = new Date(res.expires)
+                    at = res.at
+                } else {
+                    at = lastAt
+                }
             } catch {
                 at = lastAt
             }
