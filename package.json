@@ -37,6 +37,7 @@
     "gridstack": "^5.1.0",
     "heroku-ssl-redirect": "^0.1.1",
     "kalender-events": "^0.28.1",
+    "mathjs": "^11.0.1",
     "mongoose": "^6.3.5",
     "openweather-api-node": "^1.4.1",
     "passport": "^0.5.3",
