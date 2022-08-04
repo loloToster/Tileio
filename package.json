@@ -9,7 +9,7 @@
     "build-client": "webpack --config ./src/public/webpack.prod.js",
     "build-server": "tsc && xcopy .\\src\\views\\ .\\dist\\views\\ /Y /E && xcopy .\\src\\public\\static\\ .\\dist\\public\\static\\ /Y /E",
     "build-server-bash": "tsc && cp -r ./src/views ./dist/views && mkdir -p ./dist/public && cp -r ./src/public/static ./dist/public/static",
-    "build": "npm run build-client && npm run build-server",
+    "build-batch": "npm run build-client && npm run build-server",
     "build-bash": "npm run build-client && npm run build-server-bash",
     "prestart": "npm run build-bash",
     "start": "node ./dist/app.js",
