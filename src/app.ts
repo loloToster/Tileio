@@ -26,7 +26,7 @@ app.set("views", __dirname + "/views")
 require(__dirname + "/config/passport-config")
 
 app.use(cookieSession({
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: parseInt(process.env.COOKIE_AGE || "0") || 24 * 60 * 60 * 1000,
     keys: [process.env.COOKIE_SECRET!]
 }))
 
