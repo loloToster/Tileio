@@ -1,6 +1,6 @@
 import { GridItemHTMLElement, GridStack, GridStackWidget } from "gridstack"
 
-import { Grid, SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
+import { SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
 import { onClickOutside, isDark } from "../utlis/utils"
 import { openAddModal } from "./add-modal"
 import { createError } from "./error"
@@ -126,12 +126,24 @@ const contextMenuBtns: Array<{
             onclick: async (e, grid, el, cell) => {
                 const content = await openAddModal(cell.content)
                 if (!content) return
+
+                const editing = grid.el.classList.contains("editing")
+
                 cell.content = content
-                cell.w = parseInt(el.getAttribute("gs-w") || "0")
-                cell.h = parseInt(el.getAttribute("gs-h") || "0")
+                cell.w = parseInt(el.getAttribute("gs-w") || "1")
+                cell.h = parseInt(el.getAttribute("gs-h") || "1")
+
+                if (editing) {
+                    const gsX = el.getAttribute("gs-x")
+                    const gsY = el.getAttribute("gs-y")
+                    if (gsX) cell.x = parseInt(gsX)
+                    if (gsY) cell.y = parseInt(gsY)
+                }
+
                 grid.removeWidget(el)
                 createWidgetFromSerializedCell(grid, cell)
-                saveGrid(grid)
+
+                if (!editing) saveGrid(grid)
             }
         },
         {
@@ -144,12 +156,17 @@ const contextMenuBtns: Array<{
             class: "delete", innerText: "Delete",
             onclick: (e, grid, el, cell) => {
                 grid.removeWidget(el)
+
+                if (grid.el.classList.contains("editing"))
+                    return
+
                 fillGridWithDummies(grid)
                 saveGrid(grid)
             }
         }
     ]
 
+// TODO: add custom context menu on dummy cells
 function customContextmenu(e: MouseEvent, grid: GridStack, widgetEl: GridItemHTMLElement, cell: SerializedCell) {
     e.preventDefault()
     document.querySelectorAll(".rmenu").forEach(x => x.remove())
@@ -194,7 +211,6 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
 
     element.querySelector<HTMLDivElement>(".grid-stack-item-content")!
         .addEventListener("contextmenu", e => {
-            if (grid.el.classList.contains("editing")) return
             customContextmenu(e, grid, element, cell)
         })
 
