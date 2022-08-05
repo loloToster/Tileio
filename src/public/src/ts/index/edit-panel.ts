@@ -2,6 +2,7 @@ import { GridStack } from "gridstack"
 
 import { createWidgetFromSerializedCell, toggleGridEditing } from "./grid-utils"
 import { openAddModal } from "./add-modal"
+import { createError } from "./error"
 
 export const trashSelector = "#grid__menu__trash"
 
@@ -33,11 +34,13 @@ export default (grid: GridStack) => {
 
     const addButton = document.getElementById("grid__menu__add")
 
-    // TODO: check if cell can fit
     addButton?.addEventListener("click", async () => {
+        if (!grid.willItFit({}))
+            return createError("There is no space for more cells")
+
         let content = await openAddModal()
         if (!content) return
-        const size = content.type == "d" ? { w: 2, h: 2 } : {}
+        const size = content.type == "d" && grid.willItFit({ w: 2, h: 2 }) ? { w: 2, h: 2 } : {}
         createWidgetFromSerializedCell(grid, { ...size, content })
     })
 }
