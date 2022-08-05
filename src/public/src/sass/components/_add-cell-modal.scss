@@ -28,34 +28,43 @@ $link-cell-icon-colors: #1877F2,
     #FFBB00,
     #1DB954;
 
-@keyframes icon-animation {
-    @for $i from 0 through length($link-cell-icon-slugs) - 1 {
-        $slug: nth($link-cell-icon-slugs, $i + 1);
+@keyframes color-animation {
+    @for $i from 0 through length($link-cell-icon-colors) - 1 {
         $color: nth($link-cell-icon-colors, $i + 1);
 
-        #{$i * math.div(100%, length($link-cell-icon-slugs))} {
-            --icon-url: url("https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/#{$slug}.svg");
+        #{$i * math.div(100%, length($link-cell-icon-colors))} {
             background-color: #{$color};
         }
     }
 }
 
+@keyframes icon-animation {
+    @for $i from 0 through length($link-cell-icon-slugs) - 1 {
+        $slug: nth($link-cell-icon-slugs, $i + 1);
+
+        #{$i * math.div(100%, length($link-cell-icon-slugs))} {
+            background: url("https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/#{$slug}.svg");
+        }
+    }
+}
+
 #add-modal__link-cell .add-modal__menu__item__icon {
-    --icon-url: url("https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/facebook.svg");
 
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #1877F2;
-    animation: icon-animation infinite linear (length($link-cell-icon-slugs) * 2s);
+    background-color: nth($link-cell-icon-colors, 1);
+    animation: color-animation infinite linear (length($link-cell-icon-colors) * 2s);
 
     animation-play-state: paused;
 
     div {
         width: 60%;
         height: 60%;
-        background: var(--icon-url);
+        background: url("https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/#{nth($link-cell-icon-slugs, 1)}.svg");
         filter: invert(1);
+        animation: icon-animation infinite linear (length($link-cell-icon-slugs) * 2s);
+        animation-play-state: inherit;
     }
 }
 

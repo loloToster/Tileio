@@ -3,6 +3,8 @@ $header-color: #2b3b3a;
 $blue: #047cb4;
 
 body {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     margin: 0;
     background-color: $bg-color;
@@ -10,10 +12,10 @@ body {
     font-family: Roboto, Arial, sans-serif;
 }
 
-$scrollbar-width: 10px;
+$scrollbar-width: 8px;
 
 ::-webkit-scrollbar {
-    width: 10px;
+    width: $scrollbar-width;
 }
 
 /* Track */
@@ -24,7 +26,11 @@ $scrollbar-width: 10px;
 /* Handle */
 ::-webkit-scrollbar-thumb {
     background: #888888;
-    border-radius: 100vh;
+}
+
+* {
+    scrollbar-color: #888888 transparent;
+    scrollbar-width: thin;
 }
 
 .header {
@@ -71,12 +77,12 @@ $scrollbar-width: 10px;
 }
 
 .days {
-    height: 85vh;
+    flex: 1 1 0;
     overflow-x: hidden;
     overflow-y: scroll;
 
-    &__day>* {
-        float: left;
+    &__day {
+        display: flex;
     }
 
     &__date-wrapper {
@@ -109,8 +115,9 @@ $scrollbar-width: 10px;
     }
 
     &__events {
-        width: calc(80vw - $scrollbar-width - 4px);
+        flex-grow: 1;
         min-height: 20vw;
+        margin-right: 6px;
     }
 
     &__no-events {

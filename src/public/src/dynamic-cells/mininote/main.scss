@@ -39,4 +39,7 @@ body {
     &:focus {
         outline: none;
     }
+
+    scrollbar-width: thin;
+    scrollbar-color: #c6c6c6aa #e5e988;
 }

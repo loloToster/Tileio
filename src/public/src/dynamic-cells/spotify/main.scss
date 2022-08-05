@@ -28,7 +28,7 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #202020;
+    background: #484848;
 }
 
 .spotify-input {
@@ -53,6 +53,18 @@ button {
         width: 12px;
         height: 12px;
         border-radius: 50%;
+        background: white;
+    }
+
+    &::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border: none;
+        border-radius: 50%;
+        background: transparent;
+    }
+
+    &:hover::-moz-range-thumb {
         background: white;
     }
 }

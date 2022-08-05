@@ -100,7 +100,18 @@ $content-dimensions-h: const.$cell-width * 3 + const.$grid-margin * 4;
 
             width: 11px;
             height: 18px;
+
             background-color: c.$light-grey;
+        }
+
+
+        &::-moz-range-thumb {
+            width: 11px;
+            height: 18px;
+
+            background-color: c.$light-grey;
+            border: none;
+            border-radius: 0;
         }
     }
 

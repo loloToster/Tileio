@@ -1,6 +1,7 @@
 $google: #EA4335;
 $discord: #5865F2;
 $github: #181717;
+
 $logo-darken-lvl: 5%;
 $content-width: 240px;
 
@@ -14,6 +15,7 @@ body {
     @include flex-center();
     background: linear-gradient(156deg, rgba(0, 255, 106, 1) 0%, rgba(0, 206, 255, 1) 100%);
     height: 100vh;
+    margin: 0;
     font-family: Arial, Helvetica, sans-serif;
 }
 
