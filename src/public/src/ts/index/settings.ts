@@ -125,7 +125,7 @@ export default (grid: GridStack, initialGrid: Grid) => {
         }
 
         if (cellsCollide) {
-            createError("Some cells does not fit in new size")
+            createError("Some cells do not fit in the new size")
             settings?.classList.remove("active")
             return
         }
