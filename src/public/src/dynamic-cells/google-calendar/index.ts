@@ -110,7 +110,7 @@ function generateCalendar(parsedCalendar: parsedCalendar) {
     daysElement.innerHTML = ""
 
     // todo: remove repetetive code
-    if (!parsedCalendar[0].today) {
+    if (!parsedCalendar[0]?.today) {
         const today = new Date()
 
         let dayEl = document.createElement("div")
