@@ -22,7 +22,7 @@ dotenv.config()
 const app = express()
 
 app.set("view engine", "ejs")
-app.set("views", __dirname + "/views")
+app.set("views", __dirname + "/public/views")
 
 app.use(sslRedirect())
 
