@@ -78,6 +78,18 @@ async function main() {
     onClickOutside([profile, profileBtn], () => {
         profile.classList.remove("active")
     })
+
+    window.addEventListener("beforeunload", e => {
+        if (!grid.el.classList.contains("editing")) return
+
+        const confirmationMessage = "Are you sure you want to leave?"
+            + "You have unsaved changes that will be lost if you leave."
+
+        const ev = (e || window.event)
+        ev.returnValue = confirmationMessage
+
+        return confirmationMessage
+    })
 }
 
 main()
