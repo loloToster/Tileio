@@ -19,6 +19,7 @@ const linkValidation = document.querySelector(".add-modal__link-validator")
 const linkIconPreview = document.querySelector<HTMLElement>("#add-modal__link-cell-tab .add-modal__preview")
 const linkIconPreviewImg = linkIconPreview?.querySelector<HTMLImageElement>("img")
 const linkCellFinishBtn = document.querySelector<HTMLElement>("#add-modal__link-cell-tab .add-modal__finish")!
+const closeBtn = document.querySelector<HTMLButtonElement>(".add-modal__close")!
 
 const colorPicker = new ColorPicker({
     width: 200,
@@ -189,10 +190,15 @@ export function openAddModal(preview?: SerializedCellContent) {
     return new Promise<null | SerializedCellContent>(res => {
         addModal.classList.add("active")
 
-        addModal.onclick = e => {
-            if (e.target != addModal) return
+        const onClose = (e: MouseEvent) => {
             res(null)
             addModal.classList.remove("active")
+        }
+
+        closeBtn.onclick = onClose
+        addModal.onclick = e => {
+            if (e.target != addModal) return
+            onClose(e)
         }
 
         linkCellFinishBtn.onclick = () => {

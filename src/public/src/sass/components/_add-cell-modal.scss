@@ -206,6 +206,7 @@ $link-cell-icon-colors: #1877F2,
     &__content {
         display: flex;
         overflow: hidden;
+        position: relative;
 
         background-color: lighten(c.$bg-color, 10%);
         border-radius: $main-border-radius;
@@ -438,6 +439,22 @@ $link-cell-icon-colors: #1877F2,
         &:hover {
             cursor: pointer;
             background-color: darken(c.$blue, 10%);
+        }
+    }
+
+    &__close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        margin: 0;
+        padding: 0;
+        background-color: transparent;
+        cursor: pointer;
+        border: none;
+        outline: none;
+
+        svg {
+            fill: white;
         }
     }
 }
