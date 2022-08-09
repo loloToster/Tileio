@@ -2,8 +2,6 @@
 @use "../abstracts/mixins" as m;
 @use "../abstracts/constants" as const;
 
-$loading-items: 5;
-
 .grid {
     position: relative;
 
@@ -16,7 +14,6 @@ $loading-items: 5;
         position: absolute;
         display: none;
 
-        gap: 5px;
         z-index: 1;
         width: 100%;
         height: 100%;
@@ -26,30 +23,6 @@ $loading-items: 5;
 
         &.active {
             display: flex;
-        }
-
-        @keyframes loading {
-            25% {
-                transform: scaleY(2);
-            }
-
-            50% {
-                transform: scaleY(1);
-            }
-        }
-
-        &__item {
-            width: 10px;
-            height: 30px;
-
-            background-color: c.$blue;
-            animation: loading 1000ms ease-in-out infinite;
-        }
-
-        @for $i from 1 through $loading-items {
-            &__item:nth-child(#{$i}) {
-                animation-delay: 100ms * ($i - 1);
-            }
         }
     }
 

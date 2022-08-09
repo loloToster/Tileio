@@ -8,6 +8,7 @@ const addModal = document.querySelector<HTMLDivElement>(".add-modal")!
 
 // Creating Link Cells
 const searchIconsInp = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
+const iconsLoading = document.querySelector<HTMLDivElement>(".add-modal__loading")!
 const iconSearchResultsSiHeader = document.querySelector<HTMLElement>(".add-modal__icons-header--brand")
 const iconSearchResultsSi = document.querySelector(".add-modal__icons--brand")
 const iconSearchResultsFaHeader = document.querySelector<HTMLElement>(".add-modal__icons-header--normal")
@@ -72,19 +73,24 @@ let searchTimeout: any
 searchIconsInp?.addEventListener("input", () => {
     clearTimeout(searchTimeout)
     searchTimeout = setTimeout(async () => {
-        const res = await searchForIcon(searchIconsInp.value, 15)
+        noIconsResult?.classList.remove("active")
+
         iconSearchResultsSi!.innerHTML = ""
         iconSearchResultsFa!.innerHTML = ""
 
         iconSearchResultsFaHeader?.classList.remove("active")
         iconSearchResultsSiHeader?.classList.remove("active")
 
+        iconsLoading.classList.add("active")
+
+        const res = await searchForIcon(searchIconsInp.value, 15)
+
+        iconsLoading.classList.remove("active")
+
         if (!res.si.length && !res.fa.length) {
             noIconsResult?.classList.add("active")
             return
         }
-
-        noIconsResult?.classList.remove("active")
 
         if (res.si.length) {
             iconSearchResultsSiHeader?.classList.add("active")

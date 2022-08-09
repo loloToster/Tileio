@@ -3,6 +3,8 @@
 
 @forward "./base/reset";
 
+@forward "./components/loading";
+
 @forward "./layout/grid";
 @forward "./layout/grid-menu";
 @forward "./layout/profile" as p-*;

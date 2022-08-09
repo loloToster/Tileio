@@ -298,6 +298,16 @@ $link-cell-icon-colors: #1877F2,
         }
     }
 
+    &__loading {
+        display: none;
+        width: fit-content;
+        margin: 12px auto;
+
+        &.active {
+            display: block;
+        }
+    }
+
     &__icons-header {
         display: none;
 
