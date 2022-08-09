@@ -6,6 +6,23 @@ const defaultColor = "#3e3e3e"
 
 const addModal = document.querySelector<HTMLDivElement>(".add-modal")!
 
+// Changing tabs
+const menuItems = Array.from(document.getElementsByClassName("add-modal__menu__item"))
+const addModalTabs = Array.from(document.getElementsByClassName("add-modal__tab"))
+
+/**
+ * by clicking menuItem with id '[name]' a tab with id '[name]-tab' will show
+ */
+for (const item of menuItems) {
+    item.addEventListener("click", () => {
+        menuItems.forEach(i => i.classList.remove("active"))
+        item.classList.add("active")
+
+        addModalTabs.forEach(i => i.classList.remove("active"))
+        document.getElementById(item.id + "-tab")?.classList.add("active")
+    })
+}
+
 // Creating Link Cells
 const searchIconsInp = <HTMLInputElement>document.getElementById("add-modal__icon-inp")
 const iconsLoading = document.querySelector<HTMLDivElement>(".add-modal__loading")!

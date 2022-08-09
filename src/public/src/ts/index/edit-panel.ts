@@ -1,8 +1,9 @@
 import { GridStack } from "gridstack"
 
-import { createWidgetFromSerializedCell, toggleGridEditing } from "./grid-utils"
+import { createWidgetFromSerializedCell, serializeGridCells, toggleGridEditing } from "./grid-utils"
 import { openAddModal } from "./add-modal"
 import { createError } from "./error"
+import { SerializedCell } from "@backend-types/types"
 
 export const trashSelector = "#grid__menu__trash"
 
@@ -12,29 +13,28 @@ export default (grid: GridStack) => {
     grid.on("dragstart", () => trash?.classList.add("active"))
     grid.on("dragstop", () => trash?.classList.remove("active"))
 
-    const editButton = document.getElementById("grid__menu__edit")
-    editButton?.addEventListener("click", () => toggleGridEditing(grid))
+    let prevGridCells: SerializedCell[] = []
+
+    const editButton = document.getElementById("grid__menu__edit")!
+    editButton.addEventListener("click", () => {
+        toggleGridEditing(grid)
+        prevGridCells = serializeGridCells(grid)
+    })
+
+    // Reverting changes
+    const revertButton = document.getElementById("grid__menu__revert")!
+
+    revertButton.addEventListener("click", () => {
+        grid.removeAll()
+        for (const cell of prevGridCells) {
+            createWidgetFromSerializedCell(grid, cell)
+        }
+    })
 
     // Creating Cells
-    const menuItems = Array.from(document.getElementsByClassName("add-modal__menu__item"))
-    const addModalTabs = Array.from(document.getElementsByClassName("add-modal__tab"))
+    const addButton = document.getElementById("grid__menu__add")!
 
-    /**
-     * by clicking menuItem with id '[name]' a tab with id '[name]-tab' will show
-     */
-    for (const item of menuItems) {
-        item.addEventListener("click", () => {
-            menuItems.forEach(i => i.classList.remove("active"))
-            item.classList.add("active")
-
-            addModalTabs.forEach(i => i.classList.remove("active"))
-            document.getElementById(item.id + "-tab")?.classList.add("active")
-        })
-    }
-
-    const addButton = document.getElementById("grid__menu__add")
-
-    addButton?.addEventListener("click", async () => {
+    addButton.addEventListener("click", async () => {
         if (!grid.willItFit({}))
             return createError("There is no space for more cells")
 

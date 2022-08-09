@@ -23,10 +23,10 @@ export function removeDummies(grid: GridStack) {
     }
 }
 
-export async function saveGrid(grid: GridStack) {
+export function serializeGridCells(grid: GridStack): SerializedCell[] {
     const cells = grid.getGridItems()
 
-    const newCells = []
+    const serializedCells: SerializedCell[] = []
     for (const cell of cells) {
         if (cell.classList.contains(dummyClass)) continue
 
@@ -36,7 +36,7 @@ export async function saveGrid(grid: GridStack) {
         if (elementWithSerializedData instanceof HTMLElement && elementWithSerializedData.dataset.serialized)
             content = JSON.parse(elementWithSerializedData.dataset.serialized)
 
-        newCells.push({
+        serializedCells.push({
             w: parseInt(cell.getAttribute("gs-w") || "1"),
             h: parseInt(cell.getAttribute("gs-h") || "1"),
             x: parseInt(cell.getAttribute("gs-x") || "0"),
@@ -44,6 +44,12 @@ export async function saveGrid(grid: GridStack) {
             content
         })
     }
+
+    return serializedCells
+}
+
+export async function saveGrid(grid: GridStack) {
+    const newCells = serializeGridCells(grid)
 
     try {
         const res = await fetch("/grid/update", {
