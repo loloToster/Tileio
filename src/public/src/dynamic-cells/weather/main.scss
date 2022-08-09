@@ -1,3 +1,5 @@
+@forward "../../sass/base/reset";
+
 body {
     box-sizing: border-box;
 
@@ -38,9 +40,8 @@ body {
         box-sizing: border-box;
         width: 180px;
         height: 22px;
-        margin: 0;
         padding: 2px;
-        border: none;
+        background-color: white;
     }
 
     &__suggestions {

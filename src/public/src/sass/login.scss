@@ -1,3 +1,5 @@
+@forward "./base/reset";
+
 $google: #EA4335;
 $discord: #5865F2;
 $github: #181717;
@@ -29,7 +31,6 @@ main {
 input {
     box-sizing: border-box;
     display: block;
-    border: none;
     border-bottom: solid grey 1px;
     width: $content-width;
     padding: 4px 0;
@@ -56,7 +57,6 @@ input {
     font-weight: bold;
     font-size: 1.2rem;
     border-radius: 100vh;
-    border: none;
     padding: 12px;
 
     &:hover {

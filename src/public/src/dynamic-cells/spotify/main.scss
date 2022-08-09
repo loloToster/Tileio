@@ -1,3 +1,5 @@
+@forward "../../sass/base/reset";
+
 $grey: grey;
 $light-grey: white;
 
@@ -9,14 +11,6 @@ $player-menu-size: 38px;
 body {
     color: white;
     font-family: "Roboto", sans-serif;
-}
-
-button {
-    background-color: transparent;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    border: none;
 }
 
 ::-webkit-scrollbar {
@@ -203,10 +197,6 @@ button {
     &__inp {
         height: 100%;
         flex-grow: 1;
-        padding: 0;
-        margin: 0;
-        border: none;
-        outline: none;
     }
 
     &__results {

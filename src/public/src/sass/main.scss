@@ -1,13 +1,15 @@
 @use "./abstracts/colors" as c;
 @use "./abstracts/mixins" as m;
 
-@forward "./components/grid";
-@forward "./components/grid-menu";
-@forward "./components/profile" as p-*;
-@forward "./components/settings" as s-*;
-@forward "./components/add-cell-modal";
-@forward "./components/rmenu";
-@forward "./components/error";
+@forward "./base/reset";
+
+@forward "./layout/grid";
+@forward "./layout/grid-menu";
+@forward "./layout/profile" as p-*;
+@forward "./layout/settings" as s-*;
+@forward "./layout/add-cell-modal";
+@forward "./layout/rmenu";
+@forward "./layout/error";
 
 body {
     @include m.flexCenter();

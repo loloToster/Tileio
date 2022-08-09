@@ -286,16 +286,12 @@ $link-cell-icon-colors: #1877F2,
     }
 
     input {
-        border: none;
-        background: none;
-        padding: 0;
+        width: 100%;
 
         border-bottom: 1px white solid;
         margin-bottom: 8px;
         font-size: 1.2rem;
         color: white;
-
-        width: 100%;
 
         &:focus {
             outline: none;
@@ -430,14 +426,13 @@ $link-cell-icon-colors: #1877F2,
         margin-top: 16px;
         margin-bottom: 8px;
 
-        border: none;
         border-radius: 100vh;
         background-color: c.$blue;
         color: white;
         font-size: 1.7rem;
+        cursor: pointer;
 
         &:hover {
-            cursor: pointer;
             background-color: darken(c.$blue, 10%);
         }
     }
@@ -446,12 +441,7 @@ $link-cell-icon-colors: #1877F2,
         position: absolute;
         top: 16px;
         right: 16px;
-        margin: 0;
-        padding: 0;
-        background-color: transparent;
         cursor: pointer;
-        border: none;
-        outline: none;
 
         svg {
             fill: white;
