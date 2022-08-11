@@ -47,7 +47,7 @@
     "passport-google-oauth20": "^2.0.0",
     "sass": "^1.52.2",
     "simple-color-picker": "^1.0.5",
-    "simple-icons": "^7.0.0",
+    "simple-icons": "^7.6.0",
     "spotify-web-api-node": "^5.0.2",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.0",
