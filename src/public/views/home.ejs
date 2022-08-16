@@ -11,8 +11,8 @@
 </head>
 
 <body>
-    <header>
-        <a class="logo" href="/">
+    <header class="header">
+        <a class="header__logo" href="/">
             <img src="/static/assets/logo.png" alt="logo">
             <span>WidgetBlocks</span>
         </a>
@@ -25,12 +25,35 @@
                     <a href="">Guides</a>
                 </li>
                 <li class="nav__link">
-                    <a href="">About</a>
+                    <a href="">For Developers</a>
                 </li>
             </ul>
         </nav>
-        <a href="/auth"><button class="login">Login</button></a>
+        <a href="/auth"><button class="header__login action-btn">Login</button></a>
     </header>
+    <section class="landing">
+        <div class="landing__image-wrapper">
+            <img class="landing__image" src="/static/assets/landing-page.png" alt="Landing Page Image">
+        </div>
+        <div class="landing__brief">
+            <div class="landing__brief-content-wrapper">
+                <div class="landing__brief-content">
+                    <h1 class="landing__brief-heading">WidgetBlocks</h1>
+                    <p class="landing__brief-subheading">Create your homepage</p>
+                    <p class="landing__brief-subheading">with few simple clicks.</p>
+                    <a href="/auth">
+                        <button class="landing__brief-login action-btn">
+                            <div>Start using now</div>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24">
+                                <path d="m12 20-1.425-1.4 5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8Z" />
+                            </svg>
+                        </button>
+                    </a>
+                </div>
+            </div>
+            <div class="landing__brief-triangle"></div>
+        </div>
+    </section>
 </body>
 
 </html>
