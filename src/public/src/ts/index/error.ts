@@ -16,6 +16,7 @@ export function createError(msg: string) {
     error.offsetHeight // neccessary for the animation to restart
     error.classList.add("active")
 
+    clearTimeout(errorTimeout)
     errorTimeout = setTimeout(() => {
         hideError()
     }, 3000)
