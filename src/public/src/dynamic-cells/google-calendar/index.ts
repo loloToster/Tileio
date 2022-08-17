@@ -1,4 +1,7 @@
 import { IKalenderEvent } from "kalender-events"
+import createWidget from "../../ts/iframe-api"
+
+createWidget()
 
 const dayNames = [
     "Sun",

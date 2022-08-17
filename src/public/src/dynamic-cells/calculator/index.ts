@@ -1,4 +1,7 @@
 import { evaluate } from "mathjs"
+import createWidget from "../../ts/iframe-api"
+
+createWidget()
 
 const input = document.querySelector<HTMLInputElement>(".calc__input")!
 const clearInput = document.querySelector<HTMLElement>(".calc__clear")!

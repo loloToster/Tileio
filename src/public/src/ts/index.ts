@@ -3,7 +3,7 @@ import "gridstack/dist/h5/gridstack-dd-native"
 
 import { Grid } from "@backend-types/types"
 import { onClickOutside } from "./utlis/utils"
-import { fillGridWithDummies, createWidgetFromSerializedCell } from "./index/grid-utils"
+import { fillGridWithDummies, createWidgetFromSerializedCell, setupIframeApi } from "./index/grid-utils"
 import setupEditPanel, { trashSelector } from "./index/edit-panel"
 import setupSettings from "./index/settings"
 import { createError } from "./index/error"
@@ -47,23 +47,7 @@ async function main() {
 
     setupSettings(grid, initialGrid)
     setupEditPanel(grid)
-
-    /* Update iframe src on cell resize */
-    grid.on("resizestop", (e, el) => {
-        if (!(el instanceof HTMLElement)) return
-        if (!el.classList.contains("dynamic-cell")) return
-
-        const width = parseInt(el.getAttribute("gs-w") || "0")
-        const height = parseInt(el.getAttribute("gs-h") || "0")
-
-        const serializedCell = JSON.parse(el.querySelector<HTMLElement>("[data-serialized]")!.dataset.serialized!)
-        const iframe = el.querySelector("iframe")!
-
-        const newSrc = serializedCell.src + `?w=${width}&h=${height}`
-
-        if (newSrc != iframe.src)
-            iframe.src = newSrc
-    })
+    setupIframeApi(grid)
 
     const profile = document.querySelector(".profile")
     const profileBtn = document.getElementById("grid__menu__profile")

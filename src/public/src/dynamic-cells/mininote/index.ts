@@ -1,3 +1,7 @@
+import createWidget from "../../ts/iframe-api"
+
+createWidget()
+
 const note = document.getElementById("note")
 
 note?.addEventListener("input", () => {

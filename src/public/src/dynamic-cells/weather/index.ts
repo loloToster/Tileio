@@ -1,4 +1,7 @@
 import { CurrentWeather, DailyWeather, Location } from "openweather-api-node/typings"
+import createWidget from "../../ts/iframe-api"
+
+createWidget()
 
 const dayNames = [
     { long: "Currently", short: "Today" },

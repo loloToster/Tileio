@@ -1,4 +1,7 @@
 /// <reference types="@types/spotify-web-playback-sdk" />
+import createWidget from "../../ts/iframe-api"
+
+createWidget()
 
 function setCookie(name: string, value: string, expire = 365) {
     const d = new Date()

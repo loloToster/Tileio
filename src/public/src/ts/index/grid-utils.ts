@@ -172,15 +172,22 @@ const contextMenuBtns: Array<{
         }
     ]
 
+interface customContextMenuMouseEvent {
+    x: Number,
+    y: Number,
+    originalEvent?: MouseEvent
+}
+
 // TODO: add custom context menu on dummy cells
-function customContextmenu(e: MouseEvent, grid: GridStack, widgetEl: GridItemHTMLElement, cell: SerializedCell) {
-    e.preventDefault()
+function customContextMenu(e: customContextMenuMouseEvent, grid: GridStack, widgetEl: GridItemHTMLElement, cell: SerializedCell) {
+    if (e.originalEvent) e.originalEvent.preventDefault()
+
     document.querySelectorAll(".rmenu").forEach(x => x.remove())
 
     let rmenu = document.createElement("div")
     rmenu.classList.add("rmenu")
-    rmenu.style.left = `${e.pageX}px`
-    rmenu.style.top = `${e.pageY}px`
+    rmenu.style.left = `${e.x}px`
+    rmenu.style.top = `${e.y}px`
 
     onClickOutside([rmenu], () => {
         rmenu.remove()
@@ -217,7 +224,10 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
 
     element.querySelector<HTMLDivElement>(".grid-stack-item-content")!
         .addEventListener("contextmenu", e => {
-            customContextmenu(e, grid, element, cell)
+            customContextMenu(
+                { x: e.pageX, y: e.pageY, originalEvent: e },
+                grid, element, cell
+            )
         })
 
     return element
@@ -248,4 +258,59 @@ export async function toggleGridEditing(grid: GridStack, force?: boolean) {
         editButton.title = "Edit Cells"
         gridBorder!.style.opacity = "0"
     }
+}
+
+export function setupIframeApi(grid: GridStack) {
+    // Update iframe src on cell resize
+    grid.on("resizestop", (e, el) => {
+        if (!(el instanceof HTMLElement)) return
+        if (!el.classList.contains("dynamic-cell")) return
+
+        const width = parseInt(el.getAttribute("gs-w") || "0")
+        const height = parseInt(el.getAttribute("gs-h") || "0")
+
+        const serializedCell = JSON.parse(el.querySelector<HTMLElement>("[data-serialized]")!.dataset.serialized!)
+        const iframe = el.querySelector("iframe")!
+
+        const newSrc = serializedCell.src + `?w=${width}&h=${height}`
+
+        if (newSrc != iframe.src)
+            iframe.src = newSrc
+    })
+
+    // iframe API handler
+    window.addEventListener("message", e => {
+        // @ts-ignore
+        const iframe: HTMLIFrameElement | null = e.source?.frameElement
+        if (!iframe) return
+
+        const serializedCell = JSON.parse(iframe.dataset.serialized || "{}")
+        if (serializedCell.type !== "d") return
+
+        switch (e.data.type) {
+            case "ce": {
+                createError(e.data.msg)
+            }
+
+            case "cm": {
+                let cellElement: GridItemHTMLElement | undefined
+
+                for (const cell of grid.getGridItems()) {
+                    const cellIframe = cell.querySelector("iframe")
+                    if (!cellIframe || cellIframe != iframe) continue
+
+                    cellElement = cell
+                    break
+                }
+
+                if (!cellElement) return
+
+                const iframeDimensions = iframe.getBoundingClientRect()
+                const x = iframeDimensions.left + e.data.ev.clientX
+                const y = iframeDimensions.top + e.data.ev.clientY
+
+                customContextMenu({ x, y }, grid, cellElement, serializedCell)
+            }
+        }
+    })
 }
