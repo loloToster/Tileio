@@ -11,6 +11,14 @@ export function fillGridWithDummies(grid: GridStack) {
     while (grid.willItFit({})) {
         let widgetEl = grid.addWidget({ content: "" })
         widgetEl.classList.add(dummyClass)
+
+        const content = widgetEl.querySelector<HTMLDivElement>(".grid-stack-item-content")!
+        content.addEventListener("contextmenu", e => {
+            customContextMenu(
+                { x: e.pageX, y: e.pageY, originalEvent: e },
+                grid, widgetEl, {}
+            )
+        })
     }
 }
 
@@ -178,7 +186,6 @@ interface customContextMenuMouseEvent {
     originalEvent?: MouseEvent
 }
 
-// TODO: add custom context menu on dummy cells
 function customContextMenu(
     e: customContextMenuMouseEvent,
     grid: GridStack,
