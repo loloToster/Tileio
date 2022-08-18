@@ -1,8 +1,6 @@
 /// <reference types="@types/spotify-web-playback-sdk" />
 import createWidget from "../../ts/iframe-api"
 
-createWidget()
-
 function setCookie(name: string, value: string, expire = 365) {
     const d = new Date()
     d.setTime(d.getTime() + (expire * 24 * 60 * 60 * 1000))
@@ -46,6 +44,9 @@ document.querySelectorAll<HTMLInputElement>(".spotify-input").forEach(i => {
         updateSpotifySlider(i)
     })
 })
+
+const widget = createWidget()
+const SP_BASE_URL = "https://open.spotify.com"
 
 const playerEl = document.querySelector<HTMLDivElement>(".player")!
 
@@ -153,7 +154,14 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         // update playlists
         const playlistsList = document.querySelector<HTMLUListElement>(".playlists")!
 
-        document.querySelector(".playlists__playlist")?.addEventListener("click", () => {
+        const likedSongs = document.querySelector<HTMLElement>(".playlists__playlist")!
+        widget.addContextMenuBtn(likedSongs, {
+            text: "Open on Spotify",
+            action: () => {
+                window.open(`${SP_BASE_URL}/collection/tracks`)
+            }
+        })
+        likedSongs.addEventListener("click", () => {
             spotifyApi.play(`spotify:user:${user.id}:collection`)
             playerEl.classList.add("active")
         })
@@ -173,6 +181,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             nameDiv.classList.add("playlists__playlist-name")
             nameDiv.innerText = playlist.name
             li.appendChild(nameDiv)
+
+            widget.addContextMenuBtn(li, {
+                text: "Open on Spotify",
+                action: () => {
+                    window.open(`${SP_BASE_URL}/playlist/${playlist.id}`)
+                }
+            })
 
             li.addEventListener("click", () => {
                 spotifyApi.play("spotify:playlist:" + playlist.id)
@@ -238,6 +253,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                     let resultEl = document.createElement("div")
                     resultEl.classList.add("search__result")
 
+                    widget.addContextMenuBtn(resultEl, {
+                        text: "Open on Spotify",
+                        action: () => {
+                            window.open(`${SP_BASE_URL}/${cat}/${item.id}`)
+                        }
+                    })
+
                     resultEl.addEventListener("click", () => {
                         playerEl.classList.add("active")
                         spotifyApi.play(item.uri)
@@ -281,6 +303,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
                 searchResults.appendChild(categoryEl)
             })
+
+            widget.clearContextMenuBtns()
         }, 500)
     })
 
@@ -320,7 +344,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     spotifyApi.onGlobalStateChange(state => {
         if (!state && spotifyApi.deviceId) {
-            console.log("transfering playback here")
             return spotifyApi.transferPlayback(spotifyApi.deviceId)
         }
 
@@ -329,6 +352,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         updateState({
             currentTrack: {
+                id: state.item.id,
                 img: getBestImage(300, state.item.album.images),
                 name: state.item.name,
                 artist: state.item.artists
@@ -349,6 +373,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         updateState({
             currentTrack: {
+                id: state.track_window.current_track.id || "",
                 img: getBestImage(300, state.track_window.current_track.album.images),
                 name: state.track_window.current_track.name,
                 artist: state.track_window.current_track.artists
@@ -364,6 +389,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     interface CustomState {
         currentTrack: {
+            id: string,
             img: string,
             name: string,
             artist: string,
@@ -407,6 +433,14 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             default:
                 break
         }
+
+        widget.clearContextMenuBtns(playerEl, false)
+        widget.addContextMenuBtn(playerEl, {
+            text: "Open on Spotify",
+            action: () => {
+                window.open(`${SP_BASE_URL}/track/${state.currentTrack.id}`)
+            }
+        })
 
         updateDuration(state.currentTrack.position, state.currentTrack.duration, state.paused)
     }
