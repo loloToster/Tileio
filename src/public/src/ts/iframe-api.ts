@@ -1,7 +1,7 @@
 // TODO: security (validate origin, limit number of btns, limit number of characters in a btn etc.)
 
 interface CustomContextMenuBtn {
-    id: number
+    id: number,
     text: string,
     action: () => void
 }
@@ -14,8 +14,8 @@ interface CustomContextMenuObj {
 }
 
 export class Widget {
-    globalContextMenuBtns: CustomContextMenuBtn[]
-    contextMenuEls: CustomContextMenuObj[]
+    private globalContextMenuBtns: CustomContextMenuBtn[]
+    private contextMenuEls: CustomContextMenuObj[]
 
     constructor() {
         this.globalContextMenuBtns = []
@@ -29,19 +29,43 @@ export class Widget {
         if (!window.top) throw Error("No top window")
         e.preventDefault()
 
+        let globalCustomBtns = this.globalContextMenuBtns.map(btn => {
+            return { id: btn.id, text: btn.text }
+        })
+
+        let customBtns: {
+            id: number,
+            text: string
+        }[] = []
+
+        for (const el of e.composedPath()) {
+            let matchingEl = this.contextMenuEls.find(obj => obj.el == el)
+
+            if (matchingEl) {
+                customBtns = matchingEl.btns.map(btn => {
+                    return { id: btn.id, text: btn.text }
+                })
+                break
+            }
+        }
+
         window.top.postMessage({
             type: "cm", ev: {
                 clientX: e.clientX,
                 clientY: e.clientY
             },
-            customBtns: this.globalContextMenuBtns.map(btn => {
-                return { id: btn.id, text: btn.text }
-            })
+            customBtns: globalCustomBtns.concat(customBtns)
         })
     }
 
     private _fireAction(id: number) {
-        const btnWithMatchingId = this.globalContextMenuBtns.find(btn => btn.id == id)
+        const btns = this.globalContextMenuBtns.concat(
+            this.contextMenuEls.reduce((acc: CustomContextMenuBtn[], prev) => {
+                return acc.concat(prev.btns)
+            }, [])
+        )
+
+        const btnWithMatchingId = btns.find(btn => btn.id == id)
         btnWithMatchingId?.action()
     }
 
@@ -84,6 +108,7 @@ export class Widget {
         )
     }
 
+    // TODO: optimize to reuse the same obj if elements are the same 
     private _addContextMenuBtns(el: HTMLElement, btns: CustomContextMenuBtnArg[]) {
         this.contextMenuEls.push({
             el, btns: btns.map(btn => {
@@ -114,6 +139,15 @@ export class Widget {
         } else { // 1st siganture (one global btn)
             this._addGlobalContextMenuBtns([elOrBtns])
         }
+    }
+
+    // todo: do this automatically
+    clearContextMenuBtns(el?: HTMLElement, clearNonExisting = true) {
+        this.contextMenuEls = this.contextMenuEls.filter((obj, i) => {
+            if (obj.el == el) return false
+            if (!document.body.contains(obj.el) && clearNonExisting) return false
+            return true
+        })
     }
 
     createError(msg: string) {
