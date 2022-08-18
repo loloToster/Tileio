@@ -4,6 +4,7 @@ import sslRedirect from "heroku-ssl-redirect"
 import cookieSession from "cookie-session"
 import passport from "passport"
 import mongoose from "mongoose"
+import axios from "axios"
 import fs from "fs"
 import path from "path"
 
@@ -67,5 +68,13 @@ const port = process.env.PORT
 mongoose.connection.once("open", () => {
     app.listen(port, () => {
         console.log(`Server is running at http://localhost:${port}`)
+
+        // keep heroku awake
+        const url = process.env.HEROKU_URL
+        if (!url) return
+        console.log(`Keeping ${url} awake.`)
+        setInterval(() => {
+            axios.get(url).catch(console.error)
+        }, 10 * 60 * 1000)
     })
 })
