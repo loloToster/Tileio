@@ -179,8 +179,15 @@ interface customContextMenuMouseEvent {
 }
 
 // TODO: add custom context menu on dummy cells
-function customContextMenu(e: customContextMenuMouseEvent, grid: GridStack, widgetEl: GridItemHTMLElement, cell: SerializedCell) {
-    if (e.originalEvent) e.originalEvent.preventDefault()
+function customContextMenu(
+    e: customContextMenuMouseEvent,
+    grid: GridStack,
+    widgetEl: GridItemHTMLElement,
+    cell: SerializedCell,
+    customBtns: Array<{ text: string, id: number }> = [],
+    iframe?: HTMLIFrameElement
+) {
+    e.originalEvent?.preventDefault()
 
     document.querySelectorAll(".rmenu").forEach(x => x.remove())
 
@@ -193,6 +200,21 @@ function customContextMenu(e: customContextMenuMouseEvent, grid: GridStack, widg
         rmenu.remove()
     })
 
+    // iframe api btns
+    customBtns.forEach(btn => {
+        let btnEl = document.createElement("button")
+        btnEl.classList.add("rmenu__btn")
+        btnEl.innerText = btn.text
+        btnEl.addEventListener("click", e => {
+            iframe?.contentWindow?.postMessage({
+                type: "cmbtnaction",
+                id: btn.id
+            })
+        })
+        rmenu.appendChild(btnEl)
+    })
+
+    // default btns
     contextMenuBtns.forEach(btn => {
         let btnEl = document.createElement("button")
         btnEl.classList.add("rmenu__btn", `rmenu__${btn.class}`)
@@ -309,7 +331,7 @@ export function setupIframeApi(grid: GridStack) {
                 const x = iframeDimensions.left + e.data.ev.clientX
                 const y = iframeDimensions.top + e.data.ev.clientY
 
-                customContextMenu({ x, y }, grid, cellElement, serializedCell)
+                customContextMenu({ x, y }, grid, cellElement, serializedCell, e.data.customBtns || [], iframe)
             }
         }
     })
