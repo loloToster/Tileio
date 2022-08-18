@@ -312,6 +312,7 @@ export function setupIframeApi(grid: GridStack) {
         switch (e.data.type) {
             case "ce": {
                 createError(e.data.msg)
+                break
             }
 
             case "cm": {
@@ -332,6 +333,13 @@ export function setupIframeApi(grid: GridStack) {
                 const y = iframeDimensions.top + e.data.ev.clientY
 
                 customContextMenu({ x, y }, grid, cellElement, serializedCell, e.data.customBtns || [], iframe)
+
+                break
+            }
+
+            case "hcm": {
+                document.querySelector(".rmenu")?.remove()
+                break
             }
         }
     })

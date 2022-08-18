@@ -23,6 +23,7 @@ export class Widget {
 
         window.addEventListener("contextmenu", this._ContextMenuHandler.bind(this))
         window.addEventListener("message", this._msgHandler.bind(this))
+        window.addEventListener("click", () => this.hideContextMenu())
     }
 
     private _ContextMenuHandler(e: MouseEvent) {
@@ -154,6 +155,13 @@ export class Widget {
         if (!window.top) throw Error("No top window")
         window.top.postMessage({
             type: "ce", msg
+        })
+    }
+
+    hideContextMenu() {
+        if (!window.top) throw Error("No top window")
+        window.top.postMessage({
+            type: "hcm"
         })
     }
 }
