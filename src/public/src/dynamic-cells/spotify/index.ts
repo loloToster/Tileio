@@ -303,8 +303,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
                 searchResults.appendChild(categoryEl)
             })
-
-            widget.clearContextMenuBtns()
         }, 500)
     })
 
@@ -434,7 +432,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 break
         }
 
-        widget.clearContextMenuBtns(playerEl, false)
+        widget.removeContextMenuBtn(playerEl)
         widget.addContextMenuBtn(playerEl, {
             text: "Open on Spotify",
             action: () => {

@@ -22,6 +22,9 @@ export class Widget {
         window.addEventListener("contextmenu", this._ContextMenuHandler.bind(this))
         window.addEventListener("message", this._msgHandler.bind(this))
         window.addEventListener("click", () => this.hideContextMenu())
+
+        const observer = new MutationObserver(this._MutationHandler.bind(this))
+        observer.observe(document.body, { childList: true, subtree: true })
     }
 
     private _ContextMenuHandler(e: MouseEvent) {
@@ -88,6 +91,17 @@ export class Widget {
         }
     }
 
+    private _MutationHandler(mutations: MutationRecord[]) {
+        mutations.forEach(mutation => {
+            mutation.removedNodes.forEach(node => {
+                this.contextMenuEls = this.contextMenuEls.filter(ctxMenuEl => {
+                    const el = ctxMenuEl.el
+                    return node != el && !node.contains(el)
+                })
+            })
+        })
+    }
+
     private _findFreeId() {
         const globalBtnsIds = this.globalContextMenuBtns.map(b => b.id)
         const elBtnsIds = this.contextMenuEls.reduce((acc: number[], val) => {
@@ -104,57 +118,78 @@ export class Widget {
         throw Error("No free id found?")
     }
 
-    private _addGlobalContextMenuBtns(btns: CustomContextMenuBtnArg[]) {
-        this.globalContextMenuBtns = this.globalContextMenuBtns.concat(
-            btns.map(btn => {
-                return {
-                    id: this._findFreeId(),
-                    ...btn
-                }
-            })
-        )
-    }
-
-    // TODO: optimize to reuse the same obj if elements are the same 
-    private _addContextMenuBtns(el: HTMLElement, btns: CustomContextMenuBtnArg[]) {
-        this.contextMenuEls.push({
-            el, btns: btns.map(btn => {
-                return {
-                    id: this._findFreeId(),
-                    ...btn
-                }
-            })
+    private parseBtns(btns: CustomContextMenuBtnArg[]) {
+        return btns.map(btn => {
+            return {
+                id: this._findFreeId(),
+                ...btn
+            }
         })
     }
 
-    // TODO: on element remove
-    addContextMenuBtn(btn: CustomContextMenuBtnArg): void
-    addContextMenuBtn(btns: CustomContextMenuBtnArg[]): void
-    addContextMenuBtn(el: HTMLElement, btn: CustomContextMenuBtnArg): void
-    addContextMenuBtn(el: HTMLElement, btns: CustomContextMenuBtnArg[]): void
-    addContextMenuBtn(elOrBtns: HTMLElement | CustomContextMenuBtnArg | CustomContextMenuBtnArg[], btns?: CustomContextMenuBtnArg | CustomContextMenuBtnArg[]): void {
+    private _addGlobalContextMenuBtns(btns: CustomContextMenuBtn[]) {
+        this.globalContextMenuBtns = this.globalContextMenuBtns.concat(btns)
+
+        return btns.map(btn => btn.id)
+    }
+
+    private _addContextMenuBtns(el: HTMLElement, btns: CustomContextMenuBtn[]) {
+        for (let i = 0; i < this.contextMenuEls.length; i++) {
+            const contextMenuEl = this.contextMenuEls[i]
+            if (el == contextMenuEl.el) {
+                this.contextMenuEls[i].btns = contextMenuEl.btns.concat(btns)
+                return
+            }
+        }
+
+        this.contextMenuEls.push({ el, btns })
+    }
+
+    addContextMenuBtn(btn: CustomContextMenuBtnArg): number[]
+    addContextMenuBtn(btns: CustomContextMenuBtnArg[]): number[]
+    addContextMenuBtn(el: HTMLElement, btn: CustomContextMenuBtnArg): number[]
+    addContextMenuBtn(el: HTMLElement, btns: CustomContextMenuBtnArg[]): number[]
+    addContextMenuBtn(elOrBtns: HTMLElement | CustomContextMenuBtnArg | CustomContextMenuBtnArg[], btns?: CustomContextMenuBtnArg | CustomContextMenuBtnArg[]): number[] {
+        let parsedBtns: CustomContextMenuBtn[]
+
         if (elOrBtns instanceof HTMLElement) { // 3rd & 4th signatures (specifc elements)
-            if (!btns) return // btns should be defined in this case
+            if (!btns) return [] // btns should be defined in this case
 
             if (Array.isArray(btns)) { // 4th signature (specific element with multiple btns)
-                this._addContextMenuBtns(elOrBtns, btns)
+                parsedBtns = this.parseBtns(btns)
             } else { // 3rd signature (specific element with one btn)
-                this._addContextMenuBtns(elOrBtns, [btns])
+                parsedBtns = this.parseBtns([btns])
             }
-        } else if (Array.isArray(elOrBtns)) { // 2nd siganture (multiple global btns)
-            this._addGlobalContextMenuBtns(elOrBtns)
-        } else { // 1st siganture (one global btn)
-            this._addGlobalContextMenuBtns([elOrBtns])
+
+            this._addContextMenuBtns(elOrBtns, parsedBtns)
+        } else { // 1st or 2nd signature (global btns)
+            if (Array.isArray(elOrBtns)) { // 2nd siganture (multiple global btns)
+                parsedBtns = this.parseBtns(elOrBtns)
+            } else { // 1st siganture (one global btn)
+                parsedBtns = this.parseBtns([elOrBtns])
+            }
+
+            this._addGlobalContextMenuBtns(parsedBtns)
         }
+
+        return parsedBtns.map(btn => btn.id)
     }
 
-    // todo: do this automatically
-    clearContextMenuBtns(el?: HTMLElement, clearNonExisting = true) {
-        this.contextMenuEls = this.contextMenuEls.filter((obj, i) => {
-            if (obj.el == el) return false
-            if (!document.body.contains(obj.el) && clearNonExisting) return false
-            return true
-        })
+    // ! TODO: finish writing the function (include both globals and elements)
+    removeContextMenuBtn(idOrEl: number | number[] | HTMLElement | HTMLElement[]) {
+        if (Array.isArray(idOrEl)) {
+            if (!idOrEl.length) return
+
+        } else {
+
+            if (typeof idOrEl == "number") {
+
+            } else {
+                this.contextMenuEls = this.contextMenuEls.filter(ctxMenuEl => {
+                    return ctxMenuEl.el != idOrEl
+                })
+            }
+        }
     }
 
     createError(msg: string) {
