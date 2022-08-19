@@ -225,6 +225,12 @@ function customContextMenu(
         rmenu.appendChild(btnEl)
     })
 
+    if (customBtns.length) {
+        let separator = document.createElement("div")
+        separator.classList.add("rmenu__separator")
+        rmenu.appendChild(separator)
+    }
+
     // default btns
     contextMenuBtns.forEach(btn => {
         let btnEl = document.createElement("button")
