@@ -1,4 +1,4 @@
-import ColorPicker from "simple-color-picker"
+import ColorPicker from "../utlis/color-picker"
 import { isDark } from "../utlis/utils"
 import { hex, IconResponse, SerializedCellContent } from "@backend-types/types"
 

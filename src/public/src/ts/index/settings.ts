@@ -1,6 +1,6 @@
 import { Grid, hex } from "@backend-types/types"
 import { GridStack } from "gridstack"
-import ColorPicker from "simple-color-picker"
+import ColorPicker from "../utlis/color-picker"
 import { onClickOutside } from "../utlis/utils"
 import { createError } from "./error"
 import { dummyClass, removeDummies, fillGridWithDummies } from "./grid-utils"
