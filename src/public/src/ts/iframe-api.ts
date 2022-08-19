@@ -1,5 +1,3 @@
-// TODO: security (validate origin, limit number of btns, limit number of characters in a btn etc.)
-
 interface CustomContextMenuBtn {
     id: number,
     text: string,
@@ -56,7 +54,7 @@ export class Widget {
                 clientY: e.clientY
             },
             customBtns: globalCustomBtns.concat(customBtns)
-        })
+        }, "*")
     }
 
     private _fireAction(id: number) {
@@ -71,14 +69,22 @@ export class Widget {
     }
 
     private _msgHandler(e: MessageEvent) {
+        if (e.source != window.top) return
+
         switch (e.data.type) {
             case "cmbtnaction": {
                 this._fireAction(e.data.id)
                 break
             }
 
-            default:
+            case "err": {
+                throw Error(e.data.msg)
+            }
+
+            default: {
+                console.warn("Unknown message type:", e.data.type)
                 break
+            }
         }
     }
 
@@ -162,7 +168,7 @@ export class Widget {
         if (!window.top) throw Error("No top window")
         window.top.postMessage({
             type: "hcm"
-        })
+        }, "*")
     }
 }
 

@@ -186,12 +186,16 @@ interface customContextMenuMouseEvent {
     originalEvent?: MouseEvent
 }
 
+interface CustomContextMenuBtn {
+    text: string, id: number
+}
+
 function customContextMenu(
     e: customContextMenuMouseEvent,
     grid: GridStack,
     widgetEl: GridItemHTMLElement,
     cell: SerializedCell,
-    customBtns: Array<{ text: string, id: number }> = [],
+    customBtns: CustomContextMenuBtn[] = [],
     iframe?: HTMLIFrameElement
 ) {
     e.originalEvent?.preventDefault()
@@ -216,7 +220,7 @@ function customContextMenu(
             iframe?.contentWindow?.postMessage({
                 type: "cmbtnaction",
                 id: btn.id
-            })
+            }, "*")
         })
         rmenu.appendChild(btnEl)
     })
@@ -307,10 +311,26 @@ export function setupIframeApi(grid: GridStack) {
             iframe.src = newSrc
     })
 
+    function validateMsg(iframe: HTMLIFrameElement) {
+        // check if mouse is above iframe
+        if (
+            Array.from(document.querySelectorAll("iframe:hover")).includes(iframe)
+        ) return true
+
+        iframe.contentWindow?.postMessage({ type: "err", msg: "Illegal message (Mouse outside of iframe)" }, "*")
+        return false
+    }
+
     // iframe API handler
     window.addEventListener("message", e => {
-        // @ts-ignore
-        const iframe: HTMLIFrameElement | null = e.source?.frameElement
+        let iframe: HTMLIFrameElement | undefined
+        for (const ifr of Array.from(document.getElementsByTagName("iframe"))) {
+            if (ifr.contentWindow === e.source) {
+                iframe = ifr
+                break
+            }
+        }
+
         if (!iframe) return
 
         const serializedCell = JSON.parse(iframe.dataset.serialized || "{}")
@@ -323,6 +343,8 @@ export function setupIframeApi(grid: GridStack) {
             }
 
             case "cm": {
+                if (!validateMsg(iframe)) return
+
                 let cellElement: GridItemHTMLElement | undefined
 
                 for (const cell of grid.getGridItems()) {
@@ -339,13 +361,40 @@ export function setupIframeApi(grid: GridStack) {
                 const x = iframeDimensions.left + e.data.ev.clientX
                 const y = iframeDimensions.top + e.data.ev.clientY
 
-                customContextMenu({ x, y }, grid, cellElement, serializedCell, e.data.customBtns || [], iframe)
+                let customBtns: CustomContextMenuBtn[] = []
+
+                if (Array.isArray(e.data.customBtns)) {
+                    if (e.data.customBtns.length > 8)
+                        iframe.contentWindow?.postMessage({ type: "err", msg: "Numer of btns is too big" }, "*")
+                    else
+                        e.data.customBtns.forEach((btn: CustomContextMenuBtn) => {
+                            if (!Number.isInteger(btn.id))
+                                return iframe!.contentWindow?.postMessage({ type: "err", msg: "Bad id in custom btn" }, "*")
+
+                            if (typeof btn.text != "string")
+                                return iframe!.contentWindow?.postMessage({ type: "err", msg: "Bad text in custom btn" }, "*")
+
+                            if (btn.text.length > 32)
+                                return iframe!.contentWindow?.postMessage({ type: "err", msg: "Text in custom btn is too long" }, "*")
+
+                            customBtns.push(btn)
+                        })
+                } else
+                    iframe.contentWindow?.postMessage({ type: "err", msg: "Bad type of custom btns" }, "*")
+
+                customContextMenu({ x, y }, grid, cellElement, serializedCell, customBtns, iframe)
 
                 break
             }
 
             case "hcm": {
+                if (!validateMsg(iframe)) return
                 document.querySelector(".rmenu")?.remove()
+                break
+            }
+
+            default: {
+                console.warn("Unknown message type:", e.data.type)
                 break
             }
         }
