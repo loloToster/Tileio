@@ -175,19 +175,39 @@ export class Widget {
         return parsedBtns.map(btn => btn.id)
     }
 
-    // ! TODO: finish writing the function (include both globals and elements)
+    private _removeContextMenuBtnByElements(els: HTMLElement[]) {
+        this.contextMenuEls = this.contextMenuEls.filter(ctxMenuEl => {
+            return !els.includes(ctxMenuEl.el)
+        })
+    }
+
+    private _removeContextMenuBtnByIds(ids: number[]) {
+        this.globalContextMenuBtns = this.globalContextMenuBtns.filter(btn => {
+            return !ids.includes(btn.id)
+        })
+
+        for (let i = 0; i < this.contextMenuEls.length; i++) {
+            const contextMenuEl = this.contextMenuEls[i]
+            this.contextMenuEls[i].btns = contextMenuEl.btns.filter(btn => {
+                return !ids.includes(btn.id)
+            })
+        }
+    }
+
     removeContextMenuBtn(idOrEl: number | number[] | HTMLElement | HTMLElement[]) {
         if (Array.isArray(idOrEl)) {
             if (!idOrEl.length) return
 
-        } else {
-
-            if (typeof idOrEl == "number") {
-
+            if (typeof idOrEl[0] == "number") {
+                this._removeContextMenuBtnByIds(idOrEl as number[])
             } else {
-                this.contextMenuEls = this.contextMenuEls.filter(ctxMenuEl => {
-                    return ctxMenuEl.el != idOrEl
-                })
+                this._removeContextMenuBtnByElements(idOrEl as HTMLElement[])
+            }
+        } else {
+            if (typeof idOrEl == "number") {
+                this._removeContextMenuBtnByIds([idOrEl])
+            } else {
+                this._removeContextMenuBtnByElements([idOrEl])
             }
         }
     }
