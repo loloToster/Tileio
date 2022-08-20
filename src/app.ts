@@ -25,7 +25,7 @@ const app = express()
 app.set("view engine", "ejs")
 app.set("views", __dirname + "/public/views")
 
-/* app.use(sslRedirect()) */
+app.use(sslRedirect())
 
 require(__dirname + "/config/passport-config")
 
