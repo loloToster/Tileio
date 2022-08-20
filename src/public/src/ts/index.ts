@@ -3,9 +3,10 @@ import "gridstack/dist/h5/gridstack-dd-native"
 
 import { Grid } from "@backend-types/types"
 import { onClickOutside } from "./utlis/utils"
-import { fillGridWithDummies, createWidgetFromSerializedCell, setupIframeApi } from "./index/grid-utils"
+import { fillGridWithDummies, createWidgetFromSerializedCell } from "./index/grid-utils"
 import setupEditPanel, { trashSelector } from "./index/edit-panel"
 import setupSettings from "./index/settings"
+import { setupIframeApi } from "./index/iframe-api-handler"
 import { createError } from "./index/error"
 
 async function main() {

@@ -130,73 +130,70 @@ export function unserializeContent(cell: SerializedCell) {
 
 type contextMenuFunc = (e: MouseEvent, grid: GridStack, el: GridItemHTMLElement, cell: SerializedCell) => void
 
-const contextMenuBtns: Array<{
-    class: string,
+export interface ContextMenuBtn {
+    class?: string,
     innerText: string,
     onclick: contextMenuFunc
-}> = [
-        {
-            class: "edit", innerText: "Edit",
-            onclick: async (e, grid, el, cell) => {
-                const content = await openAddModal(cell.content)
-                if (!content) return
+}
 
-                const editing = grid.el.classList.contains("editing")
+const defaultContextMenuBtns: ContextMenuBtn[] = [
+    {
+        class: "edit", innerText: "Edit",
+        onclick: async (e, grid, el, cell) => {
+            const content = await openAddModal(cell.content)
+            if (!content) return
 
-                cell.content = content
-                cell.w = parseInt(el.getAttribute("gs-w") || "1")
-                cell.h = parseInt(el.getAttribute("gs-h") || "1")
+            const editing = grid.el.classList.contains("editing")
 
-                if (editing) {
-                    const gsX = el.getAttribute("gs-x")
-                    const gsY = el.getAttribute("gs-y")
-                    if (gsX) cell.x = parseInt(gsX)
-                    if (gsY) cell.y = parseInt(gsY)
-                }
+            cell.content = content
+            cell.w = parseInt(el.getAttribute("gs-w") || "1")
+            cell.h = parseInt(el.getAttribute("gs-h") || "1")
 
-                grid.removeWidget(el)
-                createWidgetFromSerializedCell(grid, cell)
-
-                if (!editing) saveGrid(grid)
+            if (editing) {
+                const gsX = el.getAttribute("gs-x")
+                const gsY = el.getAttribute("gs-y")
+                if (gsX) cell.x = parseInt(gsX)
+                if (gsY) cell.y = parseInt(gsY)
             }
-        },
-        {
-            class: "resize", innerText: "Resize",
-            onclick: (e, grid, el, cell) => {
-                toggleGridEditing(grid, true)
-            }
-        },
-        {
-            class: "delete", innerText: "Delete",
-            onclick: (e, grid, el, cell) => {
-                grid.removeWidget(el)
 
-                if (grid.el.classList.contains("editing"))
-                    return
+            grid.removeWidget(el)
+            createWidgetFromSerializedCell(grid, cell)
 
-                fillGridWithDummies(grid)
-                saveGrid(grid)
-            }
+            if (!editing) saveGrid(grid)
         }
-    ]
+    },
+    {
+        class: "resize", innerText: "Resize",
+        onclick: (e, grid, el, cell) => {
+            toggleGridEditing(grid, true)
+        }
+    },
+    {
+        class: "delete", innerText: "Delete",
+        onclick: (e, grid, el, cell) => {
+            grid.removeWidget(el)
 
-interface customContextMenuMouseEvent {
+            if (grid.el.classList.contains("editing"))
+                return
+
+            fillGridWithDummies(grid)
+            saveGrid(grid)
+        }
+    }
+]
+
+interface CustomContextMenuMouseEvent {
     x: Number,
     y: Number,
     originalEvent?: MouseEvent
 }
 
-interface CustomContextMenuBtn {
-    text: string, id: number
-}
-
-function customContextMenu(
-    e: customContextMenuMouseEvent,
+export function customContextMenu(
+    e: CustomContextMenuMouseEvent,
     grid: GridStack,
     widgetEl: GridItemHTMLElement,
     cell: SerializedCell,
-    customBtns: CustomContextMenuBtn[] = [],
-    iframe?: HTMLIFrameElement
+    customBtns: ContextMenuBtn[] = []
 ) {
     e.originalEvent?.preventDefault()
 
@@ -211,30 +208,29 @@ function customContextMenu(
         rmenu.remove()
     })
 
-    // iframe api btns
-    customBtns.forEach(btn => {
-        let btnEl = document.createElement("button")
-        btnEl.classList.add("rmenu__btn")
-        btnEl.innerText = btn.text
-        btnEl.addEventListener("click", e => {
-            iframe?.contentWindow?.postMessage({
-                type: "cmbtnaction",
-                id: btn.id
-            }, "*")
-        })
-        rmenu.appendChild(btnEl)
-    })
+    // true -> separator
+    let structure: Array<ContextMenuBtn | true> = []
 
     if (customBtns.length) {
-        let separator = document.createElement("div")
-        separator.classList.add("rmenu__separator")
-        rmenu.appendChild(separator)
+        structure = customBtns
+        structure.push(true)
     }
 
-    // default btns
-    contextMenuBtns.forEach(btn => {
+    structure = structure.concat(defaultContextMenuBtns)
+
+    structure.forEach(btnOrSeparator => {
+        if (btnOrSeparator === true) {
+            let separator = document.createElement("div")
+            separator.classList.add("rmenu__separator")
+            rmenu.appendChild(separator)
+            return
+        }
+
+        const btn = btnOrSeparator
+
         let btnEl = document.createElement("button")
-        btnEl.classList.add("rmenu__btn", `rmenu__${btn.class}`)
+        btnEl.classList.add("rmenu__btn")
+        if (btn.class) btnEl.classList.add(`rmenu__${btn.class}`)
         btnEl.innerText = btn.innerText
         btnEl.addEventListener("click", e => {
             btn.onclick(e, grid, widgetEl, cell)
@@ -297,112 +293,4 @@ export async function toggleGridEditing(grid: GridStack, force?: boolean) {
         editButton.title = "Edit Cells"
         gridBorder!.style.opacity = "0"
     }
-}
-
-export function setupIframeApi(grid: GridStack) {
-    // Update iframe src on cell resize
-    grid.on("resizestop", (e, el) => {
-        if (!(el instanceof HTMLElement)) return
-        if (!el.classList.contains("dynamic-cell")) return
-
-        const width = parseInt(el.getAttribute("gs-w") || "0")
-        const height = parseInt(el.getAttribute("gs-h") || "0")
-
-        const serializedCell = JSON.parse(el.querySelector<HTMLElement>("[data-serialized]")!.dataset.serialized!)
-        const iframe = el.querySelector("iframe")!
-
-        const newSrc = serializedCell.src + `?w=${width}&h=${height}`
-
-        if (newSrc != iframe.src)
-            iframe.src = newSrc
-    })
-
-    function validateMsg(iframe: HTMLIFrameElement) {
-        // check if mouse is above iframe
-        if (
-            Array.from(document.querySelectorAll("iframe:hover")).includes(iframe)
-        ) return true
-
-        iframe.contentWindow?.postMessage({ type: "err", msg: "Illegal message (Mouse outside of iframe)" }, "*")
-        return false
-    }
-
-    // iframe API handler
-    window.addEventListener("message", e => {
-        let iframe: HTMLIFrameElement | undefined
-        for (const ifr of Array.from(document.getElementsByTagName("iframe"))) {
-            if (ifr.contentWindow === e.source) {
-                iframe = ifr
-                break
-            }
-        }
-
-        if (!iframe) return
-
-        const serializedCell = JSON.parse(iframe.dataset.serialized || "{}")
-        if (serializedCell.type !== "d") return
-
-        switch (e.data.type) {
-            case "ce": {
-                createError(e.data.msg)
-                break
-            }
-
-            case "cm": {
-                if (!validateMsg(iframe)) return
-
-                let cellElement: GridItemHTMLElement | undefined
-
-                for (const cell of grid.getGridItems()) {
-                    const cellIframe = cell.querySelector("iframe")
-                    if (!cellIframe || cellIframe != iframe) continue
-
-                    cellElement = cell
-                    break
-                }
-
-                if (!cellElement) return
-
-                const iframeDimensions = iframe.getBoundingClientRect()
-                const x = iframeDimensions.left + e.data.ev.clientX
-                const y = iframeDimensions.top + e.data.ev.clientY
-
-                let customBtns: CustomContextMenuBtn[] = []
-
-                if (Array.isArray(e.data.customBtns)) {
-                    if (e.data.customBtns.length > 8)
-                        iframe.contentWindow?.postMessage({ type: "err", msg: "Numer of btns is too big" }, "*")
-                    else
-                        e.data.customBtns.forEach((btn: CustomContextMenuBtn) => {
-                            if (!Number.isInteger(btn.id))
-                                return iframe!.contentWindow?.postMessage({ type: "err", msg: "Bad id in custom btn" }, "*")
-
-                            if (typeof btn.text != "string")
-                                return iframe!.contentWindow?.postMessage({ type: "err", msg: "Bad text in custom btn" }, "*")
-
-                            if (btn.text.length > 32)
-                                return iframe!.contentWindow?.postMessage({ type: "err", msg: "Text in custom btn is too long" }, "*")
-
-                            customBtns.push(btn)
-                        })
-                } else
-                    iframe.contentWindow?.postMessage({ type: "err", msg: "Bad type of custom btns" }, "*")
-
-                customContextMenu({ x, y }, grid, cellElement, serializedCell, customBtns, iframe)
-
-                break
-            }
-
-            case "hcm": {
-                if (!validateMsg(iframe)) return
-                document.querySelector(".rmenu")?.remove()
-                break
-            }
-
-            default: {
-                console.warn("Unknown message type:", e.data.type)
-                break
-            }
-        }
-    })
 }
