@@ -1,3 +1,5 @@
+@use "sass:math" as math;
+
 @forward "./base/reset";
 
 $blue: #2d79d6;
@@ -45,6 +47,7 @@ button.action-btn {
 .header {
     box-sizing: border-box;
     position: sticky;
+    z-index: 1;
     top: 0;
     display: flex;
     align-items: center;
@@ -129,8 +132,6 @@ section {
         height: 100%;
     }
 
-    &__brief-content {}
-
     &__brief-heading {
         font-size: 4rem;
     }
@@ -139,10 +140,42 @@ section {
         font-size: 1.6rem;
     }
 
+    $synonyms: "homepage", "dashboard", "control panel";
+    $time-for-one-synonym: 2s;
+
+    @keyframes synonyms-animation {
+        $step: math.div(100%, length($synonyms));
+
+        @for $i from 0 to length($synonyms) {
+            #{$i * $step} {
+                content: nth($synonyms, $i + 1);
+            }
+        }
+    }
+
+    &__brief-synonyms::after {
+        content: nth($synonyms, 1);
+        $bg-color: transparent;
+        // padding: 0 4px;
+
+        color: $blue;
+        background-color: $bg-color;
+        font-weight: bold;
+        border-radius: 2px;
+        box-shadow: 0 0 0 2px $bg-color;
+
+        animation: synonyms-animation length($synonyms) * $time-for-one-synonym infinite linear;
+    }
+
+    &__brief-login-a {
+        margin-top: 8px;
+        display: inline-block;
+        width: fit-content;
+    }
+
     &__brief-login {
         font-size: 1.2rem;
         padding: 12px;
-        margin-top: 8px;
     }
 
     &__brief-triangle {
@@ -151,5 +184,21 @@ section {
         height: 0;
         border-bottom: calc(100vh - 85px) solid #383a45e0; // height
         border-right: 200px solid transparent; // width
+    }
+}
+
+.footer {
+    box-sizing: border-box;
+    padding: 16px 40px;
+    background-color: #2b2d36;
+    color: grey;
+
+    &__made-by {
+        width: fit-content;
+
+        a {
+            color: inherit;
+            text-decoration: underline;
+        }
     }
 }
