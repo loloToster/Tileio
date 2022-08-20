@@ -1,5 +1,5 @@
 import express from "express"
-import frameguard from "frameguard"
+/* import frameguard from "frameguard" */
 import path from "path"
 
 import dynamicCells from "../dynamic-cells.json"
