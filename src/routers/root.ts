@@ -12,7 +12,7 @@ const strategyIdToName: Record<string, string> = {
     "git": "Github"
 }
 
-router.get("/", frameguard({ action: "deny" }), async (req, res) => {
+router.get("/", /* frameguard({ action: "deny" }), */ async (req, res) => {
     if (!req.user) return res.redirect("/auth")
     const strategy: string = req.user.strategyId.slice(0, 3)
     res.render("index", { user: req.user, strategy: strategyIdToName[strategy], dynamicCells })
