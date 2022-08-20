@@ -1,7 +1,38 @@
+import { hex } from "@backend-types/types"
 import { GridItemHTMLElement, GridStack } from "gridstack"
 import { createError } from "./error"
 import { ContextMenuBtn, customContextMenu } from "./grid-utils"
 
+type iframeOptions = Partial<{
+    w: number,
+    h: number,
+    bgColor: hex,
+    cellColor: hex,
+    preview: boolean,
+    [key: string]: any
+}>
+
+export function generateIframeUrl(url: string, options: iframeOptions) {
+    let result: URL
+    try {
+        result = new URL(url)
+    } catch {
+        let dummyParams = "?"
+        for (const key in options)
+            dummyParams += `${key}=${encodeURIComponent(options[key].toString())}&`
+        return url + dummyParams.slice(0, -1) // remove last char becasue it is either '?' or '&'
+    }
+
+    result.searchParams.set("preview", (options.preview || false).toString())
+    if (options.preview) return result.href
+
+    if (options.w) result.searchParams.set("w", options.w.toString())
+    if (options.h) result.searchParams.set("h", options.h.toString())
+    if (options.bgColor) result.searchParams.set("bgColor", options.bgColor)
+    if (options.cellColor) result.searchParams.set("cellColor", options.cellColor)
+
+    return result.href
+}
 
 interface CustomContextMenuBtn {
     text: string, id: number

@@ -4,6 +4,7 @@ import { SerializedCell, SerializedCellContent, SerializedDynamicCellContent, Se
 import { onClickOutside, isDark } from "../utlis/utils"
 import { openAddModal } from "./add-modal"
 import { createError } from "./error"
+import { generateIframeUrl } from "./iframe-api-handler"
 
 export const dummyClass = "dummy-cell"
 
@@ -114,7 +115,12 @@ export function unserializeContent(cell: SerializedCell) {
         editingCover.classList.add("editing-cover")
 
         const iframe = document.createElement("iframe")
-        iframe.src = content.src + `?w=${cell.w || "1"}&h=${cell.h}`
+        iframe.src = generateIframeUrl(content.src, {
+            w: cell.w || 1,
+            h: cell.h || 1,
+            bgColor: document.body.style.getPropertyValue("--bg-color"),
+            cellColor: document.body.style.getPropertyValue("--cell-color")
+        })
         iframe.dataset.serialized = JSON.stringify(content)
 
         let unserializedContent = iframe.outerHTML + editingCover.outerHTML

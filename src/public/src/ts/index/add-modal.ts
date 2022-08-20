@@ -1,6 +1,7 @@
 import ColorPicker from "../utlis/color-picker"
 import { isDark } from "../utlis/utils"
 import { hex, IconResponse, SerializedCellContent } from "@backend-types/types"
+import { generateIframeUrl } from "./iframe-api-handler"
 
 const defaultColor = "#3e3e3e"
 
@@ -163,7 +164,7 @@ let lastClickedDynIconSrc: string
 function onDynamicIconClick(icon: HTMLElement) {
     iframeSrcInp.value = ""
     lastClickedDynIconSrc = icon.dataset.src!
-    dynamicCellPreview!.src = icon.dataset.src!
+    dynamicCellPreview!.src = generateIframeUrl(icon.dataset.src!, { preview: true })
 }
 
 for (const icon of builtInCells)
@@ -171,7 +172,7 @@ for (const icon of builtInCells)
 
 // update dynamic cell preview
 iframeSrcInp.addEventListener("input", () => {
-    dynamicCellPreview!.src = iframeSrcInp.value
+    dynamicCellPreview!.src = generateIframeUrl(iframeSrcInp.value, { preview: true })
 })
 
 function loadPreview(preview: SerializedCellContent) {
