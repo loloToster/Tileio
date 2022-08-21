@@ -12,10 +12,23 @@ const strategyIdToName: Record<string, string> = {
     "git": "Github"
 }
 
+const publicStaticDir = __dirname + "/../public/static"
+const htmlDir = publicStaticDir + "/html"
+
 router.get("/", frameguard({ action: "deny" }), async (req, res) => {
     if (!req.user) return res.redirect("/auth")
     const strategy: string = req.user.strategyId.slice(0, 3)
     res.render("index", { user: req.user, strategy: strategyIdToName[strategy], dynamicCells })
+})
+
+router.get("/home", async (req, res) => {
+    res.render("home")
+})
+
+router.get("/api-docs", async (req, res) => {
+    res.sendFile(
+        path.normalize(htmlDir + "/api-docs.html")
+    )
 })
 
 router.get(/\/gridstack\.min\.css|\/gridstack-extra\.min\.css/,
@@ -25,6 +38,6 @@ router.get(/\/gridstack\.min\.css|\/gridstack-extra\.min\.css/,
         )
 )
 
-router.use("/static", express.static(__dirname + "/../public/static"))
+router.use("/static", express.static(publicStaticDir))
 
 export = router
