@@ -1,8 +1,11 @@
 @use "sass:math" as math;
+@use "./static-pages/abstracts/colors" as c;
 
 @forward "./base/reset";
 
-$blue: #2d79d6;
+@forward "./static-pages/components/action-btn";
+@forward "./static-pages/layout/header";
+@forward "./static-pages/layout/footer";
 
 :root {
     color-scheme: dark;
@@ -11,7 +14,7 @@ $blue: #2d79d6;
 body {
     font-family: basic-sans, sans-serif;
     margin: 0;
-    background-color: #262730;
+    background-color: c.$bg-color;
     color: white;
 }
 
@@ -23,80 +26,6 @@ p {
 a {
     text-decoration: none;
     color: white;
-}
-
-button.action-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    background-color: $blue;
-    color: white;
-    border-radius: 100vh;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 200ms;
-
-    &:hover {
-        background-color: darken($blue, 10%);
-    }
-
-    svg {
-        margin-left: 8px;
-        fill: white;
-        vertical-align: middle;
-    }
-}
-
-.header {
-    box-sizing: border-box;
-    position: sticky;
-    z-index: 1;
-    top: 0;
-    display: flex;
-    align-items: center;
-    height: 85px;
-    padding: 20px 120px;
-    background-color: #30323c;
-    box-shadow: 0px 0px 8px 0px #191a21;
-
-    &__logo {
-        margin-right: auto;
-        display: flex;
-        align-items: center;
-
-        img {
-            height: 2.5rem;
-        }
-
-        span {
-            font-size: 2rem;
-            margin-left: 8px;
-        }
-    }
-
-    &__login {
-        margin-left: 12px;
-        padding: 12px 16px;
-        font-size: 1.1rem;
-    }
-}
-
-.nav {
-    &__links {
-        padding: 0;
-        margin: 0;
-    }
-
-    &__link {
-        display: inline-block;
-        margin: 0 12px;
-        font-size: 1.1rem;
-
-        &:hover {
-            text-decoration: underline;
-        }
-    }
 }
 
 section {
@@ -162,7 +91,7 @@ section {
         $bg-color: transparent;
         // padding: 0 4px;
 
-        color: $blue;
+        color: c.$blue;
         background-color: $bg-color;
         font-weight: bold;
         border-radius: 2px;
@@ -188,21 +117,5 @@ section {
         height: 0;
         border-bottom: calc(100vh - 85px) solid #383a45e0; // height
         border-right: 200px solid transparent; // width
-    }
-}
-
-.footer {
-    box-sizing: border-box;
-    padding: 16px 40px;
-    background-color: #2b2d36;
-    color: grey;
-
-    &__made-by {
-        width: fit-content;
-
-        a {
-            color: inherit;
-            text-decoration: underline;
-        }
     }
 }

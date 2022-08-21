@@ -1,0 +1,24 @@
+@use "../abstracts/colors" as c;
+
+button.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    background-color: c.$blue;
+    color: white;
+    border-radius: 100vh;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 200ms;
+
+    &:hover {
+        background-color: darken(c.$blue, 10%);
+    }
+
+    svg {
+        margin-left: 8px;
+        fill: white;
+        vertical-align: middle;
+    }
+}

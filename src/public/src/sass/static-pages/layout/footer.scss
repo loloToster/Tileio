@@ -1,0 +1,15 @@
+.footer {
+    box-sizing: border-box;
+    padding: 16px 40px;
+    background-color: #2b2d36;
+    color: grey;
+
+    &__made-by {
+        width: fit-content;
+
+        a {
+            color: inherit;
+            text-decoration: underline;
+        }
+    }
+}
