@@ -1,6 +1,7 @@
 /.vscode/
 /node_modules/
 /dist/
+/src/public/views/static-pages/
 /src/public/static/*
 !/src/public/static/assets/
 .env

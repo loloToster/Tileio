@@ -9,39 +9,55 @@ const outDir = __dirname + "/static"
 // compile markdown
 console.log("Compiling markdown...")
 
-const markdownDir = srcDir + "/markdown"
-const markdownOutDir = outDir + "/html"
+const staticInDir = srcDir + "/static-pages"
+const staticOutDir = __dirname + "/views/static-pages"
 
-if (!fs.existsSync(markdownOutDir))
-    fs.mkdirSync(markdownOutDir)
+if (!fs.existsSync(staticOutDir))
+    fs.mkdirSync(staticOutDir)
 
-fs.readdirSync(markdownDir).forEach(file => {
-    if (!file.match(/\.md$/)) return
+fs.readdirSync(staticInDir).forEach(file => {
+    if (!file.endsWith(".md") && !file.endsWith(".html")) {
+        console.log("Ignoring", file)
+        return
+    }
 
-    const $base = cheerio.load(fs.readFileSync(markdownDir + "/base.html").toString())
-
-    const pathToFile = `${markdownDir}/${file}`
+    const pathToFile = `${staticInDir}/${file}`
     console.log("Compiling " + pathToFile)
-    const $md = cheerio.load(
-        marked.parse(
-            fs.readFileSync(pathToFile).toString()
+
+    let content = fs.readFileSync(pathToFile).toString()
+
+    if (file.endsWith(".md")) {
+        const $md = cheerio.load(
+            marked.parse(content)
         )
+
+        let toc = ""
+
+        $md("h1, h2, h3, h4, h5, h6").each(function () {
+            const el = $md(this)
+            const id = el.attr("id")
+            const level = el.prop("tagName").substring(1)
+            const text = el.text()
+            toc += `<a href="#${id}" class="level-${level}">${text}</a>`
+        })
+
+        content = `
+            <main>
+                <div class="toc">
+                    ${toc}
+                </div>
+                <div class="content">
+                    ${$md.html()}
+                </div>
+            </main>
+            `
+    }
+
+    fs.writeFileSync(
+        `${staticOutDir}/${file.split(".")[0]}.ejs`,
+        content,
+        { flag: "w" }
     )
-
-    let toc = ""
-
-    $md("h1, h2, h3, h4, h5, h6").each(function () {
-        const el = $md(this)
-        const id = el.attr("id")
-        const level = el.prop("tagName").substring(1)
-        const text = el.text()
-        toc += `<a href="#${id}" class="level-${level}">${text}</div>`
-    })
-
-    $base("#toc").replaceWith(toc)
-    $base("#content").replaceWith($md.html())
-
-    fs.writeFileSync(`${markdownOutDir}/${file.slice(0, -3)}.html`, $base.html(), { flag: "w" })
 })
 
 const tsDir = srcDir + "/ts"

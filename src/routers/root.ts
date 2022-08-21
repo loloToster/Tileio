@@ -16,9 +16,17 @@ const publicStaticDir = __dirname + "/../public/static"
 const htmlDir = publicStaticDir + "/html"
 
 router.get("/", frameguard({ action: "deny" }), async (req, res) => {
-    if (!req.user) return res.redirect("/auth")
+    if (!req.user) return res.redirect("/home")
     const strategy: string = req.user.strategyId.slice(0, 3)
     res.render("index", { user: req.user, strategy: strategyIdToName[strategy], dynamicCells })
+})
+
+const staticPages = ["home", "api-docs"]
+
+staticPages.forEach(page => {
+    router.get("/" + page, async (req, res) => {
+        res.render("static-page", { content: page })
+    })
 })
 
 router.get("/home", async (req, res) => {

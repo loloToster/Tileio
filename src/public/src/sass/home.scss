@@ -1,23 +1,6 @@
 @use "sass:math" as math;
 @use "./static-pages/abstracts/colors" as c;
 
-@forward "./base/reset";
-
-@forward "./static-pages/components/action-btn";
-@forward "./static-pages/layout/header";
-@forward "./static-pages/layout/footer";
-
-:root {
-    color-scheme: dark;
-}
-
-body {
-    font-family: basic-sans, sans-serif;
-    margin: 0;
-    background-color: c.$bg-color;
-    color: white;
-}
-
 h1,
 p {
     margin: 0;

@@ -1,0 +1,17 @@
+@forward "./base/reset";
+
+@forward "./static-pages/layout/header";
+@forward "./static-pages/layout/footer";
+@forward "./static-pages/components/action-btn";
+
+
+:root {
+    color-scheme: dark;
+}
+
+body {
+    font-family: basic-sans, sans-serif;
+    margin: 0;
+    background-color: c.$bg-color;
+    color: white;
+}

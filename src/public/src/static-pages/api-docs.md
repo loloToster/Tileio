@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/an-old-hope.min.css">
+<link rel="stylesheet" href="/static/css/docs-page.css">
 
 # Creating Custom Dynamic Cell
 
