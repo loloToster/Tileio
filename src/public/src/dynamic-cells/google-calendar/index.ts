@@ -217,6 +217,8 @@ const refreshBtn = document.querySelector<HTMLButtonElement>(".header__btn--refr
 let refreshing = false
 
 refreshBtn.addEventListener("click", async () => {
+    if (refreshing) return
+
     refreshing = true
     refreshBtn.classList.add("active")
 
