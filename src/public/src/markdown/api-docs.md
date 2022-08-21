@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/an-old-hope.min.css">
+
 # Creating Custom Dynamic Cell
 
 # URL Api
@@ -64,7 +66,7 @@ This will enable the Widget Api and allow you to use all of the below methods.
 
 ### addContextMenuBtn
 
-The `addContextMenuBtn` method allows you to create custom buttons in the main context menu. The button Can be either global (always in the menu) or bound to an element (in the menu only if the specified HTML element was right-clicked)
+The `addContextMenuBtn` method allows you to create custom buttons in the main context menu. The button can be either global (always in the menu) or bound to an element (in the menu only if the specified HTML element was right-clicked)
 
 **Calling**
 
@@ -100,3 +102,6 @@ Creates an error popup on the screen
 
 * `text` - string (max length: 32 characters)
 * `action` - a function that gets called when the button is clicked
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>

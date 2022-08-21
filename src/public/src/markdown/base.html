@@ -6,15 +6,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WidgetBlocks</title>
+    <link rel="stylesheet" href="/static/css/md-page.css">
 </head>
 
 <body>
-    <div class="toc">
-        <div id="toc"></div>
-    </div>
-    <div class="content">
-        <div id="content"></div>
-    </div>
+    <header class="header">
+        <a class="header__logo" href="/">
+            <img src="/static/assets/logo.png" alt="logo">
+            <span>WidgetBlocks</span>
+        </a>
+        <nav class="nav">
+            <ul class="nav__links">
+                <li class="nav__link">
+                    <a href="/home">Home</a>
+                </li>
+                <li class="nav__link">
+                    <a href="">Guides</a>
+                </li>
+                <li class="nav__link">
+                    <a href="">API Docs</a>
+                </li>
+            </ul>
+        </nav>
+        <a href="/auth"><button class="header__login action-btn">Login</button></a>
+    </header>
+    <main>
+        <div class="toc">
+            <div id="toc"></div>
+        </div>
+        <div class="content">
+            <div id="content"></div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="footer__made-by">
+            <i>Made by <a href="https://github.com/loloToster" target="_blank">loloToster</a></i>
+        </div>
+    </footer>
 </body>
 
 </html>
