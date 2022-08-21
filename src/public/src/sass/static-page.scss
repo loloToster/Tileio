@@ -1,3 +1,5 @@
+@use "./static-pages/abstracts/colors" as c;
+
 @forward "./base/reset";
 
 @forward "./static-pages/layout/header";
