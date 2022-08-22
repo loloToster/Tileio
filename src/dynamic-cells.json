@@ -3,13 +3,13 @@
         "id": "mininote",
         "name": "Mininote",
         "src": "/dynamic-cells/mininote",
-        "icon": "/static/assets/note.png"
+        "icon": "/static/assets/dynamic-cells-icons/note.png"
     },
     {
         "id": "weather",
         "name": "Weather",
         "src": "/dynamic-cells/weather",
-        "icon": "/static/assets/weather.png",
+        "icon": "/static/assets/dynamic-cells-icons/weather.png",
         "sizes": [
             "4x2",
             "3x2"
@@ -19,7 +19,7 @@
         "id": "spotify",
         "name": "Spotify",
         "src": "/dynamic-cells/spotify",
-        "icon": "/static/assets/spotify.png",
+        "icon": "/static/assets/dynamic-cells-icons/spotify.png",
         "sizes": [
             "2x2"
         ]
@@ -28,7 +28,7 @@
         "id": "google-calendar",
         "name": "Google Calendar",
         "src": "/dynamic-cells/google-calendar",
-        "icon": "/static/assets/google-calendar.png",
+        "icon": "/static/assets/dynamic-cells-icons/google-calendar.png",
         "sizes": [
             "2x2",
             "2x3",
@@ -42,6 +42,6 @@
         "id": "calculator",
         "name": "Calculator",
         "src": "/dynamic-cells/calculator",
-        "icon": "/static/assets/calculator.png"
+        "icon": "/static/assets/dynamic-cells-icons/calculator.png"
     }
 ]
