@@ -60,7 +60,7 @@
                         <input id="add-modal__icon-inp" class="add-modal__input" type="text"
                             placeholder="Search for icon">
                         <div class="add-modal__loading">
-                            <div class="loading loading--small">
+                            <div class="loading loading--medium">
                                 <div class="loading__item"></div>
                                 <div class="loading__item"></div>
                                 <div class="loading__item"></div>
@@ -164,7 +164,12 @@
             </button>
             <div class="grid__menu__edit-panel">
                 <button title="Edit Cells" id="grid__menu__edit" class="grid__menu__item">
-                    <img class="edit-icon" src="/static/assets/main-icons/edit.svg" alt="edit">
+                    <div class="loading loading--small">
+                        <div class="loading__item"></div>
+                        <div class="loading__item"></div>
+                        <div class="loading__item"></div>
+                    </div>
+                    <img class="edit-icon active" src="/static/assets/main-icons/edit.svg" alt="edit">
                     <img class="save-icon" src="/static/assets/main-icons/cloud-upload.svg" alt="save">
                 </button>
                 <button title="Revert changes" id="grid__menu__revert" class="blue grid__menu__item">

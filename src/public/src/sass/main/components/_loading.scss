@@ -17,6 +17,18 @@ $loading-items: 5;
     --h: 30px;
     --g: 5px;
 
+    &--small {
+        --w: 4px;
+        --h: 15px;
+        --g: 3px;
+    }
+
+    &--medium {
+        --w: 6px;
+        --h: 20px;
+        --g: 4px;
+    }
+
     display: flex;
     gap: var(--g);
 
@@ -33,10 +45,4 @@ $loading-items: 5;
             animation-delay: 100ms * ($i - 1);
         }
     }
-}
-
-.loading--small {
-    --w: 6px;
-    --h: 20px;
-    --g: 4px;
 }

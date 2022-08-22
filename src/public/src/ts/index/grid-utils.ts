@@ -275,9 +275,18 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
 }
 
 const editButton = document.getElementById("grid__menu__edit")!
-const gridBorder = document.querySelector<HTMLElement>(".grid__border")
+const editIcon = editButton.querySelector<HTMLElement>(".edit-icon")!
+const saveIcon = editButton.querySelector<HTMLElement>(".save-icon")!
+const loadingIndicator = editButton.querySelector<HTMLElement>(".loading")!
+const gridBorder = document.querySelector<HTMLElement>(".grid__border")!
+
+let savingGrid = false
+
 export async function toggleGridEditing(grid: GridStack, force?: boolean) {
+    if (savingGrid) return
+
     let editing: boolean
+
     if (typeof force === "undefined") {
         editing = editButton.parentElement!.classList.toggle("active")
     } else {
@@ -288,15 +297,26 @@ export async function toggleGridEditing(grid: GridStack, force?: boolean) {
     grid.el.classList.toggle("editing", editing)
 
     if (editing) {
+        loadingIndicator.classList.remove("active")
+        editIcon.classList.remove("active")
+        saveIcon.classList.add("active")
         grid.enable()
         removeDummies(grid)
         editButton.title = "Save Cells"
-        gridBorder!.style.opacity = "1"
+        gridBorder.style.opacity = "1"
     } else {
+        savingGrid = true
+        editIcon.classList.remove("active")
+        saveIcon.classList.remove("active")
+        loadingIndicator.classList.add("active")
         grid.disable()
-        await saveGrid(grid)
         fillGridWithDummies(grid)
+        editButton.title = "Loading"
+        gridBorder.style.opacity = "0"
+        await saveGrid(grid)
         editButton.title = "Edit Cells"
-        gridBorder!.style.opacity = "0"
+        editIcon.classList.add("active")
+        loadingIndicator.classList.remove("active")
+        savingGrid = false
     }
 }
