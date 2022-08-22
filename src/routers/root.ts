@@ -21,7 +21,7 @@ router.get("/", frameguard({ action: "deny" }), async (req, res) => {
     res.render("index", { user: req.user, strategy: strategyIdToName[strategy], dynamicCells })
 })
 
-const staticPages = ["home", "api-docs"]
+const staticPages = ["home", "guides", "api-docs"]
 
 staticPages.forEach(page => {
     router.get("/" + page, async (req, res) => {
