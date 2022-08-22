@@ -17,14 +17,14 @@ Read further for more information.
 
 ### Editing mode
 
-To enter the editing mode click the ![Edit Button (pencil)]() in the top right corner of the grid.\
-In editing mode you can [add a cell](), [delete a cell]() or [edit an existing cell](). After making any of those changes the **grid will not save automatically**, to save the changes click the ![Save Button (cloud)]().
+To enter the editing mode click ![the Edit Button (pencil)](/static/assets/static-pages/guides/edit-btn.png) in the top right corner of the grid.\
+In editing mode you can [add a cell](#adding-a-cell), [delete a cell](#deleting-a-cell) or [edit an existing cell](#editing-a-cell). After making any of those changes the **grid will not save automatically**, to save the changes click ![the Save Button (cloud)](/static/assets/static-pages/guides/save-btn.png).
 
-If you messed something up you can also click the ![Revert Button (arrow)]() and revert the changes.
+If you messed something up you can also click ![the Revert Button (arrow)](/static/assets/static-pages/guides/revert-btn.png) and revert the changes.
 
 ### Adding a cell
 
-To add a cell enter the [editing mode](#editing-mode) and click the ![Add Button (plus symbol)](). You will be presented with a window in which you can add a cell.
+To add a cell enter the [editing mode](#editing-mode) and click ![the Add Button (plus symbol)](/static/assets/static-pages/guides/add-btn.png). You will be presented with a window in which you can add a cell.
 
 There are two types of a cell that you can add, a link cell and a dynamic cell:
 
@@ -66,7 +66,7 @@ To resize or move a cell you have to enter the [editing mode](#editing-mode). Yo
 
 ## Grid
 
-To open grid settings click the ![Settings Button (gear)]() in the top-right corner of the grid.
+To open grid settings click ![the Settings Button (gear)](/static/assets/static-pages/guides/settings-btn.png) in the top-right corner of the grid.
 
 ### Changing size
 
@@ -83,7 +83,7 @@ After changing the colors click the `Save` button to save the changes.
 
 ### Log out
 
-To log out open your profile by clicking the ![Profile Button (person)]() and then click ![Log out Button (red doors with arrow)]()
+To log out open your profile by clicking ![the Profile Button (person)](/static/assets/static-pages/guides/profile-btn.png) and then click ![the Log out Button (red doors with arrow)](/static/assets/static-pages/guides/logout-btn.png)
 
 # Other guides
 
