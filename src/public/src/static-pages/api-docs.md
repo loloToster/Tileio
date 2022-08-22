@@ -3,9 +3,20 @@
 
 # Creating Custom Dynamic Cell
 
+To facilitate the process of creating a dynamic cell, two APIs have been designed:
+
+1. [URL Api](#url-api) - helps you on the server-side by providing information like: size of the cell, colors etc as query parameters.
+2. [Widget Api](#widget-api) - helps on the client-side by communicating internally with the main page which allows you to create popups, context menu buttons, etc.
+
+Description of both of them can be found below.
+
 # URL Api
 
-The URL Api makes it easier to create a dynamic cell by providing multiple query parameters that define some of the user preferences The description of each parameter can be found below.
+The URL Api makes it easier to create a dynamic cell by providing multiple query parameters that define some of the user preferences. For example if the user specified: `https://yourapp.com/cell` as a custom iframe src when creating the cell the actual src might look like this:\
+`https://yourapp.com/cell?w=2&h=2&bgColor=%23212121&cellColor=%23333333`.\
+The description of each parameter can be found below.
+
+> ⚠️ **Every parameter is encoded using `encodeUriComponent` function. Always decode a parameter before using it!**
 
 ## Parameters
 
@@ -78,16 +89,52 @@ The `addContextMenuBtn` method allows you to create custom buttons in the main c
 
 **Returns**: `number[]` - The ids of added buttons in the same order that they were provided
 
+```js
+// Example:
+
+// add single global button (1st overload)
+widget.addContextMenuBtn({
+    text: "Open the app in new window",
+    action: () => {
+        window.open("https://yourapp.com/")
+    }
+})
+
+// add multiple buttons to the element (4th overload)
+const div = document.createElement("div")
+widget.addContextMenuBtn(div, [
+    {
+        text: "Button 1",
+        action: () => console.log("clicked btn 1")
+    },{
+        text: "Button 2",
+        action: () => console.log("clicked btn 2")
+    }
+])
+```
+
 ### removeContextMenuBtn
 
 The `removeContextMenuBtn` method removes buttons from the main context menu by their id or an HTML element related to them.
 
 **Calling**
 
-* removeContextMenuBtn(id: number) - removes a single buttons by its id
+* removeContextMenuBtn(id: number) - removes a single button by its id
 * removeContextMenuBtn(ids: number[]) - removes multiple buttons by their ids
-* removeContextMenuBtn(el: HTMLElement) - removes every button from an element
+* removeContextMenuBtn(el: HTMLElement) - removes every button from the element
 * removeContextMenuBtn(els: HTMLElement[]) - removes every button from all of the specified elements
+
+```js
+// Example:
+
+// remove buttons by ids (2nd overload)
+widget.removeContextMenuBtn([1, 2])
+
+// remove buttons by element (3rd overload)
+widget.removeContextMenuBtn(
+    document.getElementById("element")
+)
+```
 
 ### createError
 
@@ -96,6 +143,11 @@ Creates an error popup on the screen
 **Calling**
 
 * createError(msg: string) - shows an error with the specified message
+
+```js
+// Example:
+widget.createError("Something went wrong!")
+```
 
 ## Types
 

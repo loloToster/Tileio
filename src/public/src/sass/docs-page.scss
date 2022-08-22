@@ -4,6 +4,10 @@
     position: unset;
 }
 
+a {
+    color: c.$blue;
+}
+
 main {
     width: 100%;
     display: flex;
@@ -40,4 +44,12 @@ main {
 
 .content {
     width: 780px;
+}
+
+code {
+    background-color: #1c1d21;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+    margin: 4px;
+    border-radius: 3px;
+    box-shadow: 0 0 0 4px #1c1d21;
 }
