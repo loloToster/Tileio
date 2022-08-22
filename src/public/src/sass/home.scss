@@ -11,8 +11,10 @@ a {
     color: white;
 }
 
+$section-height: calc(100vh - 85px);
+
 section {
-    height: calc(100vh - 85px);
+    min-height: $section-height;
 }
 
 .landing {
@@ -24,7 +26,7 @@ section {
         align-items: center;
         justify-content: center;
         z-index: -1;
-        height: 100%;
+        height: $section-height;
         width: 100%;
     }
 
@@ -34,7 +36,7 @@ section {
 
     &__brief {
         width: 100%;
-        height: 100%;
+        height: $section-height;
     }
 
     &__brief-content-wrapper {
@@ -100,5 +102,37 @@ section {
         height: 0;
         border-bottom: calc(100vh - 85px) solid #383a45e0; // height
         border-right: 200px solid transparent; // width
+    }
+}
+
+.advantages {
+    background-color: #3c3e4b;
+
+    a {
+        color: c.$blue;
+    }
+
+    &__advantage {
+        width: 60vw;
+        padding: 120px 0;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__img {
+        height: 370px;
+        width: 370px;
+    }
+
+    &__text {
+        height: fit-content;
+        max-width: 45%;
+        font-size: 1.7rem;
+    }
+
+    &__h1 {
+        font-size: 2.5rem;
     }
 }
