@@ -36,6 +36,7 @@ clearInput.addEventListener("click", () => {
     input.value = ""
     toggleClearBtn()
     onInput()
+    input.focus()
 })
 
 const operators = [
