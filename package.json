@@ -1,5 +1,5 @@
 {
-  "name": "widgetblocks",
+  "name": "tileio",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
@@ -13,8 +13,8 @@
     "build": "npm run build-client && npm run build-server-bash",
     "start": "node ./dist/app.js",
     "test": "ts-node ./src/app.ts",
-    "start-service": "qckwinsvc --name WidgetBlocks --description WidgetBlocks --script ./dist/app.js --startImmediately",
-    "stop-service": "qckwinsvc --uninstall --name WidgetBlocks --script ./dist/app.js"
+    "start-service": "qckwinsvc --name Tileio --description Tileio --script ./dist/app.js --startImmediately",
+    "stop-service": "qckwinsvc --uninstall --name Tileio --script ./dist/app.js"
   },
   "author": "",
   "license": "ISC",

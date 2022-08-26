@@ -79,7 +79,7 @@ router.post("/create-account", async (req, res) => {
     }).save()
 
     await emailTransporter.sendMail({
-        from: `WidgetBlocks <${process.env.APP_EMAIL}>`,
+        from: `Tileio <${process.env.APP_EMAIL}>`,
         to: u.email,
         subject: "Verify your account",
         html: `Verify your account by clicking <a href="${req.protocol}://${req.headers.host}/auth/validate-email/${encodeURIComponent(u.token)}">here</a>. `

@@ -113,7 +113,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     let lastAt = ""
     let atExpires = new Date()
     const spotifyApi = new SpotifyApi({
-        name: "Widgetblocks",
+        name: "Tileio",
         getOAuthToken: async cb => {
             let at: string
             try {
