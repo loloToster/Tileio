@@ -1,10 +1,14 @@
 const login = document.querySelector(".login")!
 
+const infoBox = login.querySelector<HTMLDivElement>(".login__message-box--info")!
 const loginForm = login.getElementsByTagName("form")[0]
 const loginEmailInp = <HTMLInputElement>document.getElementById("login-email")!
 const loginEmailValidation = <HTMLDivElement>document.getElementById("login-email-validation")!
 const loginPasswordInp = <HTMLInputElement>document.getElementById("login-password")!
 const loginPasswordValidation = <HTMLDivElement>document.getElementById("login-password-validation")!
+const loginBtn = login.querySelector("button[type='submit']")!
+
+const loginCreateAccountSection = login.querySelector<HTMLDivElement>(".login__no-account")!
 
 const toggleLoginPassword = login.querySelector<HTMLButtonElement>(".text-inp__toggle-password")!
 toggleLoginPassword.addEventListener("click", () => {
@@ -27,6 +31,8 @@ loginForm.addEventListener("submit", e => {
         e.preventDefault()
         return
     }
+
+    loginBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`
 })
 
 const signUpBtn = document.getElementById("sign-up")
@@ -71,6 +77,8 @@ createAccountBtn.addEventListener("click", async () => {
         return
     }
 
+    createAccountBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`
+
     const res = await fetch("/auth/create-account", {
         method: "POST",
         body: JSON.stringify(body),
@@ -102,6 +110,12 @@ createAccountBtn.addEventListener("click", async () => {
             }
         }
 
+        createAccountBtn.innerHTML = "Create account"
         return
     }
+
+    infoBox.innerText = "Check your email, verify your account and login."
+    login.classList.add("active")
+    register.classList.remove("active")
+    loginCreateAccountSection.remove()
 })

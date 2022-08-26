@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
     <link rel="stylesheet" href="/static/css/login.css">
     <link rel="shortcut icon" href="/static/assets/favicon.ico" type="image/x-icon">
     <title>Login</title>
@@ -17,8 +18,9 @@
             <main>
                 <div class="login active">
                     <h1>Login</h1>
+                    <div class="login__message-box login__message-box--info"></div>
                     <% if (messages.error) { %>
-                        <div class="login__error-dialog">
+                        <div class="login__message-box login__message-box--error">
                             <%= messages.error %>
                         </div>
                         <% } %>

@@ -111,14 +111,28 @@ main {
         display: block;
     }
 
-    &__error-dialog {
+    &__message-box {
         box-sizing: border-box;
         width: 100%;
         padding: 8px;
-        color: $error-color;
-        border: $error-color solid 2px;
+        color: var(--color);
+        border: var(--color) solid 2px;
         border-radius: 5px;
-        background-color: #5a1e19;
+        background-color: var(--bg);
+
+        &:empty {
+            display: none;
+        }
+
+        &--error {
+            --color: #{$error-color};
+            --bg: #5a1e19;
+        }
+
+        &--info {
+            --color: #{c.$blue};
+            --bg: #0c3464;
+        }
     }
 
     &__forgot-pass {
