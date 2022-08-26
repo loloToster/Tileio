@@ -1,4 +1,5 @@
 import express from "express"
+import flash from "express-flash"
 import passport from "passport"
 import bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
@@ -8,6 +9,8 @@ import User from "../models/user"
 import UnvalidatedUser from "../models/unvalidatedUser"
 
 const router = express.Router()
+
+router.use(flash())
 
 router.get("/", async (req, res) => {
     res.render("login")
@@ -106,7 +109,9 @@ router.get("/validate-email/:token", async (req, res) => {
 
 router.post("/local",
     passport.authenticate("local", {
-        successRedirect: "/"
+        successRedirect: "/",
+        failureRedirect: "/auth",
+        failureFlash: true
     })
 )
 

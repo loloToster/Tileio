@@ -1,6 +1,8 @@
 @forward "./base/reset";
 @use "./static-pages/abstracts/colors" as c;
 
+$error-color: #d4392a;
+
 $brands: (
     "google": #EA4335,
     "discord": #5865F2,
@@ -71,6 +73,11 @@ body {
     }
 }
 
+.input-validation {
+    font-size: .9rem;
+    color: $error-color;
+}
+
 .action-btn {
     width: 100%;
     padding: 8px 0;
@@ -104,9 +111,14 @@ main {
         display: block;
     }
 
-    &__validation {
-        font-size: .9rem;
-        color: #d4392a;
+    &__error-dialog {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 8px;
+        color: $error-color;
+        border: $error-color solid 2px;
+        border-radius: 5px;
+        background-color: #5a1e19;
     }
 
     &__forgot-pass {

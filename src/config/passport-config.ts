@@ -24,13 +24,13 @@ passport.use(new LocalStrategy(
         const user = await User.findOne({ strategyId: "lcl-" + email })
 
         if (!user)
-            return done(null, false, { message: "Incorrect user or password" })
+            return done(null, false, { message: "Incorrect email or password" })
 
         try {
             if (await bcrypt.compare(password, user.hashedPassword!))
                 done(null, user)
             else
-                done(null, false, { message: "Incorrect user or password" })
+                done(null, false, { message: "Incorrect email or password" })
         } catch (err) {
             done(err)
         }
