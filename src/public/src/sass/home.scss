@@ -52,6 +52,7 @@ section {
 
     &__brief-heading {
         font-size: 4rem;
+        font-family: monospace;
     }
 
     &__brief-subheading {
@@ -71,7 +72,18 @@ section {
         }
     }
 
+    &__brief-synonyms {
+        position: relative;
+        color: transparent;
+        font-weight: bold;
+    }
+
     &__brief-synonyms::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: max-content;
+
         content: nth($synonyms, 1);
         $bg-color: transparent;
         // padding: 0 4px;
