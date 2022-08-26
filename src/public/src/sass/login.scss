@@ -35,51 +35,73 @@ body {
     border-right: 200px solid transparent; // width
 }
 
-.login {
-    background-color: #1c1d21;
-    border-radius: 12px;
+.text-inp {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: solid #383a45 2px;
+    margin: 10px 0;
+
+    input {
+        padding: 6px;
+        font-size: 1.3rem;
+        width: 60px;
+        flex-grow: 1;
+
+        &::placeholder {
+            color: #383a45;
+        }
+    }
+
+    svg {
+        width: 24px;
+        height: 24px;
+        fill: #383a45;
+        vertical-align: middle;
+    }
+
+    &__toggle-password {
+        margin-right: 4px;
+        cursor: pointer;
+
+        svg {
+            fill: #4d505f;
+        }
+    }
+}
+
+.action-btn {
+    width: 100%;
+    padding: 8px 0;
+    margin-top: 8px;
+    background-color: c.$blue;
+    font-size: 1.4rem;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+        filter: brightness(.9);
+    }
+}
+
+main {
     transform: translateX(80%);
-    width: 270px;
     padding: 32px;
+    border-radius: 12px;
+    background-color: #1c1d21;
 
     h1 {
         margin: 12px 0;
     }
+}
 
-    &__text-inp {
-        box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        width: 100%;
-        border-bottom: solid #383a45 2px;
-        margin: 10px 0;
+.login {
+    display: none;
+    width: 270px;
 
-        input {
-            padding: 6px;
-            font-size: 1.3rem;
-            width: 60px;
-            flex-grow: 1;
-
-            &::placeholder {
-                color: #383a45;
-            }
-        }
-
-        svg {
-            width: 24px;
-            height: 24px;
-            fill: #383a45;
-            vertical-align: middle;
-        }
-
-        #toggle-password {
-            margin-right: 4px;
-            cursor: pointer;
-
-            svg {
-                fill: #4d505f;
-            }
-        }
+    &.active {
+        display: block;
     }
 
     &__validation {
@@ -91,20 +113,6 @@ body {
         display: block;
         color: c.$blue;
         margin: 8px 4px;
-    }
-
-    &__main-btn {
-        width: 100%;
-        padding: 8px 0;
-        margin-top: 8px;
-        background-color: c.$blue;
-        font-size: 1.4rem;
-        border-radius: 8px;
-        cursor: pointer;
-
-        &:hover {
-            filter: brightness(.9);
-        }
     }
 
     &__no-account {
@@ -189,5 +197,14 @@ body {
         flex-grow: 1;
         background-color: var(--color);
         height: 100%;
+    }
+}
+
+.register {
+    display: none;
+    width: 320px;
+
+    &.active {
+        display: block;
     }
 }
