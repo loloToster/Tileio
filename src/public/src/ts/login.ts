@@ -1,11 +1,32 @@
 const login = document.querySelector(".login")!
 
+const loginForm = login.getElementsByTagName("form")[0]
 const loginEmailInp = <HTMLInputElement>document.getElementById("login-email")!
+const loginEmailValidation = <HTMLDivElement>document.getElementById("login-email-validation")!
 const loginPasswordInp = <HTMLInputElement>document.getElementById("login-password")!
+const loginPasswordValidation = <HTMLDivElement>document.getElementById("login-password-validation")!
 
 const toggleLoginPassword = login.querySelector<HTMLButtonElement>(".text-inp__toggle-password")!
 toggleLoginPassword.addEventListener("click", () => {
     loginPasswordInp.type = loginPasswordInp.type == "text" ? "password" : "text"
+})
+
+loginForm.addEventListener("submit", e => {
+    loginEmailValidation.innerText = ""
+    loginPasswordValidation.innerText = ""
+
+    if (!loginEmailInp.value) {
+        loginEmailValidation.innerText = "This field is required"
+        e.preventDefault()
+        return
+    }
+
+
+    if (!loginPasswordInp.value) {
+        loginPasswordValidation.innerText = "This field is required"
+        e.preventDefault()
+        return
+    }
 })
 
 const signUpBtn = document.getElementById("sign-up")
