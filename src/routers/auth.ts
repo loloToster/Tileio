@@ -1,8 +1,10 @@
 import express from "express"
 import passport from "passport"
 import bcrypt from "bcrypt"
+import nodemailer from "nodemailer"
 import { randomBytes } from "crypto"
 
+import User from "../models/user"
 import UnvalidatedUser from "../models/unvalidatedUser"
 
 const router = express.Router()
@@ -14,6 +16,14 @@ router.get("/", async (req, res) => {
 router.get("/logout", (req, res) => {
     req.logout()
     res.redirect("/")
+})
+
+const emailTransporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.APP_EMAIL,
+        pass: process.env.APP_EMAIL_PASSWORD
+    }
 })
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -49,17 +59,48 @@ router.post("/create-account", async (req, res) => {
     if (await UnvalidatedUser.exists({ email }))
         return res.status(400).json({
             field: "email",
-            msg: "This email is already waiting for validation"
+            msg: "Account with this email is already waiting for validation"
+        })
+
+    if (await User.exists({ strategyId: "lcl-" + email }))
+        return res.status(400).json({
+            field: "email",
+            msg: "There already exists a user with this email"
         })
 
     const u = await new UnvalidatedUser({
         name: username ? username : undefined,
         email,
         hashedPassword: await bcrypt.hash(password, 10),
-        token: encodeURIComponent(randomBytes(32).toString("hex") + email)
+        token: randomBytes(32).toString("hex") + email
     }).save()
 
-    console.log(u)
+    await emailTransporter.sendMail({
+        from: `WidgetBlocks <${process.env.APP_EMAIL}>`,
+        to: u.email,
+        subject: "Verify your account",
+        html: `Verify your account by clicking <a href="${req.protocol}://${req.headers.host}/auth/validate-email/${encodeURIComponent(u.token)}">here</a>. `
+    })
+
+    res.send()
+})
+
+router.get("/validate-email/:token", async (req, res) => {
+    const token = req.params.token
+    if (!token) return res.status(400).send("No token in requset")
+
+    const validatedUser = await UnvalidatedUser.findOneAndDelete({ token })
+
+    if (!validatedUser) return res.status(400).send("No user with speified token")
+
+    await new User({
+        name: validatedUser.name,
+        strategyId: "lcl-" + validatedUser.email,
+        email: validatedUser.email,
+        picture: ""
+    }).save()
+
+    res.send("Successfully verified account")
 })
 
 router.get("/google", passport.authenticate("google"))
