@@ -38,6 +38,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 function loadRouters(app: express.Application, dir: string, prefix = "") {
     let fullPath = path.join(dir, "root.js")

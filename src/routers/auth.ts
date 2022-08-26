@@ -97,28 +97,41 @@ router.get("/validate-email/:token", async (req, res) => {
         name: validatedUser.name,
         strategyId: "lcl-" + validatedUser.email,
         email: validatedUser.email,
+        hashedPassword: validatedUser.hashedPassword,
         picture: ""
     }).save()
 
     res.send("Successfully verified account")
 })
 
+router.post("/local",
+    passport.authenticate("local", {
+        successRedirect: "/"
+    })
+)
+
 router.get("/google", passport.authenticate("google"))
 
-router.get("/google/callback", passport.authenticate("google"), (req, res) => {
-    res.redirect("/")
-})
+router.get("/google/callback",
+    passport.authenticate("google", {
+        successRedirect: "/"
+    })
+)
 
 router.get("/discord", passport.authenticate("discord"))
 
-router.get("/discord/callback", passport.authenticate("discord"), (req, res) => {
-    res.redirect("/")
-})
+router.get("/discord/callback",
+    passport.authenticate("discord", {
+        successRedirect: "/"
+    })
+)
 
 router.get("/github", passport.authenticate("github"))
 
-router.get("/github/callback", passport.authenticate("github"), (req, res) => {
-    res.redirect("/")
-})
+router.get("/github/callback",
+    passport.authenticate("github", {
+        successRedirect: "/"
+    })
+)
 
 export = router

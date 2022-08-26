@@ -7,6 +7,7 @@ import dynamicCells from "../dynamic-cells.json"
 const router = express.Router()
 
 const strategyIdToName: Record<string, string> = {
+    "lcl": "Email",
     "ggl": "Google",
     "dsc": "Discord",
     "git": "Github"

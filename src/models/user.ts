@@ -23,6 +23,7 @@ export interface IUser {
     name: string,
     strategyId: string,
     email: string,
+    hashedPassword?: string,
     picture: string,
     grid: Grid,
     dynamicCells: Partial<DynamicCellsData>
@@ -32,6 +33,7 @@ const userSchema = new Schema<IUser>({
     name: String,
     strategyId: String,
     email: String,
+    hashedPassword: String,
     picture: String,
     grid: {
         col: { type: Number, default: 10 },

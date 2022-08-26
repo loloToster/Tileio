@@ -1,4 +1,7 @@
+import bcrypt from "bcrypt"
 import passport from "passport"
+
+import { Strategy as LocalStrategy } from "passport-local"
 import { Strategy as GoogleStrategy } from "passport-google-oauth20"
 import { Strategy as DiscordStrategy } from "passport-discord"
 import { Strategy as GithubStrategy } from "passport-github2"
@@ -13,6 +16,26 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id)
     done(null, user)
 })
+
+passport.use(new LocalStrategy(
+    {
+        usernameField: "email"
+    }, async (email, password, done) => {
+        const user = await User.findOne({ strategyId: "lcl-" + email })
+
+        if (!user)
+            return done(null, false, { message: "Incorrect user or password" })
+
+        try {
+            if (await bcrypt.compare(password, user.hashedPassword!))
+                done(null, user)
+            else
+                done(null, false, { message: "Incorrect user or password" })
+        } catch (err) {
+            done(err)
+        }
+    }
+))
 
 type parserFunc = (profile: any, sId: string) => Omit<IUser, "grid" | "dynamicCells">
 
