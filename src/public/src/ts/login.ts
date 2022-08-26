@@ -1,10 +1,12 @@
 const login = document.querySelector(".login")!
 
+const errorBox = login.querySelector<HTMLDivElement>(".login__message-box--error")!
 const infoBox = login.querySelector<HTMLDivElement>(".login__message-box--info")!
+
 const loginForm = login.getElementsByTagName("form")[0]
-const loginEmailInp = <HTMLInputElement>document.getElementById("login-email")!
+const loginEmailInp = <HTMLInputElement>loginForm.elements.namedItem("email")
 const loginEmailValidation = <HTMLDivElement>document.getElementById("login-email-validation")!
-const loginPasswordInp = <HTMLInputElement>document.getElementById("login-password")!
+const loginPasswordInp = <HTMLInputElement>loginForm.elements.namedItem("password")
 const loginPasswordValidation = <HTMLDivElement>document.getElementById("login-password-validation")!
 const loginBtn = login.querySelector("button[type='submit']")!
 
@@ -25,7 +27,6 @@ loginForm.addEventListener("submit", e => {
         return
     }
 
-
     if (!loginPasswordInp.value) {
         loginPasswordValidation.innerText = "This field is required"
         e.preventDefault()
@@ -43,20 +44,21 @@ signUpBtn?.addEventListener("click", () => {
 
 const register = document.querySelector(".register")!
 
-const registerUsernameInp = <HTMLInputElement>document.getElementById("register-username")
+const registerForm = register.getElementsByTagName("form")[0]
+const registerUsernameInp = <HTMLInputElement>registerForm.elements.namedItem("username")
 const registerUsernameValidation = <HTMLDivElement>document.getElementById("register-username-validation")
-const registerEmailInp = <HTMLInputElement>document.getElementById("register-email")
+const registerEmailInp = <HTMLInputElement>registerForm.elements.namedItem("email")
 const registerEmailValidation = <HTMLDivElement>document.getElementById("register-email-validation")
-const registerPasswordInp = <HTMLInputElement>document.getElementById("register-password")
+const registerPasswordInp = <HTMLInputElement>registerForm.elements.namedItem("password")
 const registerPasswordValidation = <HTMLDivElement>document.getElementById("register-password-validation")
-const createAccountBtn = <HTMLButtonElement>document.getElementById("create-account")
+const createAccountBtn = registerForm.querySelector<HTMLButtonElement>("button[type='submit']")!
 
 const toggleRegisterPassword = register.querySelector<HTMLButtonElement>(".text-inp__toggle-password")!
 toggleRegisterPassword.addEventListener("click", () => {
     registerPasswordInp.type = registerPasswordInp.type == "text" ? "password" : "text"
 })
 
-createAccountBtn.addEventListener("click", async () => {
+registerForm.addEventListener("submit", async () => {
     registerUsernameValidation.innerText = ""
     registerEmailValidation.innerText = ""
     registerPasswordValidation.innerText = ""
@@ -87,35 +89,50 @@ createAccountBtn.addEventListener("click", async () => {
         }
     })
 
-    if (res.status != 200) {
-        const json = await res.json()
-        switch (json.field) {
-            case "username": {
-                registerUsernameValidation.innerText = json.msg
-                break
-            }
-
-            case "email": {
-                registerEmailValidation.innerText = json.msg
-                break
-            }
-
-            case "password": {
-                registerPasswordValidation.innerText = json.msg
-                break
-            }
-
-            default: {
-                break
-            }
+    switch (res.status) {
+        case 200: {
+            errorBox.innerText = ""
+            infoBox.innerText = "Check your email, verify your account and login."
+            login.classList.add("active")
+            register.classList.remove("active")
+            loginCreateAccountSection.remove()
+            break
         }
 
-        createAccountBtn.innerHTML = "Create account"
-        return
-    }
+        case 400: {
+            const json = await res.json()
+            switch (json.field) {
+                case "username": {
+                    registerUsernameValidation.innerText = json.msg
+                    break
+                }
 
-    infoBox.innerText = "Check your email, verify your account and login."
-    login.classList.add("active")
-    register.classList.remove("active")
-    loginCreateAccountSection.remove()
+                case "email": {
+                    registerEmailValidation.innerText = json.msg
+                    break
+                }
+
+                case "password": {
+                    registerPasswordValidation.innerText = json.msg
+                    break
+                }
+
+                default: {
+                    break
+                }
+            }
+
+            createAccountBtn.innerHTML = "Create account"
+            break
+        }
+
+        default: {
+            infoBox.innerText = ""
+            errorBox.innerText = "Something went wrong. Please try again."
+            login.classList.add("active")
+            register.classList.remove("active")
+            createAccountBtn.innerHTML = "Create account"
+            break
+        }
+    }
 })
