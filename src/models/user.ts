@@ -31,7 +31,7 @@ export interface IUser {
 
 const userSchema = new Schema<IUser>({
     name: String,
-    strategyId: String,
+    strategyId: { type: String, unique: true },
     email: String,
     hashedPassword: String,
     picture: String,

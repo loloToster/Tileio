@@ -10,7 +10,7 @@ interface IUnvalidatedUser {
 
 const unnvalidatedUserSchema = new Schema<IUnvalidatedUser>({
     name: String,
-    email: String,
+    email: { type: String, unique: true },
     hashedPassword: String,
     token: String,
     createdAt: { type: Date, expires: 3600, default: Date.now }
