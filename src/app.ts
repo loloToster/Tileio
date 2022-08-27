@@ -62,6 +62,10 @@ function loadRouters(app: express.Application, dir: string, prefix = "") {
 
 loadRouters(app, __dirname + "/routers")
 
+app.get("*", (req, res) => {
+    res.status(404).render("not-found")
+})
+
 mongoose.connect(process.env.MONGO!)
 
 const port = process.env.PORT

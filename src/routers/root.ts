@@ -24,9 +24,22 @@ router.get("/", frameguard({ action: "deny" }), async (req, res) => {
 
 const staticPages = ["home", "guides", "api-docs"]
 
+function titleizePage(page: string) {
+    const titleElements = page.split("-")
+
+    // Capitalize every word
+    titleElements.forEach((el, i) => {
+        titleElements[i] = el.charAt(0).toUpperCase() + el.slice(1)
+    })
+
+    return titleElements.join(" ")
+}
+
 staticPages.forEach(page => {
-    router.get("/" + page, async (req, res) => {
-        res.render("static-page", { content: page })
+    const title = titleizePage(page)
+
+    router.get("/" + page, (req, res) => {
+        res.render("static-page", { content: page, title })
     })
 })
 

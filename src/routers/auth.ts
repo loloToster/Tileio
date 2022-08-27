@@ -90,11 +90,14 @@ router.post("/create-account", async (req, res) => {
 
 router.get("/validate-email/:token", async (req, res) => {
     const token = req.params.token
-    if (!token) return res.status(400).send("No token in requset")
+
+    if (!token)
+        return res.status(400).render("email-verified", { msg: "No token in requset" })
 
     const validatedUser = await UnvalidatedUser.findOneAndDelete({ token })
 
-    if (!validatedUser) return res.status(400).send("No user with speified token")
+    if (!validatedUser)
+        return res.status(400).render("email-verified", { msg: "No user with specified token" })
 
     await new User({
         name: validatedUser.name,
@@ -104,7 +107,7 @@ router.get("/validate-email/:token", async (req, res) => {
         picture: ""
     }).save()
 
-    res.send("Successfully verified account")
+    res.render("email-verified", { msg: "Successfully verified account" })
 })
 
 router.post("/local",
