@@ -369,6 +369,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         playerDeviceEl.classList.remove("active")
 
+        if (!state.track_window.current_track) return
+
         updateState({
             currentTrack: {
                 id: state.track_window.current_track.id || "",

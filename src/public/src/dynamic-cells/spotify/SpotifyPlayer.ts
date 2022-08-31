@@ -14,9 +14,12 @@ export class SpotifyApi extends Spotify.Player {
 
         this.playingHere = false
         this.deviceId = null
+
         this.addListener("ready", ({ device_id }) => {
             this.deviceId = device_id
         })
+
+        this.on("player_state_changed", () => this.playingHere = true)
 
         this.globalStateListeners = []
         this.cachedGlobalState = null
@@ -132,18 +135,39 @@ export class SpotifyApi extends Spotify.Player {
     }
 
     async toggleShuffle() {
-        const state = await this.getCurrentState()
-        if (!state) return
-        const shuffle = !state.shuffle
-        await this.fetchApi("/me/player/shuffle?state=" + shuffle, "PUT")
+        let shuffle: boolean | undefined
+
+        if (this.playingHere) {
+            const localState = await this.getCurrentState()
+            shuffle = localState?.shuffle
+        }
+
+        if (shuffle === undefined) {
+            const globalState = await this.getGlobalState()
+            shuffle = globalState.shuffle_state
+        }
+
+        await this.fetchApi("/me/player/shuffle?state=" + !shuffle, "PUT")
     }
 
     async toggleRepeat() {
         const REPEAT_MODES = ["off", "context", "track"]
-        const state = await this.getCurrentState()
-        if (!state) return
-        const repeatMode = (state.repeat_mode + 1) % 3
-        await this.fetchApi("/me/player/repeat?state=" + REPEAT_MODES[repeatMode], "PUT")
+        let currentRepeatMode: number | undefined
+
+        if (this.playingHere) {
+            const localState = await this.getCurrentState()
+            currentRepeatMode = localState?.repeat_mode
+        }
+
+        if (currentRepeatMode === undefined) {
+            const globalState = await this.getGlobalState()
+            currentRepeatMode = REPEAT_MODES.indexOf(globalState.repeat_state)
+        }
+
+        if (currentRepeatMode === undefined) return
+
+        const newRepeatMode = (currentRepeatMode + 1) % 3
+        await this.fetchApi("/me/player/repeat?state=" + REPEAT_MODES[newRepeatMode], "PUT")
     }
 
     async seek(pos: number) {
