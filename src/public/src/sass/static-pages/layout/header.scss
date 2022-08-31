@@ -11,7 +11,6 @@ $mobile-threshold: 50rem;
     padding: 20px 120px;
     background-color: #30323c;
     box-shadow: 0px 0px 8px 0px #191a21;
-    width: 100vw;
 
     @media (max-width: $mobile-threshold) {
         padding: 20px;
@@ -74,7 +73,10 @@ $mobile-threshold: 50rem;
     &__links {
         padding: 0;
         margin: 0;
-        padding: 60px 150px 0 30px;
+
+        @media (max-width: $mobile-threshold) {
+            padding: 60px 150px 0 30px;
+        }
     }
 
     &__link {
