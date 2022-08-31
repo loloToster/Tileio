@@ -1,6 +1,8 @@
 @use "sass:math" as math;
 @use "./static-pages/abstracts/colors" as c;
 
+$mobile-threshold: 50rem;
+
 h1,
 p {
     margin: 0;
@@ -18,7 +20,12 @@ section {
 }
 
 .landing {
+    display: block;
     position: relative;
+
+    @media (max-width: $mobile-threshold) {
+        display: none;
+    }
 
     &__image-wrapper {
         position: absolute;
@@ -53,10 +60,19 @@ section {
     &__brief-heading {
         font-size: 4rem;
         font-family: monospace;
+
+        @media (max-width: 30rem) {
+            font-size: 3rem;
+        }
     }
 
     &__brief-subheading {
         font-size: 1.6rem;
+        white-space: nowrap;
+
+        @media (max-width: 30rem) {
+            font-size: 1.2rem;
+        }
     }
 
     $synonyms: "homepage", "dashboard", "control panel";
@@ -106,6 +122,11 @@ section {
     &__brief-login {
         font-size: 1.2rem;
         padding: 12px;
+
+        @media (max-width: 30rem) {
+            font-size: 1rem;
+            padding: 8px;
+        }
     }
 
     &__brief-triangle {
@@ -114,6 +135,43 @@ section {
         height: 0;
         border-bottom: calc(100vh - 85px) solid #383a45e0; // height
         border-right: 200px solid transparent; // width
+    }
+}
+
+.landing-mobile {
+    display: none;
+    position: relative;
+
+    @media (max-width: $mobile-threshold) {
+        display: block;
+    }
+
+    &__img-wrapper {
+        z-index: -1;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #3c3e4b;
+        height: 100%;
+        width: 100%;
+    }
+
+    &__img {
+        height: 70%;
+    }
+
+    &__brief-wrapper {
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        padding: 60px 0;
+        background-color: c.$bg-color;
+    }
+
+    &__wave {
+        width: 100vw;
+        transform: translateY(-2px);
     }
 }
 
@@ -131,17 +189,37 @@ section {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
+        @media (max-width: $mobile-threshold) {
+            flex-direction: column-reverse;
+            padding: 30px 0;
+
+            &:nth-child(2) {
+                flex-direction: column;
+            }
+        }
     }
 
     &__img {
         height: 370px;
         width: 370px;
+
+        @media (max-width: $mobile-threshold) {
+            height: 80vw;
+            width: 80vw;
+        }
     }
 
     &__text {
         height: fit-content;
         max-width: 45%;
         font-size: 1.7rem;
+
+        @media (max-width: $mobile-threshold) {
+            margin: 30px 0;
+            text-align: center;
+            max-width: 90vw;
+        }
     }
 
     &__h1 {

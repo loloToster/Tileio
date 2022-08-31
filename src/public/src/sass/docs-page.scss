@@ -1,7 +1,11 @@
 @use "./static-pages/abstracts/colors" as c;
 
-.header {
-    position: unset;
+$mobile-threshold: 50rem;
+
+@media (min-width: $mobile-threshold) {
+    .header {
+        position: unset;
+    }
 }
 
 a {
@@ -28,6 +32,10 @@ main {
     border-radius: 8px;
     box-shadow: 1px 1px 4px 0px #191a21;
 
+    @media (max-width: $mobile-threshold) {
+        display: none;
+    }
+
     a {
         display: block;
         margin-top: 4px;
@@ -43,7 +51,9 @@ main {
 }
 
 .content {
-    width: 780px;
+    box-sizing: border-box;
+    width: min(100vw, 780px);
+    padding: 0 10px;
 }
 
 code {

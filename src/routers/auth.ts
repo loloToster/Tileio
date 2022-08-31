@@ -4,6 +4,7 @@ import passport from "passport"
 import bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
 import { randomBytes } from "crypto"
+import useragent from "express-useragent"
 
 import User from "../models/user"
 import UnvalidatedUser from "../models/unvalidatedUser"
@@ -11,6 +12,13 @@ import UnvalidatedUser from "../models/unvalidatedUser"
 const router = express.Router()
 
 router.use(flash())
+
+router.use(useragent.express(), (req, res, next) => {
+    if (req.useragent?.isMobile)
+        res.render("mobile-login")
+    else
+        next()
+})
 
 router.get("/", async (req, res) => {
     res.render("login")
