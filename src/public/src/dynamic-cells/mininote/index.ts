@@ -1,23 +1,33 @@
 import createWidget from "../../ts/iframe-api"
 
-createWidget()
+const w = createWidget()
 
-const note = document.getElementById("note")
+const note = <HTMLTextAreaElement>document.getElementById("note")
+const saving = document.querySelector<HTMLDivElement>(".saving")
 
-note?.addEventListener("input", () => {
-    const text = note.innerText.replace(/\n/g, "<br>")
-    fetch("/dynamic-cells/mininote/update", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ text })
-    })
+let savingTimeout: any
+
+note?.addEventListener("input", async () => {
+    clearTimeout(savingTimeout)
+    saving?.classList.add("active")
+    savingTimeout = setTimeout(saveNote, 500, note.value)
 })
 
-note?.addEventListener("paste", e => {
-    e.preventDefault()
-    var text = e.clipboardData?.getData("text/plain")
-    text = text?.replace(/\n/g, "<br>")
-    document.execCommand("insertHTML", false, text)
-})
+async function saveNote(text: string) {
+    try {
+        const res = await fetch("/dynamic-cells/mininote/update", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ text })
+        })
+
+        if (!res.ok)
+            throw Error("Response is not ok")
+    } catch {
+        w.createError("Could not save the note")
+    }
+
+    saving?.classList.remove("active")
+}
