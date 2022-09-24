@@ -16,6 +16,11 @@ const evaluator = new BigEval()
 function onInput() {
     toggleClearBtn()
 
+    if (!input.value) {
+        resultBox.innerText = ""
+        return
+    }
+
     let result: string
 
     let expression = input.value.replace(/π/g, ` PI `)
