@@ -1,4 +1,4 @@
-import { evaluate } from "mathjs"
+import BigEval from "./Evaluator"
 import createWidget from "../../ts/iframe-api"
 
 createWidget()
@@ -11,21 +11,20 @@ function toggleClearBtn() {
     clearInput.classList.toggle("active", Boolean(input.value))
 }
 
+const evaluator = new BigEval()
+
 function onInput() {
     toggleClearBtn()
 
     let result: string
 
-    try {
-        let expression = input.value.replace(/π/g, ` ${Math.PI.toString()} `)
-        let evaluation: string | undefined = evaluate(expression)
-        if (evaluation) {
-            result = "= " + evaluation
-        } else
-            result = ""
-    } catch {
+    let expression = input.value.replace(/π/g, ` PI `)
+    let evaluation: unknown = evaluator.exec(expression)
+
+    if (typeof evaluation === "object")
+        result = "= " + evaluation?.toString()
+    else
         result = "Invalid Syntax"
-    }
 
     resultBox.innerText = result
 }
