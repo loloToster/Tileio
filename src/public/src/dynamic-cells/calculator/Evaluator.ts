@@ -1,6 +1,6 @@
 // @ts-ignore
 import BigEval from "bigeval"
-import Decimal from "Decimal.js"
+import Decimal from "decimal.js"
 
 function p(s: any) {
     return s[0] === "+" ? s.substring(1) : s
