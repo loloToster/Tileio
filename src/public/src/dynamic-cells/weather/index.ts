@@ -125,6 +125,7 @@ async function main() {
         day.addEventListener("click", () => {
             days.forEach(d => d.classList.remove("active"))
             day.classList.add("active")
+            curTab = i
             drawWeather(i, weather)
         })
     })

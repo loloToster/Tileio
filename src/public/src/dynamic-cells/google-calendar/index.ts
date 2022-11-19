@@ -202,38 +202,36 @@ function generateCalendar(parsedCalendar: parsedCalendar) {
     })
 }
 
-async function updateCalendar() {
-    const calendar: jsonIKalenderEvent[] = (await fetch(
-        "/dynamic-cells/google-calendar/ical"
-    ).then(r => r.json())).calendar
-
-    const parsedCalendar = parseCalendar(calendar)
-    generateCalendar(parsedCalendar)
-}
-
 document.querySelector<HTMLDivElement>(".header__month")!.innerText = months[new Date().getMonth()]
 
+const editIcal = document.querySelector<HTMLButtonElement>(".header__btn--edit-ical")!
+const editIcalModal = document.querySelector<HTMLDivElement>(".input-modal")!
+const editIcalModalInput = document.querySelector<HTMLInputElement>(".input-modal__input")!
+const saveBtn = document.querySelector<HTMLButtonElement>(".input-modal__save")!
 const refreshBtn = document.querySelector<HTMLButtonElement>(".header__btn--refresh")!
+
 let refreshing = false
 
-refreshBtn.addEventListener("click", async () => {
+async function updateCalendar() {
     if (refreshing) return
 
     refreshing = true
     refreshBtn.classList.add("active")
 
     try {
-        await updateCalendar()
+        const calendar: jsonIKalenderEvent[] = (await fetch(
+            "/dynamic-cells/google-calendar/ical"
+        ).then(r => r.json())).calendar
+    
+        const parsedCalendar = parseCalendar(calendar)
+        generateCalendar(parsedCalendar)
     } finally {
         refreshBtn.classList.remove("active")
         refreshing = false
     }
-})
+}
 
-const editIcal = document.querySelector<HTMLButtonElement>(".header__btn--edit-ical")!
-const editIcalModal = document.querySelector<HTMLDivElement>(".input-modal")!
-const editIcalModalInput = document.querySelector<HTMLInputElement>(".input-modal__input")!
-const saveBtn = document.querySelector<HTMLButtonElement>(".input-modal__save")!
+refreshBtn.addEventListener("click", async () => updateCalendar())
 
 editIcal.addEventListener("click", () => {
     editIcalModal.classList.add("active")
@@ -250,11 +248,8 @@ saveBtn.addEventListener("click", async () => {
         method: "PUT"
     })
     editIcalModal.classList.remove("active")
+    updateCalendar()
 })
 
-refreshing = true
-refreshBtn.classList.add("active")
-updateCalendar().finally(() => {
-    refreshBtn.classList.remove("active")
-    refreshing = false
-})
+updateCalendar()
+setInterval(updateCalendar, 5 * 60 * 1000)
