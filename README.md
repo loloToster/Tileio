@@ -4,7 +4,7 @@
 <p align="center">
     Highly customizable grid homepage creator.
     <br>
-    Go to <a href="https://tileio.herokuapp.com/" target="_blank">tileio.herokuapp.com</a> to learn more.
+    Go to <a href="https://tileio.cyclic.app/" target="_blank">tileio.cyclic.app</a> to learn more.
 </p>
 <p align="center">
     <img src="https://img.shields.io/badge/-typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=3178C6&labelColor=151515">
