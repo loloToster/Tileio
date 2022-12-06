@@ -65,7 +65,7 @@ export class SpotifyApi extends Spotify.Player {
             setInterval(async () => {
                 const curState = await this.getGlobalState()
                 this.cachedGlobalState = curState
-                this.playingHere = curState?.device.id == this.deviceId
+                this.playingHere = curState?.device?.id == this.deviceId
                 if (this.playingHere) return
                 this.globalStateListeners.forEach(l => l(curState))
             }, 1000)
