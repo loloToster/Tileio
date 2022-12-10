@@ -51,6 +51,8 @@ export class SpotifyApi extends Spotify.Player {
     async getJson(path: string, method = "GET", body?: string) {
         const res = await this.fetchApi(path, method, body)
 
+        if (!res.ok) return null
+
         try {
             return await res.json()
         } catch {
@@ -88,7 +90,9 @@ export class SpotifyApi extends Spotify.Player {
 
     async getGlobalState() {
         try {
-            return await this.getJson("/me/player")
+            const state = await this.getJson("/me/player")
+            if (!state) return this.cachedGlobalState
+            return state
         } catch {
             return this.cachedGlobalState
         }
