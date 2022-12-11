@@ -25,7 +25,8 @@ const weatherIcon = document.querySelector<HTMLImageElement>(".weather__icon img
 const temp = document.querySelector<HTMLSpanElement>(".weather__temp .data")
 const min = document.querySelector<HTMLSpanElement>(".weather__min .data")
 const max = document.querySelector<HTMLSpanElement>(".weather__max .data")
-const rain = document.querySelector<HTMLSpanElement>(".weather__rain .data")
+const precipitationLabel = document.querySelector<HTMLSpanElement>(".weather__rain .label")
+const precipitation = document.querySelector<HTMLSpanElement>(".weather__rain .data")
 const humditiy = document.querySelector<HTMLSpanElement>(".weather__humidity .data")
 const wind = document.querySelector<HTMLSpanElement>(".weather__wind .data")
 const pressure = document.querySelector<HTMLSpanElement>(".weather__pressure .data")
@@ -33,6 +34,44 @@ const pressure = document.querySelector<HTMLSpanElement>(".weather__pressure .da
 const days = document.querySelectorAll(".days__day")
 
 const getIcon = (i: string) => `https://cdn.jsdelivr.net/npm/@bybas/weather-icons@2.0.0/production/fill/openweathermap/${i}.svg`
+
+interface TabData {
+    icon: string,
+    cur: number,
+    min: number,
+    max: number,
+    rain: number,
+    snow: number,
+    humidity: number,
+    windSpeed: number,
+    pressure: number
+}
+
+function drawTabData(data: TabData) {
+    const icon = getIcon(data.icon)
+    if (weatherIcon!.src != icon) weatherIcon!.src = icon
+    temp!.innerText = Math.round(data.cur).toString()
+    min!.innerText = Math.round(data.min).toString()
+    max!.innerText = Math.round(data.max).toString()
+
+    if (precipitation && precipitationLabel) {
+        if (data.rain && data.snow) {
+            precipitationLabel.innerText = "Rain/Snow"
+            precipitation.innerText = data.rain.toString() + "/" + data.snow.toString()
+        } else if (data.snow && !data.rain) {
+            precipitationLabel.innerText = "Snow"
+            precipitation.innerText = data.snow.toString()
+        } else {
+            precipitationLabel.innerText = "Rain"
+            precipitation.innerText = data.rain.toString()
+        }
+
+    }
+
+    if (humditiy) humditiy.innerText = data.humidity.toString()
+    if (wind) wind.innerText = data.windSpeed.toString()
+    if (pressure) pressure.innerText = data.pressure.toString()
+}
 
 function drawWeather(tab: number, data: any) {
     locationCity!.innerText = data.name || "Your Location"
@@ -51,25 +90,29 @@ function drawWeather(tab: number, data: any) {
     const daily: DailyWeather[] = data.daily
 
     if (tab == 0) {
-        const icon = getIcon(current.weather.icon.raw)
-        if (weatherIcon!.src != icon) weatherIcon!.src = icon
-        temp!.innerText = Math.round(current.weather.temp.cur).toString()
-        min!.innerText = Math.round(daily[0].weather.temp.min).toString()
-        max!.innerText = Math.round(daily[0].weather.temp.max).toString()
-        if (rain) rain.innerText = current.weather.rain.toString()
-        if (humditiy) humditiy.innerText = current.weather.humidity.toString()
-        if (wind) wind.innerText = current.weather.wind.speed.toString()
-        if (pressure) pressure.innerText = current.weather.pressure.toString()
+        drawTabData({
+            icon: current.weather.icon.raw,
+            cur: current.weather.temp.cur,
+            min: daily[0].weather.temp.min,
+            max: daily[0].weather.temp.max,
+            rain: current.weather.rain,
+            snow: current.weather.snow,
+            humidity: current.weather.humidity,
+            windSpeed: current.weather.wind.speed,
+            pressure: current.weather.pressure
+        })
     } else {
-        const icon = getIcon(daily[tab].weather.icon.raw)
-        if (weatherIcon!.src != icon) weatherIcon!.src = icon
-        temp!.innerText = Math.round(daily[tab].weather.temp.day).toString()
-        min!.innerText = Math.round(daily[tab].weather.temp.min).toString()
-        max!.innerText = Math.round(daily[tab].weather.temp.max).toString()
-        if (rain) rain.innerText = daily[tab].weather.rain.toString()
-        if (humditiy) humditiy.innerText = daily[tab].weather.humidity.toString()
-        if (wind) wind.innerText = daily[tab].weather.wind.speed.toString()
-        if (pressure) pressure.innerText = daily[tab].weather.pressure.toString()
+        drawTabData({
+            icon: daily[tab].weather.icon.raw,
+            cur: daily[tab].weather.temp.day,
+            min: daily[tab].weather.temp.min,
+            max: daily[tab].weather.temp.max,
+            rain: daily[tab].weather.rain,
+            snow: daily[tab].weather.snow,
+            humidity: daily[tab].weather.humidity,
+            windSpeed: daily[tab].weather.wind.speed,
+            pressure: daily[tab].weather.pressure
+        })
     }
 
     days.forEach((day, i) => {
