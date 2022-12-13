@@ -51,7 +51,7 @@
     "marked": "^4.0.18",
     "mongoose": "^6.3.5",
     "nodemailer": "^6.7.8",
-    "openweather-api-node": "^1.4.1",
+    "openweather-api-node": "^2.0.0",
     "passport": "^0.5.3",
     "passport-discord": "^0.1.4",
     "passport-github2": "^0.1.12",

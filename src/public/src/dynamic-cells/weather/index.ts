@@ -1,4 +1,4 @@
-import { CurrentWeather, DailyWeather, Location } from "openweather-api-node/typings"
+import { CurrentWeather, DailyWeather, Location } from "openweather-api-node"
 import createWidget from "../../ts/iframe-api"
 
 createWidget()
