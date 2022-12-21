@@ -135,7 +135,7 @@ export function setupIframeApi(grid: GridStack) {
                 } else
                     iframe.contentWindow?.postMessage({ type: "err", msg: "Bad type of custom btns" }, "*")
 
-                customContextMenu({ x, y }, grid, cellElement, serializedCell, customBtns)
+                customContextMenu({ x, y }, grid, cellElement, { content: serializedCell }, customBtns)
 
                 break
             }

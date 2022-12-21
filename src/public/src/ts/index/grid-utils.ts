@@ -222,6 +222,19 @@ export function customContextMenu(
         structure.push(true)
     }
 
+    if (cell.content?.type === "d") {
+        const iframe = widgetEl.querySelector("iframe")
+
+        structure.push({
+            innerText: "Reload",
+            onclick: () => {
+                iframe!.src = iframe!.src
+            }
+        })
+
+        structure.push(true)
+    }
+
     structure = structure.concat(defaultContextMenuBtns)
 
     structure.forEach(btnOrSeparator => {
