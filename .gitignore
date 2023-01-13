@@ -4,5 +4,6 @@
 /src/public/views/static-pages/
 /src/public/static/*
 !/src/public/static/assets/
-.env
+.env*
+!.env.exmaple
 TODO.md
