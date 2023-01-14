@@ -62,9 +62,11 @@ app.get("*", (req, res) => {
     res.status(404).render("not-found")
 })
 
-mongoose.connect(process.env.MONGO!)
+const MONGO_URL = process.env.MONGO!
+console.log("connecting to mongo:", MONGO_URL)
+mongoose.connect(MONGO_URL)
 
-const port = process.env.PORT
+const port = process.env.PORT || 80
 
 mongoose.connection.once("open", () => {
     app.listen(port, () => {
