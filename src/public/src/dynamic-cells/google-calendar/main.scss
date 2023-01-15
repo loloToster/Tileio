@@ -118,11 +118,15 @@ $scrollbar-width: 8px;
     }
 
     &__no-events {
-        display: flex;
+        display: none;
         align-items: center;
         height: 20vw;
         margin-left: 4px;
         color: grey;
+
+        &.active {
+            display: flex;
+        }
     }
 
     &__event {

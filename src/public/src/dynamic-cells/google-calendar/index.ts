@@ -29,17 +29,17 @@ function addDays(date: Date, days: number) {
     return result
 }
 
-interface parsedEvent {
+interface ParsedEvent {
     name: string,
-    time: string
+    time?: string
 }
 
-type parsedCalendar = Array<{
+interface ParsedDay {
     date: number,
     dayName: string,
     today: boolean,
-    events: parsedEvent[]
-}>
+    events: ParsedEvent[]
+}
 
 function getHHMMfromDate(d: Date) {
     return d.toTimeString().split(" ")[0].slice(0, -3)
@@ -52,7 +52,7 @@ function getOnlyDate(d: Date) {
 }
 
 function parseCalendar(calendar: jsonIKalenderEvent[]) {
-    let parsed: parsedCalendar = []
+    let parsed: ParsedDay[] = []
 
     const todayOnlyDate = getOnlyDate(new Date())
     let d = getOnlyDate(new Date())
@@ -60,7 +60,7 @@ function parseCalendar(calendar: jsonIKalenderEvent[]) {
     for (let i = 0; i < 14; i++) {
         const dEnd = new Date(d)
         dEnd.setHours(23, 59, 59, 999)
-        let dayEvents: parsedEvent[] = []
+        let dayEvents: ParsedEvent[] = []
 
         calendar.forEach(ev => {
             if (!ev.eventStart || !ev.eventEnd || typeof ev.summary != "string") return
@@ -71,7 +71,7 @@ function parseCalendar(calendar: jsonIKalenderEvent[]) {
 
             if (start >= dEnd || end <= d) return
 
-            let time = ""
+            let time: string | undefined
 
             if (!allDay) {
                 let startOnlyDate = getOnlyDate(start)
@@ -108,97 +108,59 @@ function parseCalendar(calendar: jsonIKalenderEvent[]) {
 }
 
 const daysElement = document.querySelector(".days")!
+const eventTemplate = <HTMLTemplateElement>document.getElementById("event-template")!
+const dayTemplate = <HTMLTemplateElement>document.getElementById("day-template")!
 
-function generateCalendar(parsedCalendar: parsedCalendar) {
+function generateEvent(ev: ParsedEvent) {
+    const clone = <HTMLDivElement>eventTemplate.content.cloneNode(true)
+
+    clone.querySelector<HTMLDivElement>(".days__event-name")!.innerText = ev.name
+
+    if (ev.time)
+        clone.querySelector<HTMLDivElement>(".days__event-time")!.innerText = ev.time
+
+    return clone
+}
+
+function generateDay(day: ParsedDay, noEvents = false) {
+    const clone = <HTMLDivElement>dayTemplate.content.cloneNode(true)
+
+    if (day.today)
+        clone.querySelector(".days__date")?.classList.add("active")
+
+    clone.querySelector<HTMLDivElement>(".days__date-num")!.innerText = day.date.toString()
+    clone.querySelector<HTMLDivElement>(".days__date-name")!.innerText = day.dayName
+
+    if (noEvents) {
+        clone.querySelector(".days__no-events")?.classList.add("active")
+    } else {
+        const eventsWrapper = clone.querySelector(".days__events")!
+        day.events.forEach(ev => {
+            eventsWrapper.appendChild(generateEvent(ev))
+        })
+    }
+
+    return clone
+}
+
+function generateCalendar(parsedCalendar: ParsedDay[]) {
     daysElement.innerHTML = ""
 
-    // todo: remove repetetive code
     if (!parsedCalendar[0]?.today) {
         const today = new Date()
 
-        let dayEl = document.createElement("div")
-        dayEl.classList.add("days__day")
-
-        let dateWrapper = document.createElement("div")
-        dateWrapper.classList.add("days__date-wrapper")
-
-        let date = document.createElement("div")
-        date.classList.add("active")
-        date.classList.add("days__date")
-
-        let dateNum = document.createElement("div")
-        dateNum.classList.add("days__date-num")
-        dateNum.innerText = today.getDate().toString()
-        date.appendChild(dateNum)
-
-        let dateName = document.createElement("div")
-        dateName.classList.add("days__date-name")
-        dateName.innerText = dayNames[today.getDay()]
-        date.appendChild(dateName)
-
-        dateWrapper.appendChild(date)
-        dayEl.appendChild(dateWrapper)
-
-        let eventsEl = document.createElement("div")
-        eventsEl.classList.add("days__events")
-
-        let noEvents = document.createElement("div")
-        noEvents.classList.add("days__no-events")
-        noEvents.innerText = "Nothing today"
-        eventsEl.appendChild(noEvents)
-
-        dayEl.appendChild(eventsEl)
-        daysElement.appendChild(dayEl)
+        daysElement.appendChild(
+            generateDay({
+                date: today.getDate(),
+                dayName: dayNames[today.getDay()],
+                today: true,
+                events: []
+            }, true)
+        )
     }
 
     parsedCalendar.forEach(day => {
-        let dayEl = document.createElement("div")
-        dayEl.classList.add("days__day")
-
-        let dateWrapper = document.createElement("div")
-        dateWrapper.classList.add("days__date-wrapper")
-
-        let date = document.createElement("div")
-        if (day.today) date.classList.add("active")
-        date.classList.add("days__date")
-
-        let dateNum = document.createElement("div")
-        dateNum.classList.add("days__date-num")
-        dateNum.innerText = day.date.toString()
-        date.appendChild(dateNum)
-
-        let dateName = document.createElement("div")
-        dateName.classList.add("days__date-name")
-        dateName.innerText = day.dayName
-        date.appendChild(dateName)
-
-        dateWrapper.appendChild(date)
-        dayEl.appendChild(dateWrapper)
-
-        let eventsEl = document.createElement("div")
-        eventsEl.classList.add("days__events")
-
-        day.events.forEach(event => {
-            let eventEl = document.createElement("div")
-            eventEl.classList.add("days__event")
-
-            let eventName = document.createElement("div")
-            eventName.classList.add("days__event-name")
-            eventName.innerText = event.name
-            eventEl.appendChild(eventName)
-
-            if (event.time) {
-                let eventTime = document.createElement("div")
-                eventTime.classList.add("days__event-time")
-                eventTime.innerText = event.time
-                eventEl.appendChild(eventTime)
-            }
-
-            eventsEl.appendChild(eventEl)
-        })
-
-        dayEl.appendChild(eventsEl)
-        daysElement.appendChild(dayEl)
+        daysElement.appendChild(generateDay(day))
     })
 }
 
@@ -222,7 +184,7 @@ async function updateCalendar() {
         const calendar: jsonIKalenderEvent[] = (await fetch(
             "/dynamic-cells/google-calendar/ical"
         ).then(r => r.json())).calendar
-    
+
         const parsedCalendar = parseCalendar(calendar)
         generateCalendar(parsedCalendar)
     } finally {
