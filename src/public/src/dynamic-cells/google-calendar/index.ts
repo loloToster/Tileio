@@ -184,7 +184,7 @@ async function updateCalendar() {
 
     try {
         const calendar: jsonIKalenderEvent[] = (await fetch(
-            "/dynamic-cells/google-calendar/ical/" + encodeURIComponent(timezone)
+            "/dynamic-cells/google-calendar/ical?timezone=" + encodeURIComponent(timezone)
         ).then(r => r.json())).calendar
 
         const parsedCalendar = parseCalendar(calendar)
