@@ -14,13 +14,17 @@ router.get("/ical", async (req, res) => {
 
     if (!url) return res.json({ calendar: null })
 
-    const calendar = await new KalenderEvents({ url }).getEvents({
+    const timezone = req.query.timezone?.toString()
+
+    const calendar = await new KalenderEvents({
+        url,
         type: "ical",
         preview: 14,
         previewUnits: "days",
         pastview: 0,
-        pastviewUnits: "days"
-    })
+        pastviewUnits: "days",
+        timezone
+    }).getEvents()
 
     res.json({ calendar })
 })

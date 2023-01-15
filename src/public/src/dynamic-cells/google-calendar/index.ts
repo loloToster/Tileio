@@ -180,9 +180,11 @@ async function updateCalendar() {
     refreshing = true
     refreshBtn.classList.add("active")
 
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
     try {
         const calendar: jsonIKalenderEvent[] = (await fetch(
-            "/dynamic-cells/google-calendar/ical"
+            "/dynamic-cells/google-calendar/ical/" + encodeURIComponent(timezone)
         ).then(r => r.json())).calendar
 
         const parsedCalendar = parseCalendar(calendar)
