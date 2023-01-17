@@ -22,6 +22,8 @@ function getCookie(name: string) {
     return ""
 }
 
+const DEAFULT_COVER = "/static/assets/dynamic-cells/default-cover.png"
+
 function getBestImage(size: number, images: Spotify.Image[]) {
     images = images.reverse()
 
@@ -30,7 +32,7 @@ function getBestImage(size: number, images: Spotify.Image[]) {
             return img.url
     }
 
-    return images.pop()!.url
+    return images.pop()?.url || DEAFULT_COVER
 }
 
 function updateSpotifySlider(i: HTMLInputElement) {
@@ -501,6 +503,10 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         seconds = duration % 60
         fullDuration.innerText = `${minutes}:${zeroFill(seconds)}`
     }
+
+    window.addEventListener("beforeunload", () => {
+        spotifyApi.disconnect()
+    })
 
     spotifyApi.connect()
 }

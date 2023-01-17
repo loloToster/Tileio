@@ -28,6 +28,7 @@ body {
 .spotify-input {
     --color: #b3b3b3;
     --percentage: 50;
+    appearance: none;
     -webkit-appearance: none;
     height: 3px;
     outline: none;
@@ -275,7 +276,7 @@ body {
 }
 
 .player {
-    --image: url("https://dummyimage.com/600x600/0af7bc/fff");
+    --image: url("/static/assets/dynamic-cells/default-cover.png");
 
     overflow: hidden;
     display: none;
@@ -404,6 +405,31 @@ body {
                 &:hover svg {
                     fill: $spotify-light-green;
                 }
+            }
+        }
+    }
+  
+    @keyframes loading {
+        0% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-5%);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    &__loading {
+        display: inline-block;
+        animation: loading 900ms infinite;
+
+        @for $i from 0 through 2 {
+            &:nth-child(#{$i + 1}) {
+                animation-delay: #{$i * 200ms};
             }
         }
     }
