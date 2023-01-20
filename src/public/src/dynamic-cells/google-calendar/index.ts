@@ -1,3 +1,4 @@
+import { calendar_v3 } from "@googleapis/calendar"
 import { CalendarResponse } from "@backend-types/types"
 import createWidget from "../../ts/iframe-api"
 
@@ -7,9 +8,24 @@ const widget = createWidget()
 
 widget.addContextMenuBtn({ text: "Open Calendar", action: () => window.open("https://calendar.google.com/") })
 
+const DARK_COLORS_MAP: Record<string, string | undefined> = {
+    "#a4bdfc": "#324191",
+    "#7ae7bf": "#299261",
+    "#dbadff": "#721d88",
+    "#ff887c": "#7f1f17",
+    "#fbd75b": "#866406",
+    "#ffb878": "#b83309",
+    "#46d6db": "#027cb7",
+    "#e1e1e1": "#494f52",
+    "#5484ed": "#2d3975",
+    "#51b749": "#096636",
+    "#dc2127": "#aa0000"
+}
+
 interface ParsedEvent {
     name: string | null | undefined,
-    time?: string
+    time?: string,
+    color?: string
 }
 
 interface ParsedDay {
@@ -17,6 +33,19 @@ interface ParsedDay {
     dayName: string,
     today: boolean,
     events: ParsedEvent[]
+}
+
+/**
+ * Gets color of the event, maps it to dark mode equivalent and returns it
+ */
+function getColors(colors: calendar_v3.Schema$Colors, ev: calendar_v3.Schema$Event) {
+    const bg = colors.event && ev.colorId ?
+        colors.event[ev.colorId].background :
+        null
+
+    if (!bg) return undefined
+
+    return DARK_COLORS_MAP[bg] ?? bg
 }
 
 function parseCalendar(calRes: CalendarResponse) {
@@ -38,12 +67,14 @@ function parseCalendar(calRes: CalendarResponse) {
         calRes.events.forEach(ev => {
             if (!ev.start) return
 
+            const color = getColors(calRes.colors, ev)
+
             if (ev.start.date) { // all-day event
                 const start = new Date(ev.start.date)
                 const end = new Date(ev.end!.date!)
 
                 if (start <= day && day < end)
-                    parsedEvents.push({ name: ev.summary })
+                    parsedEvents.push({ name: ev.summary, color })
 
             } else if (ev.start.dateTime) { // not all-day event
                 const start = new Date(ev.start.dateTime)
@@ -54,15 +85,16 @@ function parseCalendar(calRes: CalendarResponse) {
 
                     parsedEvents.push({
                         name: ev.summary,
-                        time: `${utils.getHHMMfromDate(start)} - ${utils.getHHMMfromDate(end)}`
+                        time: `${utils.getHHMMfromDate(start)} - ${utils.getHHMMfromDate(end)}`,
+                        color
                     })
                 } else {
                     if (utils.earilerDay(start, day) && utils.laterDay(end, day)) {
-                        parsedEvents.push({ name: ev.summary })
+                        parsedEvents.push({ name: ev.summary, color })
                     } else if (utils.sameDay(start, day) && !utils.sameDay(end, day)) {
-                        parsedEvents.push({ name: ev.summary, time: utils.getHHMMfromDate(start) })
+                        parsedEvents.push({ name: ev.summary, time: utils.getHHMMfromDate(start), color })
                     } else if (utils.sameDay(end, day) && !utils.sameDay(start, day)) {
-                        parsedEvents.push({ name: ev.summary, time: `Until ${utils.getHHMMfromDate(end)}` })
+                        parsedEvents.push({ name: ev.summary, time: `Until ${utils.getHHMMfromDate(end)}`, color })
                     }
                 }
             }
@@ -92,6 +124,9 @@ function generateEvent(ev: ParsedEvent) {
 
     if (ev.time)
         clone.querySelector<HTMLDivElement>(".days__event-time")!.innerText = ev.time
+
+    if (ev.color)
+        clone.querySelector<HTMLDivElement>(".days__event")!.style.backgroundColor = ev.color
 
     return clone
 }

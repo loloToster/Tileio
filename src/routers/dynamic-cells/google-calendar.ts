@@ -97,7 +97,9 @@ router.get("/calendar", async (req, res) => {
         events = events.concat(data.items || [])
     }
 
-    const resBody: CalendarResponse = { calendars, events }
+    const { data: colors } = await api.colors.get()
+
+    const resBody: CalendarResponse = { calendars, events, colors }
 
     res.json(resBody)
 })

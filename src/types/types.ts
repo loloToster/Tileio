@@ -50,5 +50,6 @@ export interface IconResponse {
 
 export interface CalendarResponse {
     calendars: calendar_v3.Schema$CalendarListEntry[],
-    events: calendar_v3.Schema$Event[]
+    events: calendar_v3.Schema$Event[],
+    colors: calendar_v3.Schema$Colors
 }
