@@ -59,17 +59,16 @@ $scrollbar-width: 8px;
         &.active {
             animation: spin 3s linear infinite;
         }
+
+        &:last-child {
+            margin-right: 0;
+        }
     }
 
     @keyframes spin {
         100% {
             transform: rotate(-360deg);
         }
-    }
-
-    &__link {
-        height: 20px;
-        width: 20px;
     }
 }
 
@@ -144,43 +143,5 @@ $scrollbar-width: 8px;
 
     &__event-time {
         font-size: .9rem;
-    }
-}
-
-.input-modal {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #{$bg-color}cc;
-
-    &.active {
-        display: flex;
-    }
-
-    &__input {
-        width: 80vw;
-        background-color: white;
-        padding: 3px;
-    }
-
-    &__save {
-        margin-top: 8px;
-        padding: 6px 12px;
-
-        background-color: $blue;
-        border-radius: 6px;
-        color: white;
-        font-size: 1.2rem;
-        cursor: pointer;
-
-        &:hover {
-            filter: brightness(130%);
-        }
     }
 }

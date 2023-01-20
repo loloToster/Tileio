@@ -1,49 +1,105 @@
 import express from "express"
-import { KalenderEvents } from "kalender-events"
+import { OAuth2Client } from "google-auth-library"
+import { calendar, calendar_v3 } from "@googleapis/calendar"
 
 import User from "../../models/user"
+import { CalendarResponse } from "../../types/types"
+
+function getOAuthClient() {
+    return new OAuth2Client(
+        process.env.GC_CLIENT_ID,
+        process.env.GC_CLIENT_SECRET,
+        process.env.GC_REDIRECT_URL?.replace("{PORT}", process.env.PORT || "80")
+    )
+}
+
+const googleAuthApi = getOAuthClient()
 
 const router = express.Router()
 
 router.get("/", (req, res) => {
-    res.render("dynamic-cells/google-calendar")
+    const gcData = req.user!.dynamicCells.googleCalendar
+
+    if (gcData)
+        res.render("dynamic-cells/google-calendar")
+    else
+        res.render("dynamic-cells/google-calendar-login")
 })
 
-router.get("/ical", async (req, res) => {
-    const url = req.user!.dynamicCells.googleCalendar?.url
+router.get("/login", (req, res) => {
+    const url = googleAuthApi.generateAuthUrl({
+        access_type: "offline",
+        scope: "https://www.googleapis.com/auth/calendar",
+        prompt: "select_account"
+    })
 
-    if (!url) return res.json({ calendar: null })
-
-    const timezone = req.query.timezone?.toString()
-
-    const calendar = await new KalenderEvents({
-        url,
-        type: "ical",
-        preview: 14,
-        previewUnits: "days",
-        pastview: 0,
-        pastviewUnits: "days",
-        timezone
-    }).getEvents()
-
-    res.json({ calendar })
+    res.redirect(url)
 })
 
-router.put("/ical", async (req, res) => {
-    const url = req.query.url?.toString()
+router.get("/logout", async (req, res) => {
+    await User.findByIdAndUpdate(req.user!.id, { $unset: { "dynamicCells.googleCalendar": 1 } })
+    res.redirect("/google-calendar/spotify")
+})
 
-    if (!url) return res.status(400).send()
+router.get("/redirect", async (req, res) => {
+    if (!req.query.code) return res.status(400).send()
 
-    // check if url is valid
-    let urlObject: URL
-    try {
-        urlObject = new URL(url)
-    } catch {
+    const { tokens } = await googleAuthApi.getToken(req.query.code.toString())
+
+    await User.findByIdAndUpdate(req.user!.id, {
+        "dynamicCells.googleCalendar": tokens
+    })
+
+    res.redirect("/")
+})
+
+router.get("/calendar", async (req, res) => {
+    if (!req.user || !req.user.dynamicCells.googleCalendar)
         return res.status(400).send()
+
+    const auth = getOAuthClient()
+    auth.setCredentials(req.user.dynamicCells.googleCalendar)
+
+    // refresh token if necessary
+    if (Date.now() > req.user.dynamicCells.googleCalendar.expiry_date) {
+        const res = await auth.refreshAccessToken()
+        const newTokens = res.credentials
+
+        await User.findByIdAndUpdate(req.user!.id, { "dynamicCells.googleCalendar": newTokens })
     }
 
-    await User.findByIdAndUpdate(req.user!.id, { "dynamicCells.googleCalendar.url": urlObject.href })
-    res.send()
+    const api = calendar({ version: 'v3', auth })
+
+    const { data: { items: calendars } } = await api.calendarList.list()
+
+    if (!calendars) {
+        return res.status(500).send()
+    }
+
+    const now = new Date()
+    const nowISO = now.toISOString()
+    const inTwoWeeks = new Date()
+    inTwoWeeks.setDate(now.getDate() + 14)
+    const inTwoWeeksISO = inTwoWeeks.toISOString()
+
+    let events: calendar_v3.Schema$Event[] = []
+
+    for (const cal of calendars) {
+        if (!cal.id) continue
+
+        const { data } = await api.events.list({
+            calendarId: cal.id,
+            timeMin: nowISO,
+            timeMax: inTwoWeeksISO,
+            singleEvents: true
+        })
+
+        events = events.concat(data.items || [])
+    }
+
+    const resBody: CalendarResponse = { calendars, events }
+
+    res.json(resBody)
 })
 
 export = router

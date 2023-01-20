@@ -19,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@googleapis/calendar": "^3.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-session": "^2.0.44",
     "@types/express": "^4.17.13",
@@ -46,8 +47,8 @@
     "express-useragent": "^1.0.15",
     "frameguard": "^4.0.0",
     "fuse.js": "^6.6.2",
+    "google-auth-library": "^8.7.0",
     "gridstack": "^5.1.1",
-    "kalender-events": "^0.28.1",
     "marked": "^4.0.18",
     "mongoose": "^6.3.5",
     "nodemailer": "^6.7.8",

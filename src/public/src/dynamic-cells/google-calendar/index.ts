@@ -1,36 +1,14 @@
-import { IKalenderEvent } from "kalender-events"
+import { CalendarResponse } from "@backend-types/types"
 import createWidget from "../../ts/iframe-api"
 
-createWidget()
+import * as utils from "./utils"
 
-const dayNames = [
-    "Sun",
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat"
-]
+const widget = createWidget()
 
-const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-]
-
-interface jsonIKalenderEvent extends Omit<IKalenderEvent, "eventEnd" | "eventStart"> {
-    eventEnd?: string,
-    eventStart?: string
-}
-
-function addDays(date: Date, days: number) {
-    var result = new Date(date)
-    result.setDate(result.getDate() + days)
-    return result
-}
+widget.addContextMenuBtn({ text: "Open Calendar", action: () => window.open("https://calendar.google.com/") })
 
 interface ParsedEvent {
-    name: string,
+    name: string | null | undefined,
     time?: string
 }
 
@@ -41,67 +19,63 @@ interface ParsedDay {
     events: ParsedEvent[]
 }
 
-function getHHMMfromDate(d: Date) {
-    return d.toTimeString().split(" ")[0].slice(0, -3)
-}
-
-function getOnlyDate(d: Date) {
-    let newD = new Date(d)
-    newD.setHours(0, 0, 0, 0)
-    return newD
-}
-
-function parseCalendar(calendar: jsonIKalenderEvent[]) {
+function parseCalendar(calRes: CalendarResponse) {
     let parsed: ParsedDay[] = []
 
-    const todayOnlyDate = getOnlyDate(new Date())
-    let d = getOnlyDate(new Date())
+    calRes.events.sort((a, b) => {
+        const aStart = new Date(a.start?.dateTime || a.start?.date || 0).getTime()
+        const bStart = new Date(b.start?.dateTime || b.start?.date || 0).getTime()
 
-    for (let i = 0; i < 14; i++) {
-        const dEnd = new Date(d)
-        dEnd.setHours(23, 59, 59, 999)
-        let dayEvents: ParsedEvent[] = []
+        return aStart - bStart
+    })
 
-        calendar.forEach(ev => {
-            if (!ev.eventStart || !ev.eventEnd || typeof ev.summary != "string") return
+    for (let d = 0; d < 14; d++) {
+        const day = utils.addDays(new Date(), d)
+        const date = day.getDate()
 
-            const allDay = ev.allDay || false
-            const start = new Date(ev.eventStart)
-            const end = new Date(ev.eventEnd)
+        let parsedEvents: ParsedEvent[] = []
 
-            if (start >= dEnd || end <= d) return
+        calRes.events.forEach(ev => {
+            if (!ev.start) return
 
-            let time: string | undefined
+            if (ev.start.date) { // all-day event
+                const start = new Date(ev.start.date)
+                const end = new Date(ev.end!.date!)
 
-            if (!allDay) {
-                let startOnlyDate = getOnlyDate(start)
-                let endOnlyDate = getOnlyDate(end)
-                if (startOnlyDate.getTime() != endOnlyDate.getTime()) {
-                    if (startOnlyDate.getTime() == d.getTime()) {
-                        time = getHHMMfromDate(start)
-                    } else if (endOnlyDate.getTime() == d.getTime()) {
-                        time = `To ${getHHMMfromDate(end)}`
-                    }
+                if (start <= day && day < end)
+                    parsedEvents.push({ name: ev.summary })
+
+            } else if (ev.start.dateTime) { // not all-day event
+                const start = new Date(ev.start.dateTime)
+                const end = new Date(ev.end!.dateTime!)
+
+                if (utils.sameDay(start, end)) { // event starts and ends the same day
+                    if (!utils.sameDay(start, day)) return
+
+                    parsedEvents.push({
+                        name: ev.summary,
+                        time: `${utils.getHHMMfromDate(start)} - ${utils.getHHMMfromDate(end)}`
+                    })
                 } else {
-                    time = `${getHHMMfromDate(start)} - ${getHHMMfromDate(end)}`
+                    if (utils.earilerDay(start, day) && utils.laterDay(end, day)) {
+                        parsedEvents.push({ name: ev.summary })
+                    } else if (utils.sameDay(start, day) && !utils.sameDay(end, day)) {
+                        parsedEvents.push({ name: ev.summary, time: utils.getHHMMfromDate(start) })
+                    } else if (utils.sameDay(end, day) && !utils.sameDay(start, day)) {
+                        parsedEvents.push({ name: ev.summary, time: `Until ${utils.getHHMMfromDate(end)}` })
+                    }
                 }
             }
-
-            dayEvents.push({
-                name: ev.summary,
-                time
-            })
         })
 
-        if (dayEvents.length)
+        if (parsedEvents.length) {
             parsed.push({
-                date: d.getDate(),
-                dayName: dayNames[d.getDay()],
-                today: todayOnlyDate.getTime() == d.getTime(),
-                events: dayEvents
+                date,
+                dayName: utils.DAY_NAMES[day.getDay()],
+                events: parsedEvents,
+                today: d === 0
             })
-
-        d = addDays(d, 1)
+        }
     }
 
     return parsed
@@ -114,7 +88,7 @@ const dayTemplate = <HTMLTemplateElement>document.getElementById("day-template")
 function generateEvent(ev: ParsedEvent) {
     const clone = <HTMLDivElement>eventTemplate.content.cloneNode(true)
 
-    clone.querySelector<HTMLDivElement>(".days__event-name")!.innerText = ev.name
+    clone.querySelector<HTMLDivElement>(".days__event-name")!.innerText = ev.name || "No title"
 
     if (ev.time)
         clone.querySelector<HTMLDivElement>(".days__event-time")!.innerText = ev.time
@@ -152,7 +126,7 @@ function generateCalendar(parsedCalendar: ParsedDay[]) {
         daysElement.appendChild(
             generateDay({
                 date: today.getDate(),
-                dayName: dayNames[today.getDay()],
+                dayName: utils.DAY_NAMES[today.getDay()],
                 today: true,
                 events: []
             }, true)
@@ -164,12 +138,8 @@ function generateCalendar(parsedCalendar: ParsedDay[]) {
     })
 }
 
-document.querySelector<HTMLDivElement>(".header__month")!.innerText = months[new Date().getMonth()]
+document.querySelector<HTMLDivElement>(".header__month")!.innerText = utils.MONTH_NAMES[new Date().getMonth()]
 
-const editIcal = document.querySelector<HTMLButtonElement>(".header__btn--edit-ical")!
-const editIcalModal = document.querySelector<HTMLDivElement>(".input-modal")!
-const editIcalModalInput = document.querySelector<HTMLInputElement>(".input-modal__input")!
-const saveBtn = document.querySelector<HTMLButtonElement>(".input-modal__save")!
 const refreshBtn = document.querySelector<HTMLButtonElement>(".header__btn--refresh")!
 
 let refreshing = false
@@ -180,14 +150,12 @@ async function updateCalendar() {
     refreshing = true
     refreshBtn.classList.add("active")
 
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-
     try {
-        const calendar: jsonIKalenderEvent[] = (await fetch(
-            "/dynamic-cells/google-calendar/ical?timezone=" + encodeURIComponent(timezone)
-        ).then(r => r.json())).calendar
+        // TODO: handle loading && error
+        const res = await fetch("/dynamic-cells/google-calendar/calendar")
+        const calRes: CalendarResponse = await res.json()
 
-        const parsedCalendar = parseCalendar(calendar)
+        const parsedCalendar = parseCalendar(calRes)
         generateCalendar(parsedCalendar)
     } finally {
         refreshBtn.classList.remove("active")
@@ -196,24 +164,6 @@ async function updateCalendar() {
 }
 
 refreshBtn.addEventListener("click", async () => updateCalendar())
-
-editIcal.addEventListener("click", () => {
-    editIcalModal.classList.add("active")
-})
-
-editIcalModal.addEventListener("click", e => {
-    if (e.target == editIcalModal)
-        editIcalModal.classList.remove("active")
-})
-
-saveBtn.addEventListener("click", async () => {
-    const newUrl = encodeURIComponent(editIcalModalInput.value)
-    await fetch("/dynamic-cells/google-calendar/ical?url=" + newUrl, {
-        method: "PUT"
-    })
-    editIcalModal.classList.remove("active")
-    updateCalendar()
-})
 
 updateCalendar()
 setInterval(updateCalendar, 5 * 60 * 1000)

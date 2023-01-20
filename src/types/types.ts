@@ -1,3 +1,5 @@
+import { calendar_v3 } from "@googleapis/calendar"
+
 export type hex = string
 
 export interface SerializedLinkCellContent {
@@ -44,4 +46,9 @@ export interface FAIcon {
 export interface IconResponse {
     si: SIIcon[],
     fa: FAIcon[]
+}
+
+export interface CalendarResponse {
+    calendars: calendar_v3.Schema$CalendarListEntry[],
+    events: calendar_v3.Schema$Event[]
 }
