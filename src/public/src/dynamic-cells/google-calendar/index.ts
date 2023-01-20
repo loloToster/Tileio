@@ -176,22 +176,38 @@ function generateCalendar(parsedCalendar: ParsedDay[]) {
 document.querySelector<HTMLDivElement>(".header__month")!.innerText = utils.MONTH_NAMES[new Date().getMonth()]
 
 const refreshBtn = document.querySelector<HTMLButtonElement>(".header__btn--refresh")!
+const bigErr = document.querySelector<HTMLDivElement>(".error")!
 
 let refreshing = false
+let dataWasFetched = false
 
 async function updateCalendar() {
     if (refreshing) return
 
     refreshing = true
+    bigErr.classList.remove("active")
+    refreshBtn.classList.remove("err")
     refreshBtn.classList.add("active")
 
     try {
-        // TODO: handle loading && error
         const res = await fetch("/dynamic-cells/google-calendar/calendar")
+
+        if (!res.ok) throw Error() // go to catch block
+
         const calRes: CalendarResponse = await res.json()
 
         const parsedCalendar = parseCalendar(calRes)
         generateCalendar(parsedCalendar)
+        dataWasFetched = true
+    } catch {
+        if (dataWasFetched) {
+            widget.createError("Could not get the calendar")
+        } else {
+            daysElement.innerHTML = ""
+            bigErr.classList.add("active")
+        }
+
+        refreshBtn.classList.add("err")
     } finally {
         refreshBtn.classList.remove("active")
         refreshing = false

@@ -1,4 +1,5 @@
 @forward "../../sass/base/reset";
+@use "../../sass/main/abstracts/colors" as c;
 
 $bg-color: #171d1b;
 $header-color: #2b3b3a;
@@ -46,10 +47,6 @@ $scrollbar-width: 8px;
     font-size: 1.2rem;
     background-color: $header-color;
 
-    svg {
-        fill: white;
-    }
-
     &__btn {
         width: 24px;
         height: 24px;
@@ -60,6 +57,28 @@ $scrollbar-width: 8px;
             animation: spin 3s linear infinite;
         }
 
+        svg {
+            fill: white;
+        }
+
+        &__err {
+            display: none;
+            fill: c.$red !important;
+        }
+
+        &.err {
+            svg {
+                display: none;
+            }
+
+            .header__btn__err {
+                display: block;
+            }
+        }
+    svg {
+        fill: white;
+    }
+
         &:last-child {
             margin-right: 0;
         }
@@ -69,6 +88,28 @@ $scrollbar-width: 8px;
         100% {
             transform: rotate(-360deg);
         }
+    }
+}
+
+.error {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+
+    &.active {
+        display: flex;
+    }
+
+    svg {
+        fill: c.$red;
+    }
+
+    span {
+        color: c.$red;
+        width: 50%;
+        text-align: center;
+        font-weight: 600;
     }
 }
 
