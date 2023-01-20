@@ -1,5 +1,6 @@
 import dotenv from "dotenv"
-import express from "express"
+import "express-async-errors"
+import express, { ErrorRequestHandler } from "express"
 import cookieSession from "cookie-session"
 import passport from "passport"
 import mongoose from "mongoose"
@@ -61,6 +62,12 @@ loadRouters(app, __dirname + "/routers")
 app.get("*", (req, res) => {
     res.status(404).render("not-found")
 })
+
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+    res.status(500).send()
+}
+
+app.use(errorHandler)
 
 const MONGO_URL = process.env.MONGO!
 console.log("connecting to mongo:", MONGO_URL)
