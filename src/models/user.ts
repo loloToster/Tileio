@@ -14,7 +14,11 @@ export interface DynamicCellsData {
         rt: string,
         expires: number
     },
-    googleCalendar: Record<string, any>
+    googleCalendar: {
+        at: string,
+        rt: string,
+        expires: number
+    }
 }
 
 export interface IUser {
@@ -66,7 +70,11 @@ const userSchema = new Schema<IUser>({
             rt: String,
             expires: Number
         },
-        googleCalendar: Schema.Types.Mixed
+        googleCalendar: {
+            at: String,
+            rt: String,
+            expires: Number
+        }
     }
 })
 

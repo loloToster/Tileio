@@ -18,9 +18,9 @@ const googleAuthApi = getOAuthClient()
 const router = express.Router()
 
 router.get("/", (req, res) => {
-    const gcData = req.user!.dynamicCells.googleCalendar
+    const loggedIn = Boolean(req.user!.dynamicCells.googleCalendar?.at)
 
-    if (gcData)
+    if (loggedIn)
         res.render("dynamic-cells/google-calendar")
     else
         res.render("dynamic-cells/google-calendar-login")
@@ -30,7 +30,7 @@ router.get("/login", (req, res) => {
     const url = googleAuthApi.generateAuthUrl({
         access_type: "offline",
         scope: "https://www.googleapis.com/auth/calendar",
-        prompt: "select_account"
+        prompt: "consent"
     })
 
     res.redirect(url)
@@ -38,16 +38,21 @@ router.get("/login", (req, res) => {
 
 router.get("/logout", async (req, res) => {
     await User.findByIdAndUpdate(req.user!.id, { $unset: { "dynamicCells.googleCalendar": 1 } })
-    res.redirect("/google-calendar/spotify")
+    res.redirect("/dynamic-cells/google-calendar")
 })
 
 router.get("/redirect", async (req, res) => {
     if (!req.query.code) return res.status(400).send()
 
+    const currentAuthData = req.user?.dynamicCells.googleCalendar
     const { tokens } = await googleAuthApi.getToken(req.query.code.toString())
 
     await User.findByIdAndUpdate(req.user!.id, {
-        "dynamicCells.googleCalendar": tokens
+        "dynamicCells.googleCalendar": {
+            at: tokens.access_token ?? currentAuthData?.at,
+            rt: tokens.refresh_token ?? currentAuthData?.rt,
+            expires: tokens.expiry_date ?? currentAuthData?.expires
+        }
     })
 
     res.redirect("/")
@@ -57,18 +62,29 @@ router.get("/calendar", async (req, res) => {
     if (!req.user || !req.user.dynamicCells.googleCalendar)
         return res.status(400).send()
 
+    const authData = req.user.dynamicCells.googleCalendar
+
     const auth = getOAuthClient()
-    auth.setCredentials(req.user.dynamicCells.googleCalendar)
+    auth.setCredentials({
+        access_token: authData.at,
+        refresh_token: authData.rt
+    })
 
     // refresh token if necessary
-    if (Date.now() > req.user.dynamicCells.googleCalendar.expiry_date) {
+    if (Date.now() > authData.expires) {
         const res = await auth.refreshAccessToken()
         const newTokens = res.credentials
 
-        await User.findByIdAndUpdate(req.user!.id, { "dynamicCells.googleCalendar": newTokens })
+        await User.findByIdAndUpdate(req.user!.id, {
+            "dynamicCells.googleCalendar": {
+                at: newTokens.access_token ?? authData?.at,
+                rt: newTokens.refresh_token ?? authData?.rt,
+                expires: newTokens.expiry_date ?? authData?.expires
+            }
+        })
     }
 
-    const api = calendar({ version: 'v3', auth })
+    const api = calendar({ version: "v3", auth })
 
     const { data: { items: calendars } } = await api.calendarList.list()
 
