@@ -140,9 +140,8 @@ function generateDay(day: ParsedDay, noEvents = false) {
     clone.querySelector<HTMLDivElement>(".days__date-num")!.innerText = day.date.toString()
     clone.querySelector<HTMLDivElement>(".days__date-name")!.innerText = day.dayName
 
-    if (noEvents) {
-        clone.querySelector(".days__no-events")?.classList.add("active")
-    } else {
+    if (!noEvents) {
+        clone.querySelector(".days__no-events")?.remove()
         const eventsWrapper = clone.querySelector(".days__events")!
         day.events.forEach(ev => {
             eventsWrapper.appendChild(generateEvent(ev))
@@ -176,6 +175,7 @@ function generateCalendar(parsedCalendar: ParsedDay[]) {
 document.querySelector<HTMLDivElement>(".header__month")!.innerText = utils.MONTH_NAMES[new Date().getMonth()]
 
 const refreshBtn = document.querySelector<HTMLButtonElement>(".header__btn--refresh")!
+const placeholder = document.querySelector<HTMLDivElement>(".placeholder")!
 const bigErr = document.querySelector<HTMLDivElement>(".error")!
 
 let refreshing = false
@@ -185,9 +185,11 @@ async function updateCalendar() {
     if (refreshing) return
 
     refreshing = true
+
     bigErr.classList.remove("active")
     refreshBtn.classList.remove("err")
     refreshBtn.classList.add("active")
+    if (!dataWasFetched) placeholder.classList.add("active")
 
     try {
         const res = await fetch("/dynamic-cells/google-calendar/calendar")
@@ -209,6 +211,7 @@ async function updateCalendar() {
 
         refreshBtn.classList.add("err")
     } finally {
+        placeholder.classList.remove("active")
         refreshBtn.classList.remove("active")
         refreshing = false
     }
