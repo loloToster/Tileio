@@ -25,8 +25,9 @@ router.get("/", async (req, res) => {
 })
 
 router.get("/logout", (req, res) => {
-    req.logout()
-    res.redirect("/")
+    req.logout(() => {
+        res.redirect("/")
+    })
 })
 
 const emailTransporter = nodemailer.createTransport({
