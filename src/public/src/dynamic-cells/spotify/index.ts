@@ -1,5 +1,9 @@
 /// <reference types="@types/spotify-web-playback-sdk" />
+
 import createWidget from "../../ts/iframe-api"
+
+import getPallete from "./utils/get-pallete"
+import getLyrics from "./utils/get-lyrics"
 
 function setCookie(name: string, value: string, expire = 365) {
     const d = new Date()
@@ -22,6 +26,18 @@ function getCookie(name: string) {
     return ""
 }
 
+function setCSSProp(
+    el: HTMLElement,
+    prop: string,
+    value: string | number | null,
+    priority?: string | undefined
+) {
+    if (typeof value === "number")
+        value = value.toString()
+
+    return el.style.setProperty("--" + prop, value, priority)
+}
+
 const DEAFULT_COVER = "/static/assets/dynamic-cells/default-cover.png"
 
 function getBestImage(size: number, images: Spotify.Image[]) {
@@ -38,7 +54,7 @@ function getBestImage(size: number, images: Spotify.Image[]) {
 function updateSpotifySlider(i: HTMLInputElement) {
     const v = parseInt(i.value)
     const max = parseInt(i.max)
-    i.style.setProperty("--percentage", ((v / max) * 100).toString())
+    setCSSProp(i, "percentage", (v / max) * 100)
 }
 
 document.querySelectorAll<HTMLInputElement>(".spotify-input").forEach(i => {
@@ -96,10 +112,14 @@ clearSearchInp.addEventListener("click", () => {
 })
 
 window.onSpotifyWebPlaybackSDKReady = async () => {
-    const { SpotifyApi } = await import("./SpotifyPlayer")
+    const { SpotifyApi } = await import("./utils/SpotifyPlayer")
 
     const volumeInput = document.querySelector<HTMLInputElement>(".player__volume input")!
     const transferPlaybackBtn = document.querySelector<HTMLButtonElement>(".player__transfer-playback")!
+    const openLyricsBtn = document.querySelector<HTMLButtonElement>(".player__open-lyrics")!
+    const closeLyricsBtn = document.querySelector<SVGElement>(".player__lyrics__close")!
+    const lyricsBox = document.querySelector<HTMLDivElement>(".player__lyrics")!
+    const lyricsLinesWrapper = document.querySelector<HTMLDivElement>(".player__lyrics__lines")!
 
     const titleDiv = document.querySelector<HTMLDivElement>(".player__title")!
     const artistDiv = document.querySelector<HTMLDivElement>(".player__artist")!
@@ -320,6 +340,14 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         transferPlaybackBtn.classList.remove("active")
     })
 
+    openLyricsBtn.addEventListener("click", () => {
+        lyricsBox.classList.add("active")
+    })
+
+    closeLyricsBtn.addEventListener("click", () => {
+        lyricsBox.classList.remove("active")
+    })
+
     shuffleBtn.addEventListener("click", () => {
         spotifyApi.toggleShuffle()
     })
@@ -403,12 +431,52 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         repeatMode: number
     }
 
+    let lastLyrics = ""
+
+    async function updateLyrics(state: CustomState) {
+        if (lastLyrics === state.currentTrack.id) return
+        lastLyrics = state.currentTrack.id
+
+        const pallete = await getPallete(state.currentTrack.img)
+
+        // find color with lightness closest to 50%
+        const bestColor = pallete.reduce((prev, cur) => {
+            return Math.abs(prev.lightness - 0.5) < Math.abs(cur.lightness - 0.5) ?
+                prev : cur
+        })
+
+        const lyrics = await getLyrics(state.currentTrack.artist, state.currentTrack.name)
+
+        if (!lyrics.length) {
+            lyricsBox.classList.remove("active")
+            openLyricsBtn.disabled = true
+            openLyricsBtn.title = "Could not find the lyrics"
+            return
+        } else {
+            openLyricsBtn.disabled = false
+            openLyricsBtn.title = "Lyrics"
+        }
+
+        lyricsLinesWrapper.innerHTML = ""
+
+        setCSSProp(
+            lyricsBox,
+            "lyrics-color-background",
+            bestColor.hex
+        )
+
+        lyrics.forEach(line => {
+            const div = document.createElement("div")
+            div.classList.add("player__lyrics__line")
+            div.innerText = line
+            lyricsLinesWrapper.appendChild(div)
+        })
+    }
+
     function updateState(state: CustomState) {
         transferPlaybackBtn.classList.toggle("active", !spotifyApi.playingHere)
 
-        playerEl.style.setProperty(
-            "--image", `url("${state.currentTrack.img}")`
-        )
+        setCSSProp(playerEl, "image", `url("${state.currentTrack.img}")`)
 
         titleDiv.innerText = state.currentTrack.name
         artistDiv.innerText = state.currentTrack.artist
@@ -445,6 +513,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         })
 
         updateDuration(state.currentTrack.position, state.currentTrack.duration, state.paused)
+        updateLyrics(state)
     }
 
     const durationInput = document.querySelector<HTMLInputElement>(".player__progress-bar")!

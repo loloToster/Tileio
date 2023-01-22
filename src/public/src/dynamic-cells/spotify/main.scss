@@ -1,6 +1,7 @@
 @forward "../../sass/base/reset";
 
 $grey: grey;
+$dark-grey: #4d4d4d;
 $light-grey: white;
 
 $spotify-green: #1db954;
@@ -282,7 +283,7 @@ body {
     display: none;
     background-size: cover;
     background-image:
-        linear-gradient(to top, rgba(45, 45, 45, 0.9), rgba(45, 45, 45, 0.9) 30%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(to top, #2d2d2de6, #2d2d2de6 30%, #00000000 60%),
         var(--image);
 
     &.active {
@@ -395,6 +396,10 @@ body {
 
             &:hover svg {
                 fill: $light-grey;
+            }
+
+            &:disabled svg, &:disabled:hover svg {
+                fill: $dark-grey;
             }
 
             &.active {
@@ -578,6 +583,68 @@ body {
             border-bottom-color: $spotify-green;
             border-width: 6px;
             margin-left: -6px;
+        }
+    }
+
+    &__lyrics {
+        --lyrics-color-active: #ffffff;
+        --lyrics-color-inactive: #33312f;
+        --lyrics-color-passed: #ffffffb3;
+        --lyrics-color-background: #676767;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vh;
+        height: 100vh;
+        background-color: var(--lyrics-color-background);
+        font-size: 1rem;
+        font-weight: 600;
+        transform: translateY(-100%);
+        transition: all 200ms;
+
+        &.active {
+            transform: translateY(0);
+        }
+
+        &__close {
+            position: absolute;
+            top: 5%;
+            right: 5%;
+            cursor: pointer;
+            transition: inherit;
+            fill: var(--lyrics-color-inactive);
+
+            &:hover {
+                fill: var(--lyrics-color-active)
+            }
+        }
+
+        &__lines {
+            box-sizing: border-box;
+            overflow-y: scroll;
+            padding: 10%;
+            width: 100vh;
+            height: 100vh;
+            scrollbar-width: 0;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        &__line {
+            cursor: pointer;
+            color: var(--lyrics-color-inactive);
+            transition: inherit;
+
+            &:hover, &.active {
+                color: var(--lyrics-color-active);
+            }
+
+            &.passed {
+                color: var(--lyrics-color-passed);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 import express from "express"
 import SpotifyApiNode from "spotify-web-api-node"
+import * as Genius from "genius-lyrics"
 
 import User from "../../models/user"
 
@@ -104,6 +105,29 @@ router.get("/access-token", async (req, res) => {
     }
 
     res.json({ expires: new Date(spotifyData.expires), at: spotifyData.at })
+})
+
+const LyricsClient = new Genius.Client()
+
+router.get("/lyrics", async (req, res) => {
+    let { q, artist, title } = req.query
+
+    let query: string
+
+    if (q) {
+        query = q.toString()
+    } else if (artist && title) {
+        title = title.toString().replace(/ *\([^)]*\) */g, "")
+        artist = artist.toString().split(",")[0]
+        query = artist + " " + title
+    } else {
+        return res.status(400).send()
+    }
+
+    const searches = await LyricsClient.songs.search(query)
+    const lyrics = await searches[0].lyrics(true)
+
+    res.json({ lyrics })
 })
 
 export = router
