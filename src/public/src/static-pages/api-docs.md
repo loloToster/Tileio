@@ -62,7 +62,7 @@ To create a good dynamic cell you should also use the Widget Api. It allows to d
 
 To use the Widget Api you need to embed the script by inserting it into the html of your dynamic cell:
 ```html
-<script src="https://tileio.cyclic.app/static/js/iframe-api.js"></script>
+<script src="https://tileio.lolotoster.com/static/js/iframe-api.js"></script>
 ```
 After that a `window.createWidget` function should be available in your js.
 
