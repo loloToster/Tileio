@@ -6,27 +6,6 @@ import { onClickOutside } from "../../ts/utlis/utils"
 import getPallete from "./utils/get-pallete"
 import getLyrics from "./utils/get-lyrics"
 
-function setCookie(name: string, value: string, expire = 365) {
-    const d = new Date()
-    d.setTime(d.getTime() + (expire * 24 * 60 * 60 * 1000))
-    let expires = "expires=" + d.toUTCString()
-    document.cookie = name + "=" + value + ";" + expires + ";path=/"
-}
-
-function getCookie(name: string) {
-    name = name + "="
-    let decodedCookie = decodeURIComponent(document.cookie)
-    let ca = decodedCookie.split(";")
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i]
-        while (c.charAt(0) == " ")
-            c = c.substring(1)
-        if (c.indexOf(name) == 0)
-            return c.substring(name.length, c.length)
-    }
-    return ""
-}
-
 function setCSSProp(
     el: HTMLElement,
     prop: string,
@@ -173,10 +152,10 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     spotifyApi.addListener("ready", async ({ device_id }) => {
         // set volume
-        let vol = getCookie("spotify-cell-vol")
+        let vol = localStorage.getItem("spotify-cell-vol")
         if (!vol) {
             vol = "0.5"
-            setCookie("spotify-cell-vol", vol)
+            localStorage.setItem("spotify-cell-vol", vol)
         }
 
         let volFloat = parseFloat(vol)
@@ -298,7 +277,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 "episode"
             ]
 
-            const results = await spotifyApi.search(searchInp.value, categories, userCountry)
+            const results = await spotifyApi.search(searchInp.value, categories)
 
             searchResults.innerHTML = ""
 
@@ -374,21 +353,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     volumeInput.addEventListener("input", () => {
         const newVol = parseInt(volumeInput.value) / 100
         spotifyApi.setVolume(newVol)
-        setCookie("spotify-cell-vol", newVol.toString())
+        localStorage.setItem("spotify-cell-vol", newVol.toString())
     })
 
     transferPlaybackBtn.addEventListener("click", async () => {
         if (!spotifyApi.deviceId) return
         await spotifyApi.transferPlayback(spotifyApi.deviceId)
         transferPlaybackBtn.classList.remove("active")
-    })
-
-    openLyricsBtn.addEventListener("click", () => {
-        lyricsBox.classList.add("active")
-    })
-
-    closeLyricsBtn.addEventListener("click", () => {
-        lyricsBox.classList.remove("active")
     })
 
     shuffleBtn.addEventListener("click", () => {
@@ -476,11 +447,22 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     let lastLyrics = ""
 
+    openLyricsBtn.addEventListener("click", () => {
+        lyricsBox.classList.add("active")
+    })
+
+    closeLyricsBtn.addEventListener("click", () => {
+        lyricsBox.classList.remove("active")
+    })
+
     async function updateLyrics(state: CustomState) {
         if (lastLyrics === state.currentTrack.id) return
         lastLyrics = state.currentTrack.id
 
-        const pallete = await getPallete(state.currentTrack.img)
+        const palletePromise = getPallete(state.currentTrack.img)
+        const lyricsPromise = getLyrics(state.currentTrack.artist, state.currentTrack.name)
+
+        const [pallete, lyrics] = await Promise.all([palletePromise, lyricsPromise])
 
         // find color with lightness closest to 50%
         const bestColor = pallete.reduce((prev, cur) => {

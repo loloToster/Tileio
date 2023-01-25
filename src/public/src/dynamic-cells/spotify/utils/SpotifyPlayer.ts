@@ -178,9 +178,9 @@ export class SpotifyApi extends Spotify.Player {
         await this.fetchApi("/me/player/seek?position_ms=" + pos, "PUT")
     }
 
-    async search(query: string, types: string[], market: string, limit = 5) {
+    async search(query: string, types: string[], limit = 5) {
         return await this.getJson(
-            `/search?q=${encodeURIComponent(query)}&type=${types.join(",")}&market=${market}&limit=${limit}`
+            `/search?q=${encodeURIComponent(query)}&type=${types.join(",")}&limit=${limit}`
         )
     }
 }
