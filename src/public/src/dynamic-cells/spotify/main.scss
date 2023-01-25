@@ -9,6 +9,27 @@ $spotify-light-green: #1ed760;
 
 $player-menu-size: 38px;
 
+@keyframes shimmer {
+    from {
+        transform: translateX(-100%)
+    }
+
+    to {
+        transform: translateX(100%)
+    }
+}
+
+@mixin shimmer-after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: linear-gradient(90deg, transparent, hsla(0, 0%, 100%, .1), transparent);
+    animation: shimmer 2s infinite;
+}
+
 body {
     color: white;
     font-family: "Roboto", sans-serif;
@@ -90,6 +111,7 @@ body {
     box-sizing: border-box;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 
     height: 20vh;
     padding: 10px;
@@ -99,26 +121,100 @@ body {
         height: 24px;
 
         border-radius: 4px;
-    }
 
-    &__logout {
-        height: 24px;
-        margin-right: 3px;
-
-        svg {
-            fill: red;
+        img {
+            vertical-align: middle;
         }
     }
 
-    &__name {
-        font-weight: bold;
-        margin-right: 8px;
-    }
+    &__user {
+        box-sizing: border-box;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 32px;
+        padding: 2px;
+        cursor: pointer;
+        background-color: #000000b3;
+        border-radius: 100vh;
 
-    &__avatar {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
+        &:hover,
+        &.active {
+            background-color: #282828;
+        }
+
+        &__avatar {
+            --img: #3e3e3e;
+
+            position: relative;
+            overflow: hidden;
+
+            width: 28px;
+            height: 28px;
+            border-radius: 100vh;
+            background: var(--img);
+
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+
+            &.loading::after {
+                @include shimmer-after()
+            }
+        }
+
+        &__name {
+            overflow: hidden;
+            max-width: 110px;
+            min-width: 60px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: white;
+            line-height: 28px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        &__arrow {
+            fill: white;
+            margin-inline-end: 6px;
+            transform: rotate(180deg);
+
+            &.active {
+                transform: rotate(0);
+            }
+        }
+
+        &__menu {
+            position: absolute;
+            display: none;
+            right: 0;
+            top: calc(100% + 5px);
+            padding: 4px;
+            background-color: #282828;
+            box-shadow: 0 16px 24px #0000004d, 0 6px 8px #00000033;
+            border-radius: 4px;
+
+            &.active {
+                display: block;
+            }
+        }
+
+        &__menu-item {
+            display: block;
+            min-width: 100px;
+            padding: 8px;
+            color: #ffffffe6;
+            text-decoration: none;
+            text-align: start;
+            border-radius: 2px;
+
+            &:hover {
+                background-color: #ffffff1a;
+                color: #fff;
+            }
+        }
     }
 }
 
@@ -129,7 +225,8 @@ body {
     padding: 0;
     margin: 0;
 
-    &__playlist {
+    &__playlist,
+    &__placeholder {
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -139,22 +236,58 @@ body {
         margin: 0 8px;
         margin-bottom: 6px;
 
-        background-color: rgba(255, 255, 255, .1);
+        border-radius: 4px;
+        background-color: #ffffff1a;
+    }
+
+    &__playlist {
         transition: background-color 200ms;
-        border-radius: 6px;
         cursor: pointer;
 
         &:hover {
-            background-color: rgba(255, 255, 255, .3);
+            background-color: #ffffff4d;
+        }
+    }
+
+    &__placeholder {
+        &__img {
+            position: relative;
+            overflow: hidden;
+
+            height: 72px;
+            width: 72px;
+            box-shadow: 0 8px 24px #00000080;
+            background-color: #ffffff33;
+
+            &::after {
+                @include shimmer-after()
+            }
+        }
+
+        &__text {
+            position: relative;
+            overflow: hidden;
+
+            flex-grow: 1;
+            margin: 0 16px;
+            height: 1.4rem;
+
+            background-color: #ffffff1a;
+            border-radius: 100vh;
+
+            &::after {
+                @include shimmer-after()
+            }
         }
     }
 
     &__playlist-img {
         height: 72px;
+        box-shadow: 0 8px 24px #00000080;
     }
 
     &__playlist-name {
-        margin-left: 8px;
+        margin: 0 16px;
         font-weight: bold;
     }
 }
@@ -398,7 +531,8 @@ body {
                 fill: $light-grey;
             }
 
-            &:disabled svg, &:disabled:hover svg {
+            &:disabled svg,
+            &:disabled:hover svg {
                 fill: $dark-grey;
             }
 
@@ -413,7 +547,7 @@ body {
             }
         }
     }
-  
+
     @keyframes loading {
         0% {
             transform: translateY(0);
@@ -638,7 +772,8 @@ body {
             color: var(--lyrics-color-inactive);
             transition: inherit;
 
-            &:hover, &.active {
+            &:hover,
+            &.active {
                 color: var(--lyrics-color-active);
             }
 
@@ -646,23 +781,5 @@ body {
                 color: var(--lyrics-color-passed);
             }
         }
-    }
-}
-
-.loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #262626d6;
-
-    img {
-        width: 32px;
-        height: 32px;
-        image-rendering: pixelated;
     }
 }

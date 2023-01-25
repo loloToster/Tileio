@@ -1,6 +1,7 @@
 /// <reference types="@types/spotify-web-playback-sdk" />
 
 import createWidget from "../../ts/iframe-api"
+import { onClickOutside } from "../../ts/utlis/utils"
 
 import getPallete from "./utils/get-pallete"
 import getLyrics from "./utils/get-lyrics"
@@ -65,6 +66,22 @@ document.querySelectorAll<HTMLInputElement>(".spotify-input").forEach(i => {
 
 const widget = createWidget()
 const SP_BASE_URL = "https://open.spotify.com"
+
+const userButton = document.querySelector<HTMLButtonElement>(".header__user")!
+const userArrow = document.querySelector<HTMLDivElement>(".header__user__arrow")!
+const userMenu = document.querySelector<HTMLDivElement>(".header__user__menu")!
+
+userButton.addEventListener("click", () => {
+    userButton.classList.toggle("active")
+    userArrow.classList.toggle("active")
+    userMenu.classList.toggle("active")
+})
+
+onClickOutside([userButton], () => {
+    userButton.classList.remove("active")
+    userArrow.classList.remove("active")
+    userMenu.classList.remove("active")
+})
 
 const playerEl = document.querySelector<HTMLDivElement>(".player")!
 
@@ -169,57 +186,83 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         // update user info
         const user = await spotifyApi.getUser()
+
         userCountry = user.country
-        document.querySelector<HTMLDivElement>(".header__name")!.innerText = user.display_name
-        document.querySelector<HTMLImageElement>(".header__avatar")!.src = user.images[0].url
+        document.querySelector<HTMLDivElement>(".header__user__name")!.innerText = user.display_name
+        const userAvatar = document.querySelector<HTMLImageElement>(".header__user__avatar")!
+
+        const userImg = user.images[0].url
+
+        const loader = new Image()
+
+        loader.onload = () => {
+            userAvatar.classList.remove("loading")
+            setCSSProp(
+                userAvatar,
+                "img",
+                `url("${userImg}")`
+            )
+        }
+
+        loader.src = userImg
 
         // update playlists
+        const playlistTemplate = <HTMLTemplateElement>document.getElementById("playlist-template")
         const playlistsList = document.querySelector<HTMLUListElement>(".playlists")!
 
-        const likedSongs = document.querySelector<HTMLElement>(".playlists__playlist")!
-        widget.addContextMenuBtn(likedSongs, {
-            text: "Open on Spotify",
-            action: () => {
-                window.open(`${SP_BASE_URL}/collection/tracks`)
-            }
-        })
-        likedSongs.addEventListener("click", () => {
-            spotifyApi.play(`spotify:user:${user.id}:collection`)
-            playerEl.classList.add("active")
-        })
+        interface Playlist {
+            img: string,
+            name: string,
+            playUri: string,
+            url: string
+        }
 
-        const playlists: any[] = await spotifyApi.getUserPlaylists()
+        const createPlaylist = (playlist: Playlist) => {
+            const helper = document.createElement("div")
+            helper.innerHTML = playlistTemplate.innerHTML
 
-        playlists.forEach(playlist => {
-            let li = document.createElement("li")
-            li.classList.add("playlists__playlist")
+            const clone = helper.querySelector("li")!
 
-            let img = document.createElement("img")
-            img.classList.add("playlists__playlist-img")
-            img.src = getBestImage(72, playlist.images)
-            li.appendChild(img)
+            const img = clone.querySelector("img")!
+            img.src = playlist.img
 
-            let nameDiv = document.createElement("div")
-            nameDiv.classList.add("playlists__playlist-name")
+            const nameDiv = clone.querySelector<HTMLDivElement>(".playlists__playlist-name")!
             nameDiv.innerText = playlist.name
-            li.appendChild(nameDiv)
 
-            widget.addContextMenuBtn(li, {
-                text: "Open on Spotify",
-                action: () => {
-                    window.open(`${SP_BASE_URL}/playlist/${playlist.id}`)
-                }
-            })
-
-            li.addEventListener("click", () => {
-                spotifyApi.play("spotify:playlist:" + playlist.id)
+            clone.addEventListener("click", () => {
+                spotifyApi.play(playlist.playUri)
                 playerEl.classList.add("active")
             })
 
-            playlistsList.appendChild(li)
+            widget.addContextMenuBtn(clone, {
+                text: "Open on Spotify",
+                action: () => {
+                    window.open(playlist.url)
+                }
+            })
+
+            playlistsList.appendChild(clone)
+        }
+
+        const playlists: any[] = await spotifyApi.getUserPlaylists()
+
+        playlistsList.innerHTML = ""
+
+        createPlaylist({
+            img: "https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png",
+            name: "Liked Songs",
+            playUri: `spotify:user:${user.id}:collection`,
+            url: `${SP_BASE_URL}/collection/tracks`
         })
 
-        document.querySelector(".loading")?.remove()
+        playlists.forEach(
+            playlist => createPlaylist({
+                img: getBestImage(72, playlist.images),
+                name: playlist.name,
+                playUri: "spotify:playlist:" + playlist.id,
+                url: `${SP_BASE_URL}/playlist/${playlist.id}`
+            })
+        )
     })
 
     spotifyApi.addListener("not_ready", ({ device_id }) => {
@@ -444,8 +487,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             return Math.abs(prev.lightness - 0.5) < Math.abs(cur.lightness - 0.5) ?
                 prev : cur
         })
-
-        const lyrics = await getLyrics(state.currentTrack.artist, state.currentTrack.name)
 
         if (!lyrics.length) {
             lyricsBox.classList.remove("active")

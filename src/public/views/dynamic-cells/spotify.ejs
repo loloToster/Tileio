@@ -18,22 +18,30 @@
                 <a href="https://open.spotify.com/" target="_blank">
                     <img class="header__logo" src="/static/assets/dynamic-cells-icons/spotify.png" alt="Spotify Logo">
                 </a>
-                <div style="flex-grow: 1;"></div>
-                <a class="header__logout" href="/dynamic-cells/spotify/logout">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24">
-                        <path
-                            d="M5 21q-.825 0-1.413-.587Q3 19.825 3 19V5q0-.825.587-1.413Q4.175 3 5 3h7v2H5v14h7v2Zm11-4-1.375-1.45 2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5Z" />
+                <button class="header__user">
+                    <div role="img" class="header__user__avatar loading"></div>
+                    <span class="header__user__name"></span>
+                    <svg class="header__user__arrow" height="16" width="16" viewBox="0 0 16 16">
+                        <path d="M14 10L8 4l-6 6h12z"></path>
                     </svg>
-                </a>
-                <div class="header__name"> name</div>
-                <img class="header__avatar" src="https://dummyimage.com/32x32/fff/000&text=avatar" alt="avatar">
+                    <div class="header__user__menu">
+                        <a class="header__user__menu-item" href="/dynamic-cells/spotify/logout">Log out</a>
+                    </div>
+                </button>
             </header>
-            <ul class="playlists">
+            <template id="playlist-template">
                 <li class="playlists__playlist">
-                    <img class="playlists__playlist-img"
-                        src="https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png">
-                    <div class="playlists__playlist-name">Liked Songs</div>
+                    <img class="playlists__playlist-img" />
+                    <div class="playlists__playlist-name"></div>
                 </li>
+            </template>
+            <ul class="playlists">
+                <% for( let i=0; i < 4; i++ ) { %>
+                    <li class="playlists__placeholder">
+                        <div class="playlists__placeholder__img"></div>
+                        <div class="playlists__placeholder__text"></div>
+                    </li>
+                    <% } %>
             </ul>
         </div>
         <div class="menu__tab menu__tab--search search">
@@ -197,9 +205,6 @@
             </button>
             <div class="player__lyrics__lines"></div>
         </div>
-    </div>
-    <div class="loading">
-        <img src="/static/assets/dynamic-cells/spotify-equalizer.gif" alt="Loading">
     </div>
 </body>
 
