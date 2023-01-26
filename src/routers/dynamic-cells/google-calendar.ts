@@ -1,3 +1,4 @@
+import { parse as parseUrl } from "url"
 import express from "express"
 import { OAuth2Client } from "google-auth-library"
 import { calendar, calendar_v3 } from "@googleapis/calendar"
@@ -21,7 +22,7 @@ router.get("/", (req, res) => {
     const loggedIn = Boolean(req.user!.dynamicCells.googleCalendar?.at)
 
     if (loggedIn)
-        res.render("dynamic-cells/google-calendar")
+        res.render("dynamic-cells/google-calendar", { query: parseUrl(req.url).query })
     else
         res.render("dynamic-cells/google-calendar-login")
 })
@@ -38,7 +39,8 @@ router.get("/login", (req, res) => {
 
 router.get("/logout", async (req, res) => {
     await User.findByIdAndUpdate(req.user!.id, { $unset: { "dynamicCells.googleCalendar": 1 } })
-    res.redirect("/dynamic-cells/google-calendar")
+
+    res.redirect("/dynamic-cells/google-calendar?" + parseUrl(req.url).query)
 })
 
 router.get("/redirect", async (req, res) => {

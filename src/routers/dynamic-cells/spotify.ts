@@ -1,3 +1,4 @@
+import { parse as parseUrl } from "url"
 import express from "express"
 import SpotifyApiNode from "spotify-web-api-node"
 import * as Genius from "genius-lyrics"
@@ -42,7 +43,7 @@ router.get("/", (req, res) => {
     const spotifyUser = req.user!.dynamicCells.spotify?.at
 
     if (spotifyUser)
-        res.render("dynamic-cells/spotify")
+        res.render("dynamic-cells/spotify", { query: parseUrl(req.url).query })
     else
         res.render("dynamic-cells/spotify-login")
 })
@@ -54,7 +55,7 @@ router.get("/login", (req, res) => {
 router.get("/logout", async (req, res) => {
     await User.findByIdAndUpdate(req.user!.id, { $unset: { "dynamicCells.spotify": 1 } })
 
-    res.redirect("/dynamic-cells/spotify")
+    res.redirect("/dynamic-cells/spotify?" + parseUrl(req.url).query)
 })
 
 router.get("/redirect", async (req, res) => {

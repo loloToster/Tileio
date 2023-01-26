@@ -23,15 +23,13 @@ async function main() {
 
     document.body.style.setProperty("--bg-color", initialGrid.bg || "#212121")
     document.body.style.setProperty("--cell-color", initialGrid.cell || "#343434")
-
-    const gridParent = document.querySelector<HTMLDivElement>(".grid")
-    gridParent!.style.width = `${140 * initialGrid.col}px`
-    gridParent!.style.height = `${140 * initialGrid.row}px`
+    document.body.style.setProperty("--col", initialGrid.col.toString())
+    document.body.style.setProperty("--row", initialGrid.row.toString())
 
     const grid = GridStack.init({
         row: initialGrid.row,
         column: initialGrid.col,
-        cellHeight: "initial",
+        /* cellHeight: "initial", */
         margin: "5px",
         disableOneColumnMode: true,
         removable: trashSelector,
