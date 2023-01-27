@@ -35,7 +35,7 @@
                                                         width="100%">
                                                         <tbody>
                                                             <tr>
-                                                                <td><img width="128" height="128" src="{LOGO}" />
+                                                                <td><img width="128" height="128" src="<%- logo %>" />
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -57,7 +57,9 @@
                                                                         style="font-size: 16px;font-weight: bold;margin: 0;">
                                                                     </h1>
 
-                                                                    <div style="font-size: 20px;">Hi {USERNAME},</div>
+                                                                    <div style="font-size: 20px;">
+                                                                        Hi <%= username %>,
+                                                                    </div>
 
                                                                     <div style="margin: 15px 0;">
                                                                         Thanks for using Tileio. Please verify
@@ -66,7 +68,7 @@
 
                                                                     <div
                                                                         style="padding: 10px 0; text-align: left; vertical-align: top;">
-                                                                        <a href="{VALIDATE_URL}"
+                                                                        <a href="<%- validateUrl %>"
                                                                             style="box-sizing: border-box; text-decoration: none; background-color: #2c77d3; border: solid 1px #2c77d3; border-radius: 4px; cursor: pointer; color: #ffffff; font-size: 16px; font-weight: bold; margin: 0; padding: 9px 25px; display: inline-block; letter-spacing: 1px;">
                                                                             Verify email address
                                                                         </a>
