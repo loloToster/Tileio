@@ -1,3 +1,4 @@
+import { readFile } from "fs/promises"
 import express from "express"
 import flash from "express-flash"
 import passport from "passport"
@@ -6,8 +7,8 @@ import nodemailer from "nodemailer"
 import { randomBytes } from "crypto"
 import useragent from "express-useragent"
 
-import User from "../models/user"
-import UnvalidatedUser from "../models/unvalidatedUser"
+import User from "../../models/user"
+import UnvalidatedUser from "../../models/unvalidatedUser"
 
 const router = express.Router()
 
@@ -86,11 +87,23 @@ router.post("/create-account", async (req, res) => {
         token: randomBytes(32).toString("hex") + email
     }).save()
 
+    let template = await readFile(__dirname + "/mail-template.html", { encoding: "utf-8" })
+
+    const fields = {
+        LOGO: `${req.protocol}://${req.headers.host}/static/assets/logo.png`,
+        USERNAME: u.name || u.email,
+        VALIDATE_URL: `${req.protocol}://${req.headers.host}/auth/validate-email/${encodeURIComponent(u.token)}`
+    }
+
+    for (const [field, value] of Object.entries(fields)) {
+        template = template.replace(`{${field}}`, value)
+    }
+
     await emailTransporter.sendMail({
         from: `Tileio <${process.env.APP_EMAIL}>`,
         to: u.email,
-        subject: "Verify your account",
-        html: `Verify your account by clicking <a href="${req.protocol}://${req.headers.host}/auth/validate-email/${encodeURIComponent(u.token)}">here</a>. `
+        subject: "Tileio Account Verification",
+        html: template
     })
 
     res.send()
