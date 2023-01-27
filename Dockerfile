@@ -1,7 +1,6 @@
 FROM node:16-alpine
 
 ENV PORT=80
-ENV NODE_ENV=production
 
 WORKDIR /app
 
@@ -13,5 +12,7 @@ COPY src ./src
 COPY tsconfig.json .
 
 RUN npm run build && npm prune --production && rm -rf ./src
+
+ENV NODE_ENV=production
 
 CMD ["npm", "start"]
