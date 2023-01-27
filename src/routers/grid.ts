@@ -119,8 +119,6 @@ function validateCells(gridW: number, gridH: number, cells: unknown): Serialized
         })
     }
 
-    emul.print()
-
     return validatedCells
 }
 
