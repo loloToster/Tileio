@@ -5,7 +5,8 @@ import User from "../models/user"
 import GridEmulator from "./_GridEmulator"
 
 import Fuse from "fuse.js"
-import { SimpleIcon, siSimpleicons as si } from "simple-icons"
+import type { SimpleIcon } from "simple-icons"
+import * as si from "simple-icons"
 import fa from "../fa-icons.json"
 
 const MAX_SEARCH_LIMIT = 64
@@ -28,6 +29,7 @@ const simpleIcons: SIIcon[] = []
 for (const key in si) {
     // @ts-ignore
     const icon: SimpleIcon = si[key]
+
     simpleIcons.push({
         title: icon.title,
         slug: icon.slug,
