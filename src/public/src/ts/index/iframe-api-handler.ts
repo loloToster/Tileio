@@ -40,7 +40,7 @@ interface CustomContextMenuBtn {
 
 export function setupIframeApi(grid: GridStack) {
     // Update iframe src on cell resize
-    grid.on("resizestop", (e, el) => {
+    grid.on("resizestop", (_: unknown, el: unknown) => {
         if (!(el instanceof HTMLElement)) return
         if (!el.classList.contains("dynamic-cell")) return
 

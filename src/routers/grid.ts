@@ -5,8 +5,7 @@ import User from "../models/user"
 import GridEmulator from "./_GridEmulator"
 
 import Fuse from "fuse.js"
-import { SimpleIcon } from "simple-icons"
-import si from "simple-icons/icons"
+import { SimpleIcon, siSimpleicons as si } from "simple-icons"
 import fa from "../fa-icons.json"
 
 const MAX_SEARCH_LIMIT = 64

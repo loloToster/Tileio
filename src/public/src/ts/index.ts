@@ -1,5 +1,4 @@
 import { GridStack } from "gridstack"
-import "gridstack/dist/h5/gridstack-dd-native"
 
 import { Grid } from "@backend-types/types"
 import { onClickOutside } from "./utlis/utils"
