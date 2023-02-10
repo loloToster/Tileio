@@ -4,7 +4,7 @@ import { OAuth2Client } from "google-auth-library"
 import { calendar, calendar_v3 } from "@googleapis/calendar"
 
 import User from "../../models/user"
-import { CalendarResponse } from "../../types/types"
+import { CalendarResponse, ExtendedEvent } from "../../types/types"
 
 function getOAuthClient() {
     return new OAuth2Client(
@@ -100,7 +100,7 @@ router.get("/calendar", async (req, res) => {
     inTwoWeeks.setDate(now.getDate() + 14)
     const inTwoWeeksISO = inTwoWeeks.toISOString()
 
-    let events: calendar_v3.Schema$Event[] = []
+    let events: ExtendedEvent[] = []
 
     for (const cal of calendars) {
         if (!cal.id) continue
@@ -112,7 +112,9 @@ router.get("/calendar", async (req, res) => {
             singleEvents: true
         })
 
-        events = events.concat(data.items || [])
+        events = events.concat(
+            data.items?.map<ExtendedEvent>(e => ({calendarId: cal.id! ,...e})) || []
+        )
     }
 
     const { data: colors } = await api.colors.get()
