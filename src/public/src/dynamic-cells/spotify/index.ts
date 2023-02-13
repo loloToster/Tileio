@@ -21,7 +21,7 @@ function setCSSProp(
 const DEAFULT_COVER = "/static/assets/dynamic-cells/default-cover.png"
 
 function getBestImage(size: number, images: Spotify.Image[]) {
-    images = images.reverse()
+    images = [...images.reverse()]
 
     for (const img of images) {
         if ((img.width || img.height || 0) >= size)
@@ -349,6 +349,31 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             })
         }, 500)
     })
+
+    const playlistImgWrapper = document.querySelector<HTMLDivElement>(".playlist__img img")!
+
+    document.querySelector<HTMLDivElement>(".playlist")
+        ?.addEventListener("scroll", e => {
+            const target = <HTMLDivElement>e.target
+            const scrollPos = target.scrollTop
+
+            const imgRect = playlistImgWrapper.getBoundingClientRect()
+            
+            const startThreshold = scrollPos + imgRect.y
+            const endThreshold = scrollPos + imgRect.y + imgRect.height
+
+            let opacity: number
+
+            if (scrollPos < startThreshold) {
+                opacity = 0
+            } else if (scrollPos > endThreshold) {
+                opacity = 1
+            } else {
+                opacity = (scrollPos - startThreshold) / (endThreshold - startThreshold)
+            }
+
+            setCSSProp(target, "opacity", opacity)
+        })
 
     volumeInput.addEventListener("input", () => {
         const newVol = parseInt(volumeInput.value) / 100

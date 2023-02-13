@@ -1,5 +1,7 @@
+@use "sass:math" as math;
 @forward "../../sass/base/reset";
 
+$bg: #121212;
 $grey: grey;
 $dark-grey: #4d4d4d;
 $light-grey: white;
@@ -98,7 +100,7 @@ body {
 }
 
 .menu {
-    background-color: #121212;
+    background-color: $bg;
 
     &__tab {
         display: none;
@@ -409,6 +411,122 @@ body {
         &:hover svg {
             fill: white;
         }
+    }
+}
+
+.playlist {
+    $main-padding: 16px;
+    $scrollbar-width: 6px;
+
+    background-color: $bg;
+    padding: 0 ($main-padding - $scrollbar-width) 0 $main-padding;
+    box-sizing: border-box;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        width: $scrollbar-width;
+        z-index: 1;
+    }
+
+    &__header {
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+
+        height: 46px;
+
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        background-color: rgba(82, 57, 158, var(--opacity, 0));
+        padding: 0 10px;
+        font-weight: 600;
+
+        &__name {
+            opacity: var(--opacity, 0);
+        }
+    }
+
+    &__back svg {
+        fill: white;
+        vertical-align: middle;
+    }
+
+    &__img {
+        width: 50%;
+        margin: auto;
+        padding-top: $main-padding;
+        padding-bottom: 6px;
+
+        img {
+            width: 100%;
+            vertical-align: middle;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+    }
+
+    $play-btn-size: 42px;
+    $metadata-height: 48px;
+    $play-meta-gap: 6px;
+
+    &__metadata {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: $metadata-height;
+        width: calc(100% - 42px - $play-meta-gap);
+        margin-right: $play-meta-gap;
+        overflow: hidden;
+        white-space: nowrap;
+        float: left;
+    }
+
+    &__name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__creator {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+
+        img {
+            height: 22px;
+            width: 22px;
+            vertical-align: middle;
+            border-radius: 50%;
+        }
+    }
+
+    &__play {
+        top: 24px;
+        position: sticky;
+        background-color: $spotify-green;
+        float: left;
+        height: $play-btn-size;
+        width: $play-btn-size;
+        margin-top: math.div($metadata-height - $play-btn-size, 2);
+        border-radius: 50%;
+
+        &:hover {
+            scale: 1.1;
+        }
+
+        svg {
+            vertical-align: middle;
+        }
+    }
+
+    &__songs {
+        clear: both;
     }
 }
 
