@@ -1,13 +1,15 @@
 import { calendar_v3 } from "@googleapis/calendar"
-import { CalendarResponse } from "@backend-types/types"
+import { CalendarResponse, ExtendedEvent } from "@backend-types/types"
 import createWidget from "../../ts/iframe-api"
 
 import * as utils from "./utils"
+import { isDark } from "../../ts/utlis/utils"
 
 const widget = createWidget()
 
 widget.addContextMenuBtn({ text: "Open Calendar", action: () => window.open("https://calendar.google.com/") })
 
+const DEFAULT_COLOR = "#047cb4"
 const DARK_COLORS_MAP: Record<string, string | undefined> = {
     "#a4bdfc": "#324191",
     "#7ae7bf": "#299261",
@@ -19,6 +21,7 @@ const DARK_COLORS_MAP: Record<string, string | undefined> = {
     "#e1e1e1": "#494f52",
     "#5484ed": "#2d3975",
     "#51b749": "#096636",
+    "#16a765": "#096636",
     "#dc2127": "#aa0000"
 }
 
@@ -35,17 +38,33 @@ interface ParsedDay {
     events: ParsedEvent[]
 }
 
+type Nullable<T> = T | null | undefined 
+
 /**
  * Gets color of the event, maps it to dark mode equivalent and returns it
  */
-function getColors(colors: calendar_v3.Schema$Colors, ev: calendar_v3.Schema$Event) {
-    const bg = colors.event && ev.colorId ?
-        colors.event[ev.colorId].background :
-        null
+function getColor(
+    ev: ExtendedEvent, 
+    colors: calendar_v3.Schema$Colors, 
+    calendars: calendar_v3.Schema$CalendarListEntry[]
+) {
+    let color: Nullable<string>
 
-    if (!bg) return undefined
+    if (ev.colorId && colors.event) {
+        color = colors.event[ev.colorId].background
+    } else if (colors.calendar) {
+        const cal = calendars.find(c => c.id === ev.calendarId)
+        if (cal?.colorId) color = colors.calendar[cal.colorId].background
+    }
 
-    return DARK_COLORS_MAP[bg] ?? bg
+    if (color) {
+        const mapped = DARK_COLORS_MAP[color]
+        if (mapped) return mapped
+
+        return isDark(color) ? color : color + "b4" // opacity
+    } else {
+        return DEFAULT_COLOR
+    }
 }
 
 function parseCalendar(calRes: CalendarResponse) {
@@ -67,7 +86,7 @@ function parseCalendar(calRes: CalendarResponse) {
         calRes.events.forEach(ev => {
             if (!ev.start) return
 
-            const color = getColors(calRes.colors, ev)
+            const color = getColor(ev, calRes.colors, calRes.calendars)
 
             if (ev.start.date) { // all-day event
                 const start = new Date(ev.start.date)

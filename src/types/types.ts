@@ -48,8 +48,12 @@ export interface IconResponse {
     fa: FAIcon[]
 }
 
+export interface ExtendedEvent extends calendar_v3.Schema$Event {
+    calendarId: string
+}
+
 export interface CalendarResponse {
     calendars: calendar_v3.Schema$CalendarListEntry[],
-    events: calendar_v3.Schema$Event[],
+    events: ExtendedEvent[],
     colors: calendar_v3.Schema$Colors
 }
