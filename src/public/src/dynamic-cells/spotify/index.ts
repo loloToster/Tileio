@@ -1,22 +1,10 @@
 /// <reference types="@types/spotify-web-playback-sdk" />
 
 import createWidget from "../../ts/iframe-api"
-import { onClickOutside } from "../../ts/utlis/utils"
+import { onClickOutside, setCSSVar } from "../../ts/utlis/utils"
 
 import { getClosestToLightness } from "./utils/get-pallete"
 import getLyrics from "./utils/get-lyrics"
-
-function setCSSProp(
-    el: HTMLElement,
-    prop: string,
-    value: string | number | null,
-    priority?: string | undefined
-) {
-    if (typeof value === "number")
-        value = value.toString()
-
-    return el.style.setProperty("--" + prop, value, priority)
-}
 
 const DEAFULT_COVER = "/static/assets/dynamic-cells/default-cover.png"
 
@@ -34,7 +22,7 @@ function getBestImage(size: number, images: Spotify.Image[]) {
 function updateSpotifySlider(i: HTMLInputElement) {
     const v = parseInt(i.value)
     const max = parseInt(i.max)
-    setCSSProp(i, "percentage", (v / max) * 100)
+    setCSSVar(i, "percentage", (v / max) * 100)
 }
 
 document.querySelectorAll<HTMLInputElement>(".spotify-input").forEach(i => {
@@ -206,7 +194,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             opacity = (scrollPos - startThreshold) / (endThreshold - startThreshold)
         }
 
-        setCSSProp(target, "opacity", opacity)
+        setCSSVar(target, "opacity", opacity)
     })
 
     function createSong(track: any) {
@@ -231,16 +219,16 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         openedPlaylist = playlist
 
         playlistCreatorImg.classList.add("loading")
-        setCSSProp(playlistCreatorImg, "img", null)
+        setCSSVar(playlistCreatorImg, "img", null)
 
         playlistTab.classList.add("active")
 
         playlistImg.src = playlist.img
 
         getClosestToLightness(playlistImg, 0.3).then(color => {
-            setCSSProp(playlistTab, "r", color.red)
-            setCSSProp(playlistTab, "g", color.green)
-            setCSSProp(playlistTab, "b", color.blue)
+            setCSSVar(playlistTab, "r", color.red)
+            setCSSVar(playlistTab, "g", color.green)
+            setCSSVar(playlistTab, "b", color.blue)
         })
 
         playlistName.innerText = playlist.name
@@ -251,7 +239,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         loader.onload = async () => {
             playlistCreatorImg.classList.remove("loading")
-            setCSSProp(
+            setCSSVar(
                 playlistCreatorImg,
                 "img",
                 `url("${loader.src}")`
@@ -308,7 +296,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         loader.onload = () => {
             userAvatar.classList.remove("loading")
-            setCSSProp(
+            setCSSVar(
                 userAvatar,
                 "img",
                 `url("${userImg}")`
@@ -612,7 +600,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         lyricsLinesWrapper.innerHTML = ""
 
-        setCSSProp(
+        setCSSVar(
             lyricsBox,
             "lyrics-color-background",
             color.hex
@@ -629,7 +617,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     function updateState(state: CustomState) {
         transferPlaybackBtn.classList.toggle("active", !spotifyApi.playingHere)
 
-        setCSSProp(playerEl, "image", `url("${state.currentTrack.img}")`)
+        setCSSVar(playerEl, "image", `url("${state.currentTrack.img}")`)
 
         titleDiv.innerText = state.currentTrack.name
         artistDiv.innerText = state.currentTrack.artist

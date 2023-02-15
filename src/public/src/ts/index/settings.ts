@@ -1,7 +1,7 @@
 import { Grid, hex } from "@backend-types/types"
 import { GridStack } from "gridstack"
 import ColorPicker from "../utlis/color-picker"
-import { onClickOutside } from "../utlis/utils"
+import { onClickOutside, setCSSVar } from "../utlis/utils"
 import { createError } from "./error"
 import { dummyClass, removeDummies, fillGridWithDummies } from "./grid-utils"
 
@@ -71,8 +71,8 @@ export default (grid: GridStack, initialGrid: Grid) => {
     const gridHeightDiff = parseInt(gridHeightInp.max) - gridHeightMin
     const gridHeightSpan = <HTMLSpanElement>document.getElementById("settings__grid-h-value")
 
-    const setWidthInpBg = () => gridWidthInp.style.setProperty("--val", (((parseInt(gridWidthInp.value) - gridWidthMin) / gridWidthDiff) * 100).toString())
-    const setHeightInpBg = () => gridHeightInp.style.setProperty("--val", (((parseInt(gridHeightInp.value) - gridHeightMin) / gridHeightDiff) * 100).toString())
+    const setWidthInpBg = () => setCSSVar(gridWidthInp, "val", (((parseInt(gridWidthInp.value) - gridWidthMin) / gridWidthDiff) * 100))
+    const setHeightInpBg = () => setCSSVar(gridHeightInp, "val", (((parseInt(gridHeightInp.value) - gridHeightMin) / gridHeightDiff) * 100))
 
     gridWidthInp.value = initialGrid.col.toString()
     gridHeightInp.value = initialGrid.row.toString()
@@ -138,10 +138,10 @@ export default (grid: GridStack, initialGrid: Grid) => {
             body: JSON.stringify(values)
         })
 
-        document.body.style.setProperty("--bg-color", values.bgColor)
-        document.body.style.setProperty("--cell-color", values.cellColor)
-        document.body.style.setProperty("--col", values.col.toString())
-        document.body.style.setProperty("--row", values.row.toString())
+        setCSSVar(document.body, "bg-color", values.bgColor)
+        setCSSVar(document.body, "cell-color", values.cellColor)
+        setCSSVar(document.body, "col", values.col)
+        setCSSVar(document.body, "row", values.row)
 
         removeDummies(grid)
         grid.column(values.col, "none")

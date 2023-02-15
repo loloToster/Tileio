@@ -1,7 +1,7 @@
 import { GridStack } from "gridstack"
 
 import { Grid } from "@backend-types/types"
-import { onClickOutside } from "./utlis/utils"
+import { onClickOutside, setCSSVar } from "./utlis/utils"
 import { fillGridWithDummies, createWidgetFromSerializedCell } from "./index/grid-utils"
 import setupEditPanel, { trashSelector } from "./index/edit-panel"
 import setupSettings from "./index/settings"
@@ -20,10 +20,10 @@ async function main() {
     const loading = document.querySelector(".grid__loading")
     loading?.classList.remove("active")
 
-    document.body.style.setProperty("--bg-color", initialGrid.bg || "#212121")
-    document.body.style.setProperty("--cell-color", initialGrid.cell || "#343434")
-    document.body.style.setProperty("--col", initialGrid.col.toString())
-    document.body.style.setProperty("--row", initialGrid.row.toString())
+    setCSSVar(document.body, "bg-color", initialGrid.bg || "#212121")
+    setCSSVar(document.body, "cell-color", initialGrid.cell || "#343434")
+    setCSSVar(document.body, "col", initialGrid.col)
+    setCSSVar(document.body, "row", initialGrid.row)
 
     const grid = GridStack.init({
         row: initialGrid.row,

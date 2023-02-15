@@ -1,3 +1,4 @@
+import { setCSSVar, getCSSVar } from "../../ts/utlis/utils"
 import createWidget from "../../ts/iframe-api"
 
 const w = createWidget()
@@ -55,7 +56,7 @@ closeSettings?.addEventListener("click", () => {
 colors.forEach(c => {
     c.addEventListener("click", () => {
         const newColor = c.style.getPropertyValue("--color").trim()
-        document.body.style.setProperty("--color", newColor)
+        setCSSVar(document.body, "color", newColor)
         colors.forEach(c => c.classList.remove("choosen"))
         c.classList.add("choosen")
         if (choosenColorCheck) c.appendChild(choosenColorCheck)
@@ -68,7 +69,7 @@ colors.forEach(c => {
 
 fonts.forEach(f => {
     f.addEventListener("click", () => {
-        note.style.setProperty("--font", f.style.getPropertyValue("--font").trim())
+        setCSSVar(note, "font", getCSSVar(f, "font").trim())
         fonts.forEach(f => f.classList.remove("choosen"))
         f.classList.add("choosen")
 

@@ -7,6 +7,7 @@ export function onClickOutside(els: (Element | null)[], func: (e?: MouseEvent) =
         func(e)
     })
 }
+
 export const LUMINANCE_THRESHOLD = 236
 
 export function getLuminance(hex: string) {
@@ -25,3 +26,19 @@ export function getLuminance(hex: string) {
 }
 
 export const isDark = (c: string) => getLuminance(c) < LUMINANCE_THRESHOLD
+
+export function setCSSVar(
+    el: HTMLElement,
+    name: string,
+    value: string | number | null,
+    priority?: string | undefined
+) {
+    if (typeof value === "number")
+        value = value.toString()
+
+    return el.style.setProperty("--" + name, value, priority)
+}
+
+export function getCSSVar(el: HTMLElement, name:string) {
+    return el.style.getPropertyValue("--" + name)
+}
