@@ -74,12 +74,20 @@ export class SpotifyApi extends Spotify.Player {
         }
     }
 
-    async getUser() {
-        return await this.getJson("/me")
+    async getUser(id?: string) {
+        return await this.getJson(id ? `/users/${id}` : "/me")
     }
 
     async getUserPlaylists() {
         const data = await this.getJson("/me/playlists")
+        return data.items
+    }
+
+    async getTracks(id?: string, limit = 20, offset = 0) {
+        const data = await this.getJson(
+            (id ? `/playlists/${id}/tracks` : "/me/tracks") + `?limit=${limit}&offset=${offset}`
+        )
+
         return data.items
     }
 

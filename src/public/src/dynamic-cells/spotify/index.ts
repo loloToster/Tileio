@@ -3,7 +3,7 @@
 import createWidget from "../../ts/iframe-api"
 import { onClickOutside } from "../../ts/utlis/utils"
 
-import getPallete from "./utils/get-pallete"
+import { getClosestToLightness } from "./utils/get-pallete"
 import getLyrics from "./utils/get-lyrics"
 
 function setCSSProp(
@@ -150,6 +150,138 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         }
     })
 
+    interface Playlist {
+        id: string
+        img: string,
+        name: string,
+        playUri: string,
+        url: string,
+        creator: {
+            id: string,
+            name: string,
+            img: string | null
+        }
+    }
+
+    let openedPlaylist: Playlist | null = null
+
+    const playlistTab = document.querySelector<HTMLDivElement>(".playlist")!
+    const playlistBackBtn = document.querySelector<HTMLButtonElement>(".playlist__back")!
+    const playlistPlayBtn = document.querySelector<HTMLButtonElement>(".playlist__play")!
+    const playlistImg = document.querySelector<HTMLImageElement>(".playlist__img img")!
+    const playlistName = document.querySelector<HTMLDivElement>(".playlist__name")!
+    const playlistHeaderName = document.querySelector<HTMLDivElement>(".playlist__header__name")!
+    const playlistCreatorImg = document.querySelector<HTMLDivElement>(".playlist__creator__img")!
+    const playlistCreatorName = document.querySelector<HTMLSpanElement>(".playlist__creator span")!
+    const playlistSongsContainer = document.querySelector<HTMLDivElement>(".playlist__songs")!
+    const playlistSongTemplate = <HTMLTemplateElement>document.getElementById("playlist-song-template")!
+
+    playlistBackBtn.addEventListener("click", () => {
+        playlistTab.classList.remove("active")
+        openedPlaylist = null
+    })
+
+    playlistPlayBtn.addEventListener("click", () => {
+        if (!openedPlaylist) return
+        spotifyApi.play(openedPlaylist.playUri)
+    })
+
+    // handle header fading
+    playlistTab.addEventListener("scroll", e => {
+        const target = <HTMLDivElement>e.target
+        const scrollPos = target.scrollTop
+
+        const imgRect = playlistImg.getBoundingClientRect()
+        
+        const startThreshold = scrollPos + imgRect.y
+        const endThreshold = scrollPos + imgRect.y + imgRect.height
+
+        let opacity: number
+
+        if (scrollPos < startThreshold) {
+            opacity = 0
+        } else if (scrollPos > endThreshold) {
+            opacity = 1
+        } else {
+            opacity = (scrollPos - startThreshold) / (endThreshold - startThreshold)
+        }
+
+        setCSSProp(target, "opacity", opacity)
+    })
+
+    function createSong(track: any) {
+        const helper = document.createElement("div")
+        helper.innerHTML = playlistSongTemplate.innerHTML
+        
+        const clone = helper.querySelector("div")!
+
+        clone.querySelector<HTMLImageElement>(".playlist__song__cover img")!.src = getBestImage(40, track.album.images)
+        clone.querySelector<HTMLDivElement>(".playlist__song__title")!.innerText = track.name
+        clone.querySelector<HTMLDivElement>(".playlist__song__artists")!.innerText = track.artists.map((e: any) => e.name).join(", ")
+
+        if (!track.explicit)
+            clone.querySelector<HTMLSpanElement>(".playlist__song__explicit")?.remove()
+
+        playlistSongsContainer.appendChild(clone)
+    }
+
+    let ownerImgCache: Record<string, string | undefined> = {}
+
+    function openPlaylist(playlist: Playlist) {
+        openedPlaylist = playlist
+
+        playlistCreatorImg.classList.add("loading")
+        setCSSProp(playlistCreatorImg, "img", null)
+
+        playlistTab.classList.add("active")
+
+        playlistImg.src = playlist.img
+
+        getClosestToLightness(playlistImg, 0.3).then(color => {
+            setCSSProp(playlistTab, "r", color.red)
+            setCSSProp(playlistTab, "g", color.green)
+            setCSSProp(playlistTab, "b", color.blue)
+        })
+
+        playlistName.innerText = playlist.name
+        playlistHeaderName.innerText = playlist.name
+        playlistCreatorName.innerText = playlist.creator.name
+
+        const loader = new Image()
+
+        loader.onload = async () => {
+            playlistCreatorImg.classList.remove("loading")
+            setCSSProp(
+                playlistCreatorImg,
+                "img",
+                `url("${loader.src}")`
+            )
+        }
+
+        const cachedImg = ownerImgCache[playlist.creator.id]
+        if (cachedImg) {
+            loader.src = cachedImg
+            return
+        }
+
+        if (playlist.creator.img) {
+            loader.src = playlist.creator.img
+        } else {
+            spotifyApi.getUser(playlist.creator.id).then(user => {
+                const img = user.images[0].url
+                loader.src = img
+                ownerImgCache[user.id] = img
+            })
+        }
+
+        playlistSongsContainer.innerHTML = ""
+        spotifyApi.getTracks(playlist.id === "usercollection" ? undefined : playlist.id, 50).then(
+            (items: any[]) => {
+                items.forEach(i => createSong(i.track))
+            }
+        )
+    }
+
     spotifyApi.addListener("ready", async ({ device_id }) => {
         // set volume
         let vol = localStorage.getItem("spotify-cell-vol")
@@ -189,13 +321,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         const playlistTemplate = <HTMLTemplateElement>document.getElementById("playlist-template")
         const playlistsList = document.querySelector<HTMLUListElement>(".playlists")!
 
-        interface Playlist {
-            img: string,
-            name: string,
-            playUri: string,
-            url: string
-        }
-
         const createPlaylist = (playlist: Playlist) => {
             const helper = document.createElement("div")
             helper.innerHTML = playlistTemplate.innerHTML
@@ -209,8 +334,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             nameDiv.innerText = playlist.name
 
             clone.addEventListener("click", () => {
-                spotifyApi.play(playlist.playUri)
-                playerEl.classList.add("active")
+                openPlaylist(playlist)
             })
 
             widget.addContextMenuBtn(clone, {
@@ -228,18 +352,30 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         playlistsList.innerHTML = ""
 
         createPlaylist({
+            id: "usercollection",
             img: "https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png",
             name: "Liked Songs",
             playUri: `spotify:user:${user.id}:collection`,
-            url: `${SP_BASE_URL}/collection/tracks`
+            url: `${SP_BASE_URL}/collection/tracks`,
+            creator: {
+                id: user.id,
+                name: user.display_name,
+                img: user.images[0].url
+            }
         })
 
         playlists.forEach(
             playlist => createPlaylist({
-                img: getBestImage(72, playlist.images),
+                id: playlist.id,
+                img: getBestImage(200, playlist.images),
                 name: playlist.name,
                 playUri: "spotify:playlist:" + playlist.id,
-                url: `${SP_BASE_URL}/playlist/${playlist.id}`
+                url: `${SP_BASE_URL}/playlist/${playlist.id}`,
+                creator: {
+                    id: playlist.owner.id,
+                    name: playlist.owner.display_name,
+                    img: playlist.owner.id === user.id ? userImg : null
+                }
             })
         )
     })
@@ -350,31 +486,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         }, 500)
     })
 
-    const playlistImgWrapper = document.querySelector<HTMLDivElement>(".playlist__img img")!
-
-    document.querySelector<HTMLDivElement>(".playlist")
-        ?.addEventListener("scroll", e => {
-            const target = <HTMLDivElement>e.target
-            const scrollPos = target.scrollTop
-
-            const imgRect = playlistImgWrapper.getBoundingClientRect()
-            
-            const startThreshold = scrollPos + imgRect.y
-            const endThreshold = scrollPos + imgRect.y + imgRect.height
-
-            let opacity: number
-
-            if (scrollPos < startThreshold) {
-                opacity = 0
-            } else if (scrollPos > endThreshold) {
-                opacity = 1
-            } else {
-                opacity = (scrollPos - startThreshold) / (endThreshold - startThreshold)
-            }
-
-            setCSSProp(target, "opacity", opacity)
-        })
-
     volumeInput.addEventListener("input", () => {
         const newVol = parseInt(volumeInput.value) / 100
         spotifyApi.setVolume(newVol)
@@ -484,16 +595,10 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         if (lastLyrics === state.currentTrack.id) return
         lastLyrics = state.currentTrack.id
 
-        const palletePromise = getPallete(state.currentTrack.img)
+        const colorPromise = getClosestToLightness(state.currentTrack.img, 0.5)
         const lyricsPromise = getLyrics(state.currentTrack.artist, state.currentTrack.name)
 
-        const [pallete, lyrics] = await Promise.all([palletePromise, lyricsPromise])
-
-        // find color with lightness closest to 50%
-        const bestColor = pallete.reduce((prev, cur) => {
-            return Math.abs(prev.lightness - 0.5) < Math.abs(cur.lightness - 0.5) ?
-                prev : cur
-        })
+        const [color, lyrics] = await Promise.all([colorPromise, lyricsPromise])
 
         if (!lyrics.length) {
             lyricsBox.classList.remove("active")
@@ -510,7 +615,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         setCSSProp(
             lyricsBox,
             "lyrics-color-background",
-            bestColor.hex
+            color.hex
         )
 
         lyrics.forEach(line => {
