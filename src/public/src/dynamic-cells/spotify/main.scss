@@ -95,7 +95,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vh;
+    width: 100vw;
     height: 100vh;
 }
 
@@ -224,7 +224,7 @@ body {
 }
 
 .playlists {
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     height: 65vh;
     padding: 0;
@@ -421,29 +421,34 @@ body {
 
     $main-padding: 16px;
 
-    display: none;
     box-sizing: border-box;
-    overflow-y: overlay;
-    // background-color: $bg;
-    padding: 0 $main-padding 0 $main-padding;
+    overflow: hidden;
+    transform: translateX(-100%);
     transition: all 200ms;
 
-    background: $bg linear-gradient(0deg, rgba(0, 0, 0, 0) 0, rgba(var(--r), var(--g), var(--b), 1) 100%);
-    background-size: 100% 80vh;
-    background-attachment: local;
-    background-repeat: no-repeat;
-
     &.active {
-        display: block;
+        transform: translateX(0);
     }
 
-    &::-webkit-scrollbar {
-        width: 6px;
+    &__content {
+        box-sizing: border-box;
+        overflow-y: overlay;
+        height: 100%;
+        padding: 0 $main-padding;
+
+        background: $bg linear-gradient(0deg, rgba(0, 0, 0, 0) 0, rgba(var(--r), var(--g), var(--b), 1) 100%);
+        background-size: 100% 80vh;
+        background-attachment: local;
+        background-repeat: no-repeat;
+
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
     }
 
     &__header {
         box-sizing: border-box;
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100vw;

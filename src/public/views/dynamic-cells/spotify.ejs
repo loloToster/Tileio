@@ -207,46 +207,48 @@
         </div>
     </div>
     <div class="main-tab playlist">
-        <div class="playlist__img">
-            <img src="https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png">
-        </div>
-        <div class="playlist__metadata">
-            <div class="playlist__name">Liked songs</div>
-            <div class="playlist__creator">
-                <div role="img" class="playlist__creator__img"></div>
-                <span>loloToster</span>
+        <div class="playlist__content">
+            <div class="playlist__img">
+                <img src="https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png">
             </div>
-        </div>
-        <button class="playlist__play">
-            <svg height="20" width="20" aria-hidden="true" viewBox="0 0 24 24">
-                <path
-                    d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z">
-                </path>
-            </svg>
-        </button>
-        <template id="playlist-song-template">
-            <div class="playlist__song">
-                <div class="playlist__song__cover">
-                    <button>
-                        <svg viewBox="0 0 24 24">
-                            <path
-                                d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z">
-                            </path>
-                        </svg>
-                    </button>
-                    <img src="">
+            <div class="playlist__metadata">
+                <div class="playlist__name">Liked songs</div>
+                <div class="playlist__creator">
+                    <div role="img" class="playlist__creator__img"></div>
+                    <span>loloToster</span>
                 </div>
-                <div class="playlist__song__text">
-                    <div class="playlist__song__title">Title</div>
-                    <div class="playlist__song__metadata">
-                        <span class="playlist__song__explicit">E</span>
-                        <span class="playlist__song__artists">Artist</span>
+            </div>
+            <button class="playlist__play">
+                <svg height="20" width="20" aria-hidden="true" viewBox="0 0 24 24">
+                    <path
+                        d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z">
+                    </path>
+                </svg>
+            </button>
+            <template id="playlist-song-template">
+                <div class="playlist__song">
+                    <div class="playlist__song__cover">
+                        <button>
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z">
+                                </path>
+                            </svg>
+                        </button>
+                        <img src="">
                     </div>
+                    <div class="playlist__song__text">
+                        <div class="playlist__song__title">Title</div>
+                        <div class="playlist__song__metadata">
+                            <span class="playlist__song__explicit">E</span>
+                            <span class="playlist__song__artists">Artist</span>
+                        </div>
+                    </div>
+                    <img class="playlist__song__playing" src="/static/assets/dynamic-cells/spotify-equalizer.gif">
                 </div>
-                <img class="playlist__song__playing" src="/static/assets/dynamic-cells/spotify-equalizer.gif">
-            </div>
-        </template>
-        <div class="playlist__songs"></div>
+            </template>
+            <div class="playlist__songs"></div>
+        </div>
         <header class="playlist__header">
             <button class="playlist__back">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">

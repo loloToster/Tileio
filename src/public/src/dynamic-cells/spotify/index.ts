@@ -154,6 +154,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     let openedPlaylist: Playlist | null = null
 
     const playlistTab = document.querySelector<HTMLDivElement>(".playlist")!
+    const playlistContent = document.querySelector<HTMLDivElement>(".playlist__content")!
     const playlistBackBtn = document.querySelector<HTMLButtonElement>(".playlist__back")!
     const playlistPlayBtn = document.querySelector<HTMLButtonElement>(".playlist__play")!
     const playlistImg = document.querySelector<HTMLImageElement>(".playlist__img img")!
@@ -172,10 +173,12 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     playlistPlayBtn.addEventListener("click", () => {
         if (!openedPlaylist) return
         spotifyApi.play(openedPlaylist.playUri)
+        playerEl.classList.add("active")
+        playlistTab.classList.remove("active")
     })
 
     // handle header fading
-    playlistTab.addEventListener("scroll", e => {
+    playlistContent.addEventListener("scroll", e => {
         const target = <HTMLDivElement>e.target
         const scrollPos = target.scrollTop
 
@@ -194,7 +197,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             opacity = (scrollPos - startThreshold) / (endThreshold - startThreshold)
         }
 
-        setCSSVar(target, "opacity", opacity)
+        setCSSVar(playlistTab, "opacity", opacity)
     })
 
     function createSong(track: any) {
