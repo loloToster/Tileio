@@ -144,6 +144,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         name: string,
         playUri: string,
         url: string,
+        numOfTracks: number | null,
         creator: {
             id: string,
             name: string,
@@ -163,18 +164,22 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     const playlistCreatorImg = document.querySelector<HTMLDivElement>(".playlist__creator__img")!
     const playlistCreatorName = document.querySelector<HTMLSpanElement>(".playlist__creator span")!
     const playlistSongsContainer = document.querySelector<HTMLDivElement>(".playlist__songs")!
+    const playlistSongPlaceholderTemplate = <HTMLTemplateElement>document.getElementById("playlist-song-placeholder-template")!
     const playlistSongTemplate = <HTMLTemplateElement>document.getElementById("playlist-song-template")!
 
     playlistBackBtn.addEventListener("click", () => {
         playlistTab.classList.remove("active")
-        openedPlaylist = null
     })
+
+    function playFromPlaylist(uri: string, context?: string) {
+        spotifyApi.play(uri, context)
+        playerEl.classList.add("active")
+        playlistTab.classList.remove("active")
+    }
 
     playlistPlayBtn.addEventListener("click", () => {
         if (!openedPlaylist) return
-        spotifyApi.play(openedPlaylist.playUri)
-        playerEl.classList.add("active")
-        playlistTab.classList.remove("active")
+        playFromPlaylist(openedPlaylist.playUri)
     })
 
     // handle header fading
@@ -200,7 +205,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         setCSSVar(playlistTab, "opacity", opacity)
     })
 
-    function createSong(track: any) {
+    function createSong(track: any, playlist: Playlist) {
         const helper = document.createElement("div")
         helper.innerHTML = playlistSongTemplate.innerHTML
         
@@ -213,22 +218,48 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         if (!track.explicit)
             clone.querySelector<HTMLSpanElement>(".playlist__song__explicit")?.remove()
 
-        playlistSongsContainer.appendChild(clone)
+        clone.querySelector<HTMLButtonElement>(".playlist__song__cover button")
+            ?.addEventListener("click", () => {
+                playFromPlaylist(track.uri, playlist.playUri)
+            })
+
+        const placeholder = document.querySelector<HTMLDivElement>(".playlist__song--placeholder")
+
+        if (placeholder)
+            placeholder.replaceWith(clone)
+        else
+            playlistSongsContainer.appendChild(clone)
     }
 
     let ownerImgCache: Record<string, string | undefined> = {}
+    let fetchController = 0
 
-    function openPlaylist(playlist: Playlist) {
+    function createSongPlaceholders(n: number) {
+        const placeholder = playlistSongPlaceholderTemplate.innerHTML.trim()
+        playlistSongsContainer.innerHTML = playlistSongsContainer.innerHTML + placeholder.repeat(n)
+    }
+
+    async function openPlaylist(playlist: Playlist) {
+        playlistTab.classList.add("active")
+
+        if (playlist.id !== openedPlaylist?.id){
+            fetchController += 1
+            playlistContent.scrollTo(0, 0)
+        } else {
+            return
+        }
+        
+        const curFetchController = fetchController
         openedPlaylist = playlist
 
         playlistCreatorImg.classList.add("loading")
         setCSSVar(playlistCreatorImg, "img", null)
 
-        playlistTab.classList.add("active")
-
         playlistImg.src = playlist.img
 
         getClosestToLightness(playlistImg, 0.3).then(color => {
+            if (fetchController !== curFetchController) return
+
             setCSSVar(playlistTab, "r", color.red)
             setCSSVar(playlistTab, "g", color.green)
             setCSSVar(playlistTab, "b", color.blue)
@@ -241,6 +272,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         const loader = new Image()
 
         loader.onload = async () => {
+            if (fetchController !== curFetchController) return
+
             playlistCreatorImg.classList.remove("loading")
             setCSSVar(
                 playlistCreatorImg,
@@ -250,27 +283,44 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         }
 
         const cachedImg = ownerImgCache[playlist.creator.id]
-        if (cachedImg) {
-            loader.src = cachedImg
-            return
-        }
 
         if (playlist.creator.img) {
             loader.src = playlist.creator.img
+        } else if (cachedImg) {
+            loader.src = cachedImg
         } else {
             spotifyApi.getUser(playlist.creator.id).then(user => {
                 const img = user.images[0].url
-                loader.src = img
                 ownerImgCache[user.id] = img
+                if (fetchController !== curFetchController) return
+                loader.src = img
             })
         }
 
+        const tracksPerFetch = 50
         playlistSongsContainer.innerHTML = ""
-        spotifyApi.getTracks(playlist.id === "usercollection" ? undefined : playlist.id, 50).then(
-            (items: any[]) => {
-                items.forEach(i => createSong(i.track))
+
+        createSongPlaceholders(playlist.numOfTracks === null ? 10 : playlist.numOfTracks)
+
+        for (let i = 0; true; i += tracksPerFetch) {
+            const { items, total } = await spotifyApi.getTracks(
+                playlist.id === "usercollection" ? undefined : playlist.id, tracksPerFetch, i
+            )
+
+            if (fetchController !== curFetchController) break
+
+            if (i == 0 && playlist.numOfTracks === null) {
+                playlistSongsContainer.innerHTML = ""
+                createSongPlaceholders(total)
             }
-        )
+
+            items.forEach((i: any) => createSong(i.track, playlist))
+
+            if (items.length < tracksPerFetch) {
+                document.querySelectorAll(".playlist__song--placeholder").forEach(e => e.remove())
+                break
+            }
+        }
     }
 
     spotifyApi.addListener("ready", async ({ device_id }) => {
@@ -348,13 +398,14 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             name: "Liked Songs",
             playUri: `spotify:user:${user.id}:collection`,
             url: `${SP_BASE_URL}/collection/tracks`,
+            numOfTracks: null,
             creator: {
                 id: user.id,
                 name: user.display_name,
                 img: user.images[0].url
             }
         })
-
+        
         playlists.forEach(
             playlist => createPlaylist({
                 id: playlist.id,
@@ -362,6 +413,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 name: playlist.name,
                 playUri: "spotify:playlist:" + playlist.id,
                 url: `${SP_BASE_URL}/playlist/${playlist.id}`,
+                numOfTracks: playlist.tracks.total,
                 creator: {
                     id: playlist.owner.id,
                     name: playlist.owner.display_name,

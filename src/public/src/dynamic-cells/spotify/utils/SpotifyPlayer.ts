@@ -88,7 +88,7 @@ export class SpotifyApi extends Spotify.Player {
             (id ? `/playlists/${id}/tracks` : "/me/tracks") + `?limit=${limit}&offset=${offset}`
         )
 
-        return data.items
+        return data
     }
 
     async getDevices() {
@@ -108,17 +108,22 @@ export class SpotifyApi extends Spotify.Player {
         return await this.getJson("/me/player", "PUT", JSON.stringify({ device_ids: [deviceId] }))
     }
 
-    async play(spotify_uri: string) {
-        let context_uri: string | undefined = undefined
-        let uris: string[] | undefined = undefined
-
-        if (spotify_uri.startsWith("spotify:track:"))
-            uris = [spotify_uri]
-        else
-            context_uri = spotify_uri
+    async play(uri: string, context?: string) {
+        let context_uri: string | undefined
+        let uris: string[] | undefined
+        let offset: object | undefined
+        
+        if (context) {
+            context_uri = context
+            offset = { uri }
+        } else if (uri.startsWith("spotify:track:")) {
+            uris = [uri]
+        } else {
+            context_uri = uri
+        }
 
         this.fetchApi("/me/player/play", "PUT", JSON.stringify({
-            context_uri, uris
+            context_uri, uris, offset
         }))
     }
 

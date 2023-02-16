@@ -572,11 +572,19 @@ body {
         align-items: center;
         width: 100%;
 
+        &:last-child {
+            padding-bottom: $main-padding;
+        }
+
         &__cover {
             position: relative;
             height: 40px;
             width: 40px;
             flex-shrink: 0;
+
+            &--placeholder {
+                background-color: #282828;
+            }
 
             img {
                 width: 100%;
@@ -608,6 +616,10 @@ body {
         &__text {
             white-space: nowrap;
             min-width: 0;
+
+            &--placeholder {
+                width: 100%;
+            }
         }
 
         &.active &__title {
@@ -619,6 +631,14 @@ body {
             text-overflow: ellipsis;
             margin-bottom: 3px;
             font-size: 0.9rem;
+
+            &--placeholder {
+                height: 0.7rem;
+                width: 80%;
+                background-color: #282828;
+                border-radius: 100vh;
+                margin-bottom: 6px;
+            }
         }
 
         &__metadata {
@@ -627,6 +647,13 @@ body {
             font-size: 0.775rem;
             color: #b3b3b3;
             min-width: 0;
+
+            &--placeholder {
+                height: 0.7rem;
+                width: 70%;
+                background-color: #282828;
+                border-radius: 100vh;
+            }
         }
 
         &__explicit {
