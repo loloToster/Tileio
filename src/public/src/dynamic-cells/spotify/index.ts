@@ -114,8 +114,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     const nextBtn = document.querySelector<HTMLButtonElement>(".player__next")!
     const loopBtn = document.querySelector<HTMLButtonElement>(".player__loop")!
 
-    let userCountry: string
-
     let lastAt = ""
     let atExpires = new Date()
     const spotifyApi = new SpotifyApi({
@@ -153,6 +151,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     }
 
     let openedPlaylist: Playlist | null = null
+    let curPlayerState: CustomState | null = null
 
     const playlistTab = document.querySelector<HTMLDivElement>(".playlist")!
     const playlistContent = document.querySelector<HTMLDivElement>(".playlist__content")!
@@ -179,7 +178,12 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     playlistPlayBtn.addEventListener("click", () => {
         if (!openedPlaylist) return
-        playFromPlaylist(openedPlaylist.playUri)
+
+        if (curPlayerState?.context.uri === openedPlaylist.playUri) {
+            spotifyApi.togglePlay()
+        } else {
+            playFromPlaylist(openedPlaylist.playUri)
+        }
     })
 
     // handle header fading
@@ -239,6 +243,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         playlistSongsContainer.innerHTML = playlistSongsContainer.innerHTML + placeholder.repeat(n)
     }
 
+    function updatePlaylistPlayState() {
+        playlistPlayBtn.classList.toggle(
+            "playing",
+            curPlayerState?.context.uri === openedPlaylist?.playUri && !curPlayerState?.paused
+        )
+    }
+
     async function openPlaylist(playlist: Playlist) {
         playlistTab.classList.add("active")
 
@@ -268,6 +279,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         playlistName.innerText = playlist.name
         playlistHeaderName.innerText = playlist.name
         playlistCreatorName.innerText = playlist.creator.name
+
+        updatePlaylistPlayState()
 
         const loader = new Image()
 
@@ -339,7 +352,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         // update user info
         const user = await spotifyApi.getUser()
 
-        userCountry = user.country
         document.querySelector<HTMLDivElement>(".header__user__name")!.innerText = user.display_name
         const userAvatar = document.querySelector<HTMLImageElement>(".header__user__avatar")!
 
@@ -572,6 +584,9 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         playerDeviceEl.innerText = `Listening on ${state.device.name}`
 
         updateState({
+            context: {
+                uri: state.context.uri || null
+            },
             currentTrack: {
                 id: state.item.id,
                 img: getBestImage(300, state.item.album.images),
@@ -595,6 +610,9 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         if (!state.track_window.current_track) return
 
         updateState({
+            context: {
+                uri: state.context.uri
+            },
             currentTrack: {
                 id: state.track_window.current_track.id || "",
                 img: getBestImage(300, state.track_window.current_track.album.images),
@@ -611,6 +629,9 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     })
 
     interface CustomState {
+        context: {
+            uri: string | null
+        },
         currentTrack: {
             id: string,
             img: string,
@@ -670,6 +691,9 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     }
 
     function updateState(state: CustomState) {
+        curPlayerState = state
+        updatePlaylistPlayState()
+
         transferPlaybackBtn.classList.toggle("active", !spotifyApi.playingHere)
 
         setCSSVar(playerEl, "image", `url("${state.currentTrack.img}")`)
