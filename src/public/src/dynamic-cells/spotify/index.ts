@@ -150,6 +150,23 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         }
     }
 
+    interface CustomState {
+        context: {
+            uri: string | null
+        },
+        currentTrack: {
+            id: string,
+            img: string,
+            name: string,
+            artist: string,
+            position: number,
+            duration: number
+        },
+        shuffle: boolean,
+        paused: boolean,
+        repeatMode: number
+    }
+
     let openedPlaylist: Playlist | null = null
     let curPlayerState: CustomState | null = null
 
@@ -215,6 +232,12 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         
         const clone = helper.querySelector("div")!
 
+        clone.dataset.id = track.id
+        if (playlist.playUri === curPlayerState?.context.uri && curPlayerState?.currentTrack.id === track.id) {
+            clone.classList.add("active")
+            clone.classList.toggle("playing", !curPlayerState?.paused)
+        }
+
         clone.querySelector<HTMLImageElement>(".playlist__song__cover img")!.src = getBestImage(40, track.album.images)
         clone.querySelector<HTMLDivElement>(".playlist__song__title")!.innerText = track.name
         clone.querySelector<HTMLDivElement>(".playlist__song__artists")!.innerText = track.artists.map((e: any) => e.name).join(", ")
@@ -224,7 +247,16 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         clone.querySelector<HTMLButtonElement>(".playlist__song__cover button")
             ?.addEventListener("click", () => {
-                playFromPlaylist(track.uri, playlist.playUri)
+                if (!openedPlaylist) return
+
+                if (
+                    curPlayerState?.context.uri === openedPlaylist.playUri &&
+                    curPlayerState.currentTrack.id === track.id
+                ) {
+                    spotifyApi.togglePlay()
+                } else {
+                    playFromPlaylist(track.uri, playlist.playUri)
+                }
             })
 
         const placeholder = document.querySelector<HTMLDivElement>(".playlist__song--placeholder")
@@ -248,6 +280,21 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             "playing",
             curPlayerState?.context.uri === openedPlaylist?.playUri && !curPlayerState?.paused
         )
+
+        if (!curPlayerState || !openedPlaylist) return
+
+        document.querySelectorAll(
+            ".playlist__song.active, .playlist__song.playing"
+        ).forEach(s => s.classList.remove("active", "playing"))
+
+        if (openedPlaylist.playUri !== curPlayerState.context.uri) return
+
+        document.querySelectorAll(
+            `.playlist__song[data-id="${curPlayerState.currentTrack.id}"]`
+        ).forEach(s => {
+            s.classList.add("active")
+            s.classList.toggle("playing", !curPlayerState?.paused)
+        })
     }
 
     async function openPlaylist(playlist: Playlist) {
@@ -627,23 +674,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             repeatMode: state.repeat_mode
         })
     })
-
-    interface CustomState {
-        context: {
-            uri: string | null
-        },
-        currentTrack: {
-            id: string,
-            img: string,
-            name: string,
-            artist: string,
-            position: number,
-            duration: number
-        },
-        shuffle: boolean,
-        paused: boolean,
-        repeatMode: number
-    }
 
     let lastLyrics = ""
 
