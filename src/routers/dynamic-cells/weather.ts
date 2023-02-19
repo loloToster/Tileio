@@ -9,7 +9,7 @@ const weather = new OpenWeatherAPI({
 const router = express.Router()
 
 router.get("/", (req, res) => {
-    res.render("dynamic-cells/weather", { big: req.query.w == "4" })
+    res.render("dynamic-cells/weather")
 })
 
 router.get("/data", async (req, res) => {

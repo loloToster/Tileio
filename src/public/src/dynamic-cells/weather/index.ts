@@ -1,5 +1,7 @@
 import { CurrentWeather, DailyWeather, Location } from "openweather-api-node"
+
 import createWidget from "../../ts/iframe-api"
+import { setCSSVar } from "../../ts/utlis/utils"
 
 createWidget()
 
@@ -21,15 +23,26 @@ const searchLocationInp = document.querySelector<HTMLInputElement>(".location__s
 const searchSuggestions = document.querySelector<HTMLDivElement>(".location__suggestions")
 const locationDay = document.querySelector<HTMLSpanElement>(".location__day")
 
-const weatherIcon = document.querySelector<HTMLImageElement>(".weather__icon img")
-const temp = document.querySelector<HTMLSpanElement>(".weather__temp .data")
-const min = document.querySelector<HTMLSpanElement>(".weather__min .data")
-const max = document.querySelector<HTMLSpanElement>(".weather__max .data")
-const precipitationLabel = document.querySelector<HTMLSpanElement>(".weather__rain .label")
-const precipitation = document.querySelector<HTMLSpanElement>(".weather__rain .data")
-const humditiy = document.querySelector<HTMLSpanElement>(".weather__humidity .data")
-const wind = document.querySelector<HTMLSpanElement>(".weather__wind .data")
-const pressure = document.querySelector<HTMLSpanElement>(".weather__pressure .data")
+const weatherIcon = document.querySelector<HTMLImageElement>(".weather__icon img")!
+const temp = document.querySelector<HTMLSpanElement>(".weather__temp .data")!
+const min = document.querySelector<HTMLSpanElement>(".weather__min .data")!
+const max = document.querySelector<HTMLSpanElement>(".weather__max .data")!
+
+const snowChart = document.querySelector<HTMLDivElement>(".weather__charts__wrapper--snow")!
+const rainChart = document.querySelector<HTMLDivElement>(".weather__charts__wrapper--rain")!
+const humidityChart = document.querySelector<HTMLDivElement>(".weather__charts__wrapper--humidity")!
+const windChart = document.querySelector<HTMLDivElement>(".weather__charts__wrapper--wind")!
+
+const snowChartIndicator = document.querySelector<HTMLSpanElement>(".weather__charts__wrapper--snow .data")!
+const rainChartIndicator = document.querySelector<HTMLSpanElement>(".weather__charts__wrapper--rain .data")!
+const humidityChartIndicator = document.querySelector<HTMLSpanElement>(".weather__charts__wrapper--humidity .data")!
+const windChartIndicator = document.querySelector<HTMLSpanElement>(".weather__charts__wrapper--wind .data")!
+
+const precipitationLabel = document.querySelector<HTMLSpanElement>(".weather__rain .label")!
+const precipitation = document.querySelector<HTMLSpanElement>(".weather__rain .data")!
+const humidity = document.querySelector<HTMLSpanElement>(".weather__humidity .data")!
+const wind = document.querySelector<HTMLSpanElement>(".weather__wind .data")!
+const pressure = document.querySelector<HTMLSpanElement>(".weather__pressure .data")!
 
 const days = document.querySelectorAll(".days__day")
 
@@ -49,28 +62,47 @@ interface TabData {
 
 function drawTabData(data: TabData) {
     const icon = getIcon(data.icon)
-    if (weatherIcon!.src != icon) weatherIcon!.src = icon
-    temp!.innerText = Math.round(data.cur).toString()
-    min!.innerText = Math.round(data.min).toString()
-    max!.innerText = Math.round(data.max).toString()
+    if (weatherIcon.src != icon) weatherIcon.src = icon
+    temp.innerText = Math.round(data.cur).toString()
+    min.innerText = Math.round(data.min).toString()
+    max.innerText = Math.round(data.max).toString()
 
-    if (precipitation && precipitationLabel) {
-        if (data.rain && data.snow) {
-            precipitationLabel.innerText = "Rain/Snow"
-            precipitation.innerText = data.rain.toString() + "/" + data.snow.toString()
-        } else if (data.snow && !data.rain) {
-            precipitationLabel.innerText = "Snow"
-            precipitation.innerText = data.snow.toString()
-        } else {
-            precipitationLabel.innerText = "Rain"
-            precipitation.innerText = data.rain.toString()
-        }
-
+    if (data.rain && data.snow) {
+        precipitationLabel.innerText = "Rain/Snow"
+        precipitation.innerText = data.rain.toString() + "/" + data.snow.toString()
+        rainChart.classList.remove("hide")
+        snowChart.classList.remove("hide")
+    } else if (data.snow && !data.rain) {
+        precipitationLabel.innerText = "Snow"
+        precipitation.innerText = data.snow.toString()
+        rainChart.classList.add("hide")
+        snowChart.classList.remove("hide")
+    } else {
+        precipitationLabel.innerText = "Rain"
+        precipitation.innerText = data.rain.toString()
+        rainChart.classList.remove("hide")
+        snowChart.classList.add("hide")
     }
 
-    if (humditiy) humditiy.innerText = data.humidity.toString()
-    if (wind) wind.innerText = data.windSpeed.toString()
-    if (pressure) pressure.innerText = data.pressure.toString()
+    const elToVal = [
+        [snowChart, (data.snow / 15) * 100],
+        [rainChart, (data.rain / 15) * 100],
+        [humidityChart, data.humidity],
+        [windChart, (data.windSpeed / 30) * 100]
+    ] as const
+
+    elToVal.forEach(
+        ([el, val]) => setCSSVar(el, "percentage", val < 4 ? val + 4 : val)
+    )
+
+    snowChartIndicator.innerText = data.snow.toString()
+    rainChartIndicator.innerText = data.rain.toString()
+    humidityChartIndicator.innerText = data.humidity.toString()
+    windChartIndicator.innerText = data.windSpeed.toString()
+
+    humidity.innerText = data.humidity.toString()
+    wind.innerText = data.windSpeed.toString()
+    pressure.innerText = data.pressure.toString()
 }
 
 function drawWeather(tab: number, data: any) {
