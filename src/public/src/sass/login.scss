@@ -4,9 +4,9 @@
 $error-color: #d4392a;
 
 $brands: (
-    "google": #EA4335,
-    "discord": #5865F2,
-    "github": #181717
+    "google": #ea4335,
+    "discord": #5865f2,
+    "github": #181717,
 );
 
 :root {
@@ -38,7 +38,6 @@ body {
 }
 
 .text-inp {
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     width: 100%;
@@ -60,7 +59,6 @@ body {
         width: 24px;
         height: 24px;
         fill: #383a45;
-        vertical-align: middle;
     }
 
     &__toggle-password {
@@ -74,7 +72,7 @@ body {
 }
 
 .input-validation {
-    font-size: .9rem;
+    font-size: 0.9rem;
     color: $error-color;
 }
 
@@ -88,7 +86,7 @@ body {
     cursor: pointer;
 
     &:hover {
-        filter: brightness(.9);
+        filter: brightness(0.9);
     }
 }
 
@@ -112,7 +110,6 @@ main {
     }
 
     &__message-box {
-        box-sizing: border-box;
         width: 100%;
         padding: 8px;
         color: var(--color);
@@ -191,11 +188,10 @@ main {
         }
 
         &:hover {
-            filter: brightness(.9);
+            filter: brightness(0.9);
         }
 
-        @each $brand,
-        $color in $brands {
+        @each $brand, $color in $brands {
             &.#{$brand} {
                 --color: #{$color};
                 --dark-color: #{darken($color, 5%)};
@@ -211,8 +207,8 @@ main {
         img {
             filter: invert(1);
             padding: 6px;
-            width: $brand-btn-height - 6px * 2;
-            height: $brand-btn-height - 6px * 2;
+            width: $brand-btn-height;
+            height: $brand-btn-height;
         }
     }
 

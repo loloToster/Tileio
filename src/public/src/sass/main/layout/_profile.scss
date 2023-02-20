@@ -23,14 +23,12 @@ $content-dimensions: const.$cell-width * 2 + const.$grid-margin * 2;
     }
 
     &__content {
-        box-sizing: border-box;
-
         width: $content-dimensions;
         height: $content-dimensions;
 
         padding: 16px;
 
-        &>* {
+        & > * {
             display: block;
         }
     }
@@ -68,7 +66,7 @@ $content-dimensions: const.$cell-width * 2 + const.$grid-margin * 2;
 
     &__login-method {
         color: grey;
-        font-size: .9rem;
+        font-size: 0.9rem;
     }
 
     &__email {

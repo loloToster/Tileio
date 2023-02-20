@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 button,
 input {
     margin: 0;
@@ -5,4 +9,9 @@ input {
     border: none;
     outline: none;
     background-color: transparent;
+}
+
+img,
+svg {
+    vertical-align: middle;
 }

@@ -12,21 +12,11 @@ $icon-margin: 6px;
 $preview-size: 280px;
 $preview-icon-size: $preview-size - 96px;
 
-$cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row );
+$cell-width: math.div(($col-width - (($num-of-icon-in-row - 1) * $icon-margin)), $num-of-icon-in-row);
 
-$link-cell-icon-slugs: "facebook",
-    "twitch",
-    "youtube",
-    "reddit",
-    "googlekeep",
-    "spotify";
+$link-cell-icon-slugs: "facebook", "twitch", "youtube", "reddit", "googlekeep", "spotify";
 
-$link-cell-icon-colors: #1877F2,
-    #9146FF,
-    #FF0000,
-    #FF4500,
-    #FFBB00,
-    #1DB954;
+$link-cell-icon-colors: #1877f2, #9146ff, #ff0000, #ff4500, #ffbb00, #1db954;
 
 @keyframes color-animation {
     @for $i from 0 through length($link-cell-icon-colors) - 1 {
@@ -49,7 +39,6 @@ $link-cell-icon-colors: #1877F2,
 }
 
 #add-modal__link-cell .add-modal__menu__item__icon {
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -73,7 +62,6 @@ $link-cell-icon-colors: #1877F2,
 }
 
 #add-modal__dynamic-cell .add-modal__menu__item__icon {
-    box-sizing: border-box;
     padding: 8px;
     background-color: #323232;
     color: c.$light-grey;
@@ -126,7 +114,7 @@ $link-cell-icon-colors: #1877F2,
     .small-straps {
         padding-top: 12px;
         padding-bottom: 2px;
-        height: 24px;
+        height: 32px;
     }
 
     .small-strap {
@@ -176,7 +164,7 @@ $link-cell-icon-colors: #1877F2,
 
         &.second {
             background-color: #9e4d4d;
-            animation-delay: .7s;
+            animation-delay: 0.7s;
         }
     }
 }
@@ -218,7 +206,6 @@ $link-cell-icon-colors: #1877F2,
         flex-direction: column;
 
         height: $modal-height;
-
 
         &__item {
             @include m.flexCenter();
@@ -269,7 +256,7 @@ $link-cell-icon-colors: #1877F2,
     &__column {
         float: left;
 
-        width: 340px;
+        width: 404px;
         height: $modal-height;
         padding: 0 32px;
 
@@ -339,7 +326,6 @@ $link-cell-icon-colors: #1877F2,
             }
 
             img {
-                box-sizing: border-box;
                 padding: 4px;
 
                 width: 100%;
@@ -388,11 +374,11 @@ $link-cell-icon-colors: #1877F2,
     }
 
     &__link-validator {
-        padding-bottom: .8rem;
+        padding-bottom: 0.8rem;
 
         color: c.$red;
         opacity: 0;
-        font-size: .8rem;
+        font-size: 0.8rem;
         font-weight: bold;
 
         &.active {

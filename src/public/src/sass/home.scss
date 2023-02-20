@@ -1,3 +1,5 @@
+@forward "./base/reset";
+
 @use "sass:math" as math;
 @use "./static-pages/abstracts/colors" as c;
 
@@ -159,10 +161,12 @@ section {
 
     &__img {
         height: 70%;
+        width: 70%;
+        object-fit: contain;
     }
 
     &__brief-wrapper {
-        width: 100vw;
+        width: 100%;
         display: flex;
         justify-content: center;
         padding: 60px 0;
@@ -170,7 +174,7 @@ section {
     }
 
     &__wave {
-        width: 100vw;
+        width: 100%;
         transform: translateY(-2px);
     }
 }

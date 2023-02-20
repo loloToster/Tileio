@@ -1,3 +1,4 @@
+@forward "./base/reset";
 @use "./static-pages/abstracts/colors" as c;
 
 $mobile-threshold: 50rem;
@@ -51,9 +52,7 @@ main {
 }
 
 .content {
-    box-sizing: border-box;
-    width: min(100vw, 780px);
-    padding: 0 10px;
+    width: min(90vw, 780px);
 }
 
 code {
@@ -65,7 +64,6 @@ code {
 }
 
 img {
-    vertical-align: middle;
     width: 2rem;
     height: 2rem;
 }

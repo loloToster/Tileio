@@ -1,7 +1,6 @@
 $mobile-threshold: 50rem;
 
 .header {
-    box-sizing: border-box;
     position: sticky;
     z-index: 1;
     top: 0;
@@ -48,14 +47,12 @@ $mobile-threshold: 50rem;
 
         svg {
             fill: white;
-            vertical-align: middle;
         }
     }
 }
 
 .nav {
     @media (max-width: $mobile-threshold) {
-        box-sizing: border-box;
         width: 0;
         overflow: hidden;
         position: fixed;

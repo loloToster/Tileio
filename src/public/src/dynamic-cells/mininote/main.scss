@@ -3,7 +3,6 @@
 $padding: 24px;
 
 body {
-    box-sizing: border-box;
     overflow: hidden;
     font-family: Arial, Helvetica, sans-serif;
 
@@ -67,7 +66,7 @@ body {
     color: #141414;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
-    font-size: .8rem;
+    font-size: 0.8rem;
 
     &.active {
         display: block;
@@ -75,7 +74,6 @@ body {
 }
 
 .settings {
-    box-sizing: border-box;
     display: none;
     flex-direction: column;
     gap: 6px;
@@ -101,7 +99,7 @@ body {
         top: 3%;
         right: 3%;
         cursor: pointer;
-        
+
         svg {
             fill: white;
         }
@@ -122,13 +120,13 @@ body {
             cursor: pointer;
             background-color: var(--color);
 
-            &:hover, &.choosen {
-                filter: brightness(.8);
+            &:hover,
+            &.choosen {
+                filter: brightness(0.8);
             }
 
             svg {
                 fill: #474747;
-                vertical-align: middle;
             }
         }
     }
@@ -137,7 +135,6 @@ body {
         overflow-y: scroll;
 
         &__font {
-            box-sizing: border-box;
             --font: Arial, Helvetica;
 
             font-family: var(--font), sans-serif;
@@ -154,7 +151,8 @@ body {
                 background-color: #393836;
             }
 
-            &.choosen, &.choosen:hover {
+            &.choosen,
+            &.choosen:hover {
                 background-color: #4c7136;
             }
 

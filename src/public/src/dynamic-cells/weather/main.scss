@@ -1,7 +1,6 @@
 @forward "../../sass/base/reset";
 
 body {
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -37,7 +36,6 @@ body {
     }
 
     &__search-input {
-        box-sizing: border-box;
         width: 180px;
         height: 22px;
         padding: 2px;
@@ -53,7 +51,6 @@ body {
     }
 
     &__suggestion {
-        box-sizing: border-box;
         width: 100%;
         padding: 6px;
         background-color: #353535;
@@ -152,7 +149,6 @@ body {
     }
 
     &__charts {
-        box-sizing: border-box;
         display: flex;
         gap: 4px;
         height: 100%;

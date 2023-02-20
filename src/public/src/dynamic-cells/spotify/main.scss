@@ -13,11 +13,11 @@ $player-menu-size: 38px;
 
 @keyframes shimmer {
     from {
-        transform: translateX(-100%)
+        transform: translateX(-100%);
     }
 
     to {
-        transform: translateX(100%)
+        transform: translateX(100%);
     }
 }
 
@@ -28,7 +28,7 @@ $player-menu-size: 38px;
     right: 0;
     bottom: 0;
     left: 0;
-    background-image: linear-gradient(90deg, transparent, hsla(0, 0%, 100%, .1), transparent);
+    background-image: linear-gradient(90deg, transparent, hsla(0, 0%, 100%, 0.1), transparent);
     animation: shimmer 2s infinite;
 }
 
@@ -60,7 +60,13 @@ body {
     height: 3px;
     outline: none;
     border-radius: 100px;
-    background: linear-gradient(to right, var(--color) 0%, var(--color) calc(var(--percentage) * 1%), #535353 calc(var(--percentage) * 1%), #535353 100%);
+    background: linear-gradient(
+        to right,
+        var(--color) 0%,
+        var(--color) calc(var(--percentage) * 1%),
+        #535353 calc(var(--percentage) * 1%),
+        #535353 100%
+    );
 
     &:hover {
         --color: #{$spotify-green};
@@ -113,7 +119,6 @@ body {
 }
 
 .header {
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -126,14 +131,9 @@ body {
         height: 24px;
 
         border-radius: 4px;
-
-        img {
-            vertical-align: middle;
-        }
     }
 
     &__user {
-        box-sizing: border-box;
         position: relative;
         display: flex;
         align-items: center;
@@ -165,7 +165,7 @@ body {
             background-repeat: no-repeat;
 
             &.loading::after {
-                @include shimmer-after()
+                @include shimmer-after();
             }
         }
 
@@ -265,7 +265,7 @@ body {
             background-color: #ffffff33;
 
             &::after {
-                @include shimmer-after()
+                @include shimmer-after();
             }
         }
 
@@ -281,7 +281,7 @@ body {
             border-radius: 100vh;
 
             &::after {
-                @include shimmer-after()
+                @include shimmer-after();
             }
         }
     }
@@ -345,7 +345,6 @@ body {
     }
 
     &__result-category {
-        box-sizing: border-box;
         width: calc(100vw - 12px);
         padding: 0 8px;
 
@@ -366,11 +365,11 @@ body {
 
         border-radius: 8px;
         cursor: pointer;
-        background-color: rgba(255, 255, 255, .1);
+        background-color: rgba(255, 255, 255, 0.1);
         transition: background-color 200ms;
 
         &:hover {
-            background-color: rgba(255, 255, 255, .3);
+            background-color: rgba(255, 255, 255, 0.3);
         }
 
         img {
@@ -388,7 +387,7 @@ body {
     }
 
     &__result-author {
-        font-size: .9rem;
+        font-size: 0.9rem;
         color: #7e7e7e;
     }
 }
@@ -421,7 +420,6 @@ body {
 
     $main-padding: 16px;
 
-    box-sizing: border-box;
     overflow: hidden;
     transform: translateX(-100%);
     transition: all 200ms;
@@ -431,7 +429,6 @@ body {
     }
 
     &__content {
-        box-sizing: border-box;
         overflow-y: overlay;
         height: 100%;
         padding: 0 $main-padding;
@@ -447,7 +444,6 @@ body {
     }
 
     &__header {
-        box-sizing: border-box;
         position: absolute;
         top: 0;
         left: 0;
@@ -470,7 +466,6 @@ body {
 
     &__back svg {
         fill: white;
-        vertical-align: middle;
     }
 
     &__img {
@@ -482,7 +477,6 @@ body {
 
         img {
             width: 100%;
-            vertical-align: middle;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
     }
@@ -534,7 +528,7 @@ body {
             background-repeat: no-repeat;
 
             &.loading::after {
-                @include shimmer-after()
+                @include shimmer-after();
             }
         }
     }
@@ -552,10 +546,6 @@ body {
 
         &:hover {
             scale: 1.1;
-        }
-
-        svg {
-            vertical-align: middle;
         }
 
         & .pause {
@@ -579,7 +569,6 @@ body {
     }
 
     &__song {
-        box-sizing: border-box;
         display: flex;
         gap: 10px;
         padding: 3px 0;
@@ -633,7 +622,6 @@ body {
                 fill: #b3b3b3;
                 height: 40%;
                 width: 40%;
-                vertical-align: middle;
             }
         }
 
@@ -716,16 +704,13 @@ body {
     transform: translateX(100%);
     transition: all 200ms;
     background-size: cover;
-    background-image:
-        linear-gradient(to top, #2d2d2de6, #2d2d2de6 30%, #00000000 60%),
-        var(--image);
+    background-image: linear-gradient(to top, #2d2d2de6, #2d2d2de6 30%, #00000000 60%), var(--image);
 
     &.active {
         transform: translateX(0);
     }
 
     &__wrapper {
-        box-sizing: border-box;
         display: flex;
         flex-direction: column;
 
@@ -744,7 +729,6 @@ body {
 
         svg {
             fill: $grey;
-            vertical-align: middle;
         }
 
         &:hover svg {
@@ -978,7 +962,7 @@ body {
         align-items: center;
 
         div {
-            font-size: .7rem;
+            font-size: 0.7rem;
             color: #b3b3b3;
         }
     }
@@ -1051,12 +1035,11 @@ body {
             fill: var(--lyrics-color-inactive);
 
             &:hover {
-                fill: var(--lyrics-color-active)
+                fill: var(--lyrics-color-active);
             }
         }
 
         &__lines {
-            box-sizing: border-box;
             overflow-y: scroll;
             padding: 10%;
             width: 100vh;

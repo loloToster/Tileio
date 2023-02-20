@@ -37,7 +37,6 @@ $scrollbar-width: 8px;
 }
 
 .header {
-    box-sizing: border-box;
     display: flex;
     align-items: center;
 
@@ -75,9 +74,9 @@ $scrollbar-width: 8px;
                 display: block;
             }
         }
-    svg {
-        fill: white;
-    }
+        svg {
+            fill: white;
+        }
 
         &:last-child {
             margin-right: 0;
@@ -125,7 +124,6 @@ $scrollbar-width: 8px;
     }
 
     &__right {
-        box-sizing: border-box;
         width: 80vw;
         padding-right: 12px;
     }
@@ -178,7 +176,6 @@ $scrollbar-width: 8px;
     }
 
     &__date-wrapper {
-        box-sizing: border-box;
         width: 20vw;
         height: 20vw;
         padding: 6px;
@@ -221,7 +218,6 @@ $scrollbar-width: 8px;
     }
 
     &__event {
-        box-sizing: border-box;
         width: 100%;
         padding: 6px;
         margin: 6px 0;
@@ -234,6 +230,6 @@ $scrollbar-width: 8px;
     }
 
     &__event-time {
-        font-size: .9rem;
+        font-size: 0.9rem;
     }
 }
