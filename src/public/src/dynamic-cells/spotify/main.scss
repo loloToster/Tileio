@@ -41,7 +41,7 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -299,14 +299,17 @@ body {
 
 .search {
     overflow: hidden;
+    flex-direction: column;
+
+    &.active {
+        display: flex;
+    }
 
     &__inp-wrapper {
-        overflow: hidden;
         display: flex;
 
         width: 92vw;
-        height: 32px;
-        margin: 4vh 4vw;
+        margin: 4vw;
 
         background-color: white;
         border-radius: 100vh;
@@ -339,14 +342,79 @@ body {
         flex-grow: 1;
     }
 
+    &__content {
+        flex-grow: 1;
+        min-height: 0;
+    }
+
+    &__browse-wrapper {
+        display: none;
+        max-height: 100%;
+        overflow: overlay;
+
+        &.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 1rem;
+            margin: 4vw;
+            margin-top: 0;
+        }
+    }
+
+    &__browse {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        padding: 4vw;
+        padding-top: 0;
+        gap: 4vw;
+
+        &__item {
+            display: block;
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4 / 2.2;
+            background-color: #ffffff1a;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+
+            span {
+                display: block;
+                font-weight: bold;
+                font-size: 0.875rem;
+                padding: 5%;
+                max-width: 81%;
+                overflow-wrap: break-word;
+            }
+
+            img {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                height: 63%;
+                aspect-ratio: 1;
+                border-radius: 7px;
+                transform: rotate(25deg) translate(18%, -2%);
+            }
+        }
+    }
+
     &__results {
-        overflow-y: scroll;
-        height: calc(77vh - 31px);
+        display: none;
+        max-height: 100%;
+        overflow-y: overlay;
+
+        &.active {
+            display: block;
+        }
     }
 
     &__result-category {
-        width: calc(100vw - 12px);
-        padding: 0 8px;
+        width: 100%;
+        padding: 0 4vw;
 
         &__name {
             font-weight: bold;
@@ -437,10 +505,6 @@ body {
         background-size: 100% 80vh;
         background-attachment: local;
         background-repeat: no-repeat;
-
-        &::-webkit-scrollbar {
-            width: 6px;
-        }
     }
 
     &__header {

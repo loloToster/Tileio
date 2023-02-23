@@ -82,6 +82,9 @@ switchToMenu.addEventListener("click", () => {
     playerEl.classList.remove("active")
 })
 
+const browseCategoryTemplate = <HTMLTemplateElement>document.getElementById("browse-category-template")
+const browseCategoriesContainerWrapper = document.querySelector<HTMLDivElement>(".search__browse-wrapper")!
+const browseCategoriesContainer = document.querySelector<HTMLDivElement>(".search__browse")!
 const searchInp = document.querySelector<HTMLInputElement>(".search__inp")!
 const clearSearchInp = document.querySelector<HTMLButtonElement>(".search__inp-btn--clear")!
 const searchResults = document.querySelector<HTMLDivElement>(".search__results")!
@@ -93,6 +96,7 @@ searchInp.addEventListener("input", () => {
 clearSearchInp.addEventListener("click", () => {
     searchInp.value = ""
     clearSearchInp.classList.remove("active")
+    searchInp.dispatchEvent(new Event("input"))
 })
 
 window.onSpotifyWebPlaybackSDKReady = async () => {
@@ -480,6 +484,22 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 }
             })
         )
+
+        const { categories: { items: browseCats } } = await spotifyApi.getBrowseCategories(50)
+        
+        browseCats.forEach((cat: any) => {
+            const helper = document.createElement("div")
+            helper.innerHTML = browseCategoryTemplate.innerHTML
+
+            const clone = helper.querySelector("a")!
+
+            clone.href = `${SP_BASE_URL}/genre/${cat.id}`
+            const img = clone.querySelector("img")!
+            img.src = getBestImage(64, cat.icons)
+            clone.querySelector("span")!.innerText = cat.name
+
+            browseCategoriesContainer.appendChild(clone)
+        })
     })
 
     spotifyApi.addListener("not_ready", ({ device_id }) => {
@@ -503,6 +523,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         clearTimeout(searchTimeout)
         searchTimeout = setTimeout(async () => {
             if (!searchInp.value) {
+                browseCategoriesContainerWrapper.classList.add("active")
+                searchResults.classList.remove("active")
                 searchResults.innerHTML = ""
                 return
             }
@@ -518,6 +540,9 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             const results = await spotifyApi.search(searchInp.value, categories)
 
             searchResults.innerHTML = ""
+
+            browseCategoriesContainerWrapper.classList.remove("active")
+            searchResults.classList.add("active")
 
             categories.forEach(cat => {
                 const category = cat + "s"
@@ -632,7 +657,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         updateState({
             context: {
-                uri: state.context.uri || null
+                uri: state.context?.uri || null
             },
             currentTrack: {
                 id: state.item.id,

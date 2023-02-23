@@ -53,7 +53,7 @@
                         </path>
                     </svg>
                 </div>
-                <input class="search__inp" placeholder="Artists, songs or podcasts" type="text">
+                <input class="search__inp" placeholder="What do you want to listen to?" type="text">
                 <button class="search__inp-btn search__inp-btn--clear">
                     <svg viewBox="0 0 24 24">
                         <path
@@ -62,7 +62,19 @@
                     </svg>
                 </button>
             </div>
-            <div class="search__results"></div>
+            <div class="search__content">
+                <template id="browse-category-template">
+                    <a href="" target="_blank" class="search__browse__item">
+                        <span></span>
+                        <img src="">
+                    </a>
+                </template>
+                <div class="search__browse-wrapper active">
+                    <h1>Browse all</h1>
+                    <div class="search__browse"></div>
+                </div>
+                <div class="search__results"></div>
+            </div>
         </div>
         <nav class="nav">
             <button class="nav__btn nav__btn--library active">

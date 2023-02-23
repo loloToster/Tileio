@@ -196,4 +196,10 @@ export class SpotifyApi extends Spotify.Player {
             `/search?q=${encodeURIComponent(query)}&type=${types.join(",")}&limit=${limit}`
         )
     }
+
+    async getBrowseCategories(limit=20, offset = 0) {
+        return await this.getJson(
+            `/browse/categories?limit=${limit}&offset=${offset}`
+        )
+    }
 }
