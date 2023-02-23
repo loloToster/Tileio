@@ -85,8 +85,17 @@ switchToMenu.addEventListener("click", () => {
 const browseCategoryTemplate = <HTMLTemplateElement>document.getElementById("browse-category-template")
 const browseCategoriesContainerWrapper = document.querySelector<HTMLDivElement>(".search__browse-wrapper")!
 const browseCategoriesContainer = document.querySelector<HTMLDivElement>(".search__browse")!
+
 const searchInp = document.querySelector<HTMLInputElement>(".search__inp")!
 const clearSearchInp = document.querySelector<HTMLButtonElement>(".search__inp-btn--clear")!
+
+const searchCategoriesArrWrapper = document.querySelector<HTMLDivElement>(".search__categories-arrow-wrapper")!
+const searchCategoriesWrapper = document.querySelector<HTMLDivElement>(".search__categories-wrapper")!
+const searchCategoriesContainer = document.querySelector<HTMLDivElement>(".search__categories")!
+const searchCategories = document.querySelectorAll<HTMLDivElement>(".search__categories__cat")!
+const searchArrLeft = document.querySelector<HTMLButtonElement>(".search__categories-arrow-wrapper__arrow--left")!
+const searchArrRight = document.querySelector<HTMLButtonElement>(".search__categories-arrow-wrapper__arrow--right")!
+
 const searchResults = document.querySelector<HTMLDivElement>(".search__results")!
 
 searchInp.addEventListener("input", () => {
@@ -97,6 +106,36 @@ clearSearchInp.addEventListener("click", () => {
     searchInp.value = ""
     clearSearchInp.classList.remove("active")
     searchInp.dispatchEvent(new Event("input"))
+})
+
+let curCatIdx = 0
+function setCatIdx(idx: number) {
+    curCatIdx = idx
+
+    const maxLeft = curCatIdx === 0
+    const maxRight = curCatIdx === searchCategories.length - 1
+
+    searchArrLeft.disabled = maxLeft
+    searchArrRight.disabled = maxRight
+
+    searchCategoriesWrapper.classList.toggle("active-left", !maxLeft)
+    searchCategoriesWrapper.classList.toggle("active-right", !maxRight)
+
+    const curCat = searchCategories[curCatIdx]
+
+    setCSSVar(
+        searchCategoriesContainer,
+        "offset",
+        curCat.getBoundingClientRect().x - searchCategoriesContainer.getBoundingClientRect().x
+    )
+}
+
+searchArrLeft.addEventListener("click", () => {
+    setCatIdx(curCatIdx - 1)
+})
+
+searchArrRight.addEventListener("click", () => {
+    setCatIdx(curCatIdx + 1)
 })
 
 window.onSpotifyWebPlaybackSDKReady = async () => {
@@ -213,7 +252,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         const scrollPos = target.scrollTop
 
         const imgRect = playlistImg.getBoundingClientRect()
-        
+
         const startThreshold = scrollPos + imgRect.y
         const endThreshold = scrollPos + imgRect.y + imgRect.height
 
@@ -233,7 +272,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     function createSong(track: any, playlist: Playlist) {
         const helper = document.createElement("div")
         helper.innerHTML = playlistSongTemplate.innerHTML
-        
+
         const clone = helper.querySelector("div")!
 
         clone.dataset.id = track.id
@@ -304,13 +343,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     async function openPlaylist(playlist: Playlist) {
         playlistTab.classList.add("active")
 
-        if (playlist.id !== openedPlaylist?.id){
+        if (playlist.id !== openedPlaylist?.id) {
             fetchController += 1
             playlistContent.scrollTo(0, 0)
         } else {
             return
         }
-        
+
         const curFetchController = fetchController
         openedPlaylist = playlist
 
@@ -468,7 +507,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 img: user.images[0].url
             }
         })
-        
+
         playlists.forEach(
             playlist => createPlaylist({
                 id: playlist.id,
@@ -486,7 +525,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         )
 
         const { categories: { items: browseCats } } = await spotifyApi.getBrowseCategories(50)
-        
+
         browseCats.forEach((cat: any) => {
             const helper = document.createElement("div")
             helper.innerHTML = browseCategoryTemplate.innerHTML
@@ -524,6 +563,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         searchTimeout = setTimeout(async () => {
             if (!searchInp.value) {
                 browseCategoriesContainerWrapper.classList.add("active")
+                searchCategoriesArrWrapper.classList.remove("active")
                 searchResults.classList.remove("active")
                 searchResults.innerHTML = ""
                 return
@@ -542,6 +582,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             searchResults.innerHTML = ""
 
             browseCategoriesContainerWrapper.classList.remove("active")
+            searchCategoriesArrWrapper.classList.add("active")
             searchResults.classList.add("active")
 
             categories.forEach(cat => {

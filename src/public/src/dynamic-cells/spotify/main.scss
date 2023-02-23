@@ -305,12 +305,13 @@ body {
         display: flex;
     }
 
-    &__inp-wrapper {
-        display: flex;
-
+    &__top {
         width: 92vw;
         margin: 4vw;
+    }
 
+    &__inp-wrapper {
+        display: flex;
         background-color: white;
         border-radius: 100vh;
     }
@@ -338,8 +339,105 @@ body {
     }
 
     &__inp {
-        height: 100%;
+        height: 32px;
         flex-grow: 1;
+    }
+
+    &__categories-arrow-wrapper {
+        display: none;
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        margin-top: 4vw;
+        border-radius: 100vh;
+
+        &.active {
+            display: block;
+        }
+
+        &__arrow {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 0;
+            height: 28px;
+            width: 28px;
+            background-color: #242424;
+            border-radius: 50%;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #2a2a2a;
+            }
+
+            &:disabled {
+                display: none;
+            }
+
+            &--left {
+                left: 0;
+            }
+
+            &--right {
+                right: 0;
+                transform: rotate(180deg);
+            }
+
+            svg {
+                width: 14px;
+                height: 14px;
+                fill: white;
+            }
+        }
+    }
+
+    &__categories-wrapper {
+        &.active-left {
+            mask-image: linear-gradient(90deg, transparent, #000 80px);
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 80px);
+        }
+
+        &.active-right {
+            mask-image: linear-gradient(90deg, #000 calc(100% - 80px), transparent);
+            -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 80px), transparent);
+        }
+
+        &.active-left.active-right {
+            mask-image: linear-gradient(90deg, transparent, #000 80px, #000 calc(100% - 80px), transparent);
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 80px, #000 calc(100% - 80px), transparent);
+        }
+    }
+
+    &__categories {
+        position: relative;
+        left: calc(var(--offset, 0) * -1px);
+        display: flex;
+        font-size: 0.875rem;
+        gap: 6px;
+        transition: left 50ms;
+
+        &__cat {
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+            background-color: #ffffff1a;
+            height: 28px;
+            padding: 4px 12px;
+            border-radius: 100vh;
+            cursor: default;
+            user-select: none;
+            transition: background-color 100ms;
+
+            &:hover {
+                background-color: #ffffff4d;
+            }
+
+            &.active {
+                color: black;
+                background-color: white;
+            }
+        }
     }
 
     &__content {

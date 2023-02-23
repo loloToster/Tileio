@@ -45,22 +45,51 @@
             </ul>
         </div>
         <div class="menu__tab menu__tab--search search">
-            <div class="search__inp-wrapper">
-                <div class="search__inp-btn">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 101.414-1.414l-4.344-4.344a9.157 9.157 0 002.077-5.816c0-5.14-4.226-9.28-9.407-9.28zm-7.407 9.279c0-4.006 3.302-7.28 7.407-7.28s7.407 3.274 7.407 7.28-3.302 7.279-7.407 7.279-7.407-3.273-7.407-7.28z">
-                        </path>
-                    </svg>
+            <div class="search__top">
+                <div class="search__inp-wrapper">
+                    <div class="search__inp-btn">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 101.414-1.414l-4.344-4.344a9.157 9.157 0 002.077-5.816c0-5.14-4.226-9.28-9.407-9.28zm-7.407 9.279c0-4.006 3.302-7.28 7.407-7.28s7.407 3.274 7.407 7.28-3.302 7.279-7.407 7.279-7.407-3.273-7.407-7.28z">
+                            </path>
+                        </svg>
+                    </div>
+                    <input class="search__inp" placeholder="What do you want to listen to?" type="text">
+                    <button class="search__inp-btn search__inp-btn--clear">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M3.293 3.293a1 1 0 011.414 0L12 10.586l7.293-7.293a1 1 0 111.414 1.414L13.414 12l7.293 7.293a1 1 0 01-1.414 1.414L12 13.414l-7.293 7.293a1 1 0 01-1.414-1.414L10.586 12 3.293 4.707a1 1 0 010-1.414z">
+                            </path>
+                        </svg>
+                    </button>
                 </div>
-                <input class="search__inp" placeholder="What do you want to listen to?" type="text">
-                <button class="search__inp-btn search__inp-btn--clear">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M3.293 3.293a1 1 0 011.414 0L12 10.586l7.293-7.293a1 1 0 111.414 1.414L13.414 12l7.293 7.293a1 1 0 01-1.414 1.414L12 13.414l-7.293 7.293a1 1 0 01-1.414-1.414L10.586 12 3.293 4.707a1 1 0 010-1.414z">
-                        </path>
-                    </svg>
-                </button>
+                <div class="search__categories-arrow-wrapper">
+                    <div class="search__categories-wrapper active-right">
+                        <div class="search__categories">
+                            <div class="search__categories__cat active">All</div>
+                            <div class="search__categories__cat">Songs</div>
+                            <div class="search__categories__cat">Artists</div>
+                            <div class="search__categories__cat">Playlists</div>
+                            <div class="search__categories__cat">Albums</div>
+                        </div>
+                    </div>
+                    <button disabled
+                        class="search__categories-arrow-wrapper__arrow search__categories-arrow-wrapper__arrow--left">
+                        <svg viewBox="0 0 16 16">
+                            <path
+                                d="M11.03.47a.75.75 0 0 1 0 1.06L4.56 8l6.47 6.47a.75.75 0 1 1-1.06 1.06L2.44 8 9.97.47a.75.75 0 0 1 1.06 0z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button
+                        class="search__categories-arrow-wrapper__arrow search__categories-arrow-wrapper__arrow--right active">
+                        <svg viewBox="0 0 16 16">
+                            <path
+                                d="M11.03.47a.75.75 0 0 1 0 1.06L4.56 8l6.47 6.47a.75.75 0 1 1-1.06 1.06L2.44 8 9.97.47a.75.75 0 0 1 1.06 0z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class="search__content">
                 <template id="browse-category-template">
