@@ -83,9 +83,23 @@ export class SpotifyApi extends Spotify.Player {
         return data.items
     }
 
-    async getTracks(id?: string, limit = 20, offset = 0) {
+    async getUserTracks(limit = 20, offset = 0) {
+        const data = await this.getJson(`/me/tracks?limit=${limit}&offset=${offset}`)
+
+        return data
+    }
+
+    async getPlaylistTracks(id: string, limit = 20, offset = 0) {
         const data = await this.getJson(
-            (id ? `/playlists/${id}/tracks` : "/me/tracks") + `?limit=${limit}&offset=${offset}`
+            `/playlists/${id}/tracks?limit=${limit}&offset=${offset}`
+        )
+
+        return data
+    }
+
+    async getAlbumTracks(id: string, limit = 20, offset = 0) {
+        const data = await this.getJson(
+            `/albums/${id}/tracks?limit=${limit}&offset=${offset}`
         )
 
         return data
@@ -112,7 +126,7 @@ export class SpotifyApi extends Spotify.Player {
         let context_uri: string | undefined
         let uris: string[] | undefined
         let offset: object | undefined
-        
+
         if (context) {
             context_uri = context
             offset = { uri }
@@ -197,7 +211,7 @@ export class SpotifyApi extends Spotify.Player {
         )
     }
 
-    async getBrowseCategories(limit=20, offset = 0) {
+    async getBrowseCategories(limit = 20, offset = 0) {
         return await this.getJson(
             `/browse/categories?limit=${limit}&offset=${offset}`
         )

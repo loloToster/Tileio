@@ -120,12 +120,17 @@ body {
 
     &__cover {
         position: relative;
+        overflow: hidden;
         height: 40px;
         width: 40px;
         flex-shrink: 0;
 
         &--placeholder {
             background-color: #282828;
+        }
+
+        &.rounded {
+            border-radius: 50%;
         }
 
         img {
@@ -138,13 +143,13 @@ body {
             opacity: 0;
             width: 100%;
             height: 100%;
-            background-color: #484848;
+            background-color: #00000080;
             cursor: pointer;
             transition: all 60ms;
         }
 
         svg {
-            fill: #b3b3b3;
+            fill: white;
             height: 40%;
             width: 40%;
         }
@@ -545,9 +550,10 @@ body {
             display: inline-flex;
             align-items: center;
             flex-shrink: 0;
-            background-color: #ffffff1a;
             height: 28px;
             padding: 4px 12px;
+            color: white;
+            background-color: #ffffff1a;
             border-radius: 100vh;
             cursor: default;
             user-select: none;
@@ -628,57 +634,20 @@ body {
         display: none;
         max-height: 100%;
         overflow-y: overlay;
+        padding: 0 4vw;
 
         &.active {
             display: block;
         }
-    }
 
-    &__result-category {
-        width: 100%;
-        padding: 0 4vw;
+        &__cat {
+            display: none;
+            padding-bottom: 4vw;
 
-        &__name {
-            font-weight: bold;
-            margin-bottom: 6px;
-            text-transform: capitalize;
+            &.active {
+                display: block;
+            }
         }
-    }
-
-    &__result {
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-
-        height: 60px;
-        margin-bottom: 6px;
-
-        border-radius: 8px;
-        cursor: pointer;
-        background-color: rgba(255, 255, 255, 0.1);
-        transition: background-color 200ms;
-
-        &:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-
-        img {
-            height: 60px;
-            width: 60px;
-        }
-    }
-
-    &__result-title-author {
-        margin-left: 8px;
-    }
-
-    &__result-title {
-        font-weight: bold;
-    }
-
-    &__result-author {
-        font-size: 0.9rem;
-        color: #7e7e7e;
     }
 }
 
@@ -815,6 +784,10 @@ body {
 
             &.loading::after {
                 @include shimmer-after();
+            }
+
+            &.hidden {
+                display: none;
             }
         }
     }

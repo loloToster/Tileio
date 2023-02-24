@@ -102,11 +102,11 @@
                 <div class="search__categories-arrow-wrapper">
                     <div class="search__categories-wrapper active-right">
                         <div class="search__categories">
-                            <div class="search__categories__cat active">All</div>
-                            <div class="search__categories__cat">Songs</div>
-                            <div class="search__categories__cat">Artists</div>
-                            <div class="search__categories__cat">Playlists</div>
-                            <div class="search__categories__cat">Albums</div>
+                            <button class="search__categories__cat active">All</button>
+                            <button data-cat="track" class="search__categories__cat">Songs</button>
+                            <button data-cat="album" class="search__categories__cat">Albums</button>
+                            <button data-cat="playlist" class="search__categories__cat">Playlists</button>
+                            <button data-cat="artist" class="search__categories__cat">Artists</button>
                         </div>
                     </div>
                     <button disabled
@@ -138,7 +138,13 @@
                     <h1>Browse all</h1>
                     <div class="search__browse"></div>
                 </div>
-                <div class="search__results"></div>
+                <div class="search__results">
+                    <div class="search__results__cat active"></div>
+                    <div data-cat="track" class="search__results__cat"></div>
+                    <div data-cat="album" class="search__results__cat"></div>
+                    <div data-cat="playlist" class="search__results__cat"></div>
+                    <div data-cat="artist" class="search__results__cat"></div>
+                </div>
             </div>
         </div>
         <nav class="nav">

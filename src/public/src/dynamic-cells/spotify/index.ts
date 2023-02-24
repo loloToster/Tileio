@@ -58,21 +58,25 @@ const spotifyItemTemplate = <HTMLTemplateElement>document.getElementById("spotif
 interface SpotifyItemProps {
     img: string,
     title: string,
-    artists: string,
+    metadata?: string,
     id?: string,
+    playable?: boolean,
     active?: boolean,
     playing?: boolean,
-    explicit?: boolean
+    explicit?: boolean,
+    roundedImg?: boolean
 }
 
 function createSpotifyItem({
     img,
     title,
-    artists,
+    metadata = "",
     id,
+    playable = true,
     active,
     playing,
-    explicit
+    explicit,
+    roundedImg
 }: SpotifyItemProps) {
     const helper = document.createElement("div")
     helper.innerHTML = spotifyItemTemplate.innerHTML
@@ -84,9 +88,15 @@ function createSpotifyItem({
     clone.classList.toggle("active", Boolean(active))
     clone.classList.toggle("playing", Boolean(playing))
 
-    clone.querySelector<HTMLImageElement>(".spotify-item__cover img")!.src = img
+    const cover = clone.querySelector<HTMLDivElement>(".spotify-item__cover")!
+    cover.querySelector("img")!.src = img
+    cover.classList.toggle("rounded", Boolean(roundedImg))
+
     clone.querySelector<HTMLDivElement>(".spotify-item__title")!.innerText = title
-    clone.querySelector<HTMLDivElement>(".spotify-item__artists")!.innerText = artists
+    clone.querySelector<HTMLDivElement>(".spotify-item__artists")!.innerText = metadata
+
+    if (!playable)
+        clone.querySelector("button")?.remove()
 
     if (!explicit)
         clone.querySelector<HTMLSpanElement>(".spotify-item__explicit")?.remove()
@@ -141,7 +151,10 @@ const searchCategoriesContainer = document.querySelector<HTMLDivElement>(".searc
 const searchCategories = document.querySelectorAll<HTMLDivElement>(".search__categories__cat")!
 const searchArrLeft = document.querySelector<HTMLButtonElement>(".search__categories-arrow-wrapper__arrow--left")!
 const searchArrRight = document.querySelector<HTMLButtonElement>(".search__categories-arrow-wrapper__arrow--right")!
-
+const searchCatButtons = document.querySelectorAll<HTMLButtonElement>(".search__categories__cat")
+const searchCatContainers = document.querySelectorAll<HTMLDivElement>(".search__results__cat")
+const searchAllCatButton = searchCatButtons[0]
+const searchAllCatContainer = searchCatContainers[0]
 const searchResults = document.querySelector<HTMLDivElement>(".search__results")!
 
 searchInp.addEventListener("input", () => {
@@ -169,10 +182,13 @@ function setCatIdx(idx: number) {
 
     const curCat = searchCategories[curCatIdx]
 
+    const computedGap = window.getComputedStyle(searchCategoriesContainer).gap
+    const arrOffset = searchArrLeft.getBoundingClientRect().width + parseInt(computedGap.substring(0, computedGap.length - 2))
+
     setCSSVar(
         searchCategoriesContainer,
         "offset",
-        curCat.getBoundingClientRect().x - searchCategoriesContainer.getBoundingClientRect().x
+        curCat.getBoundingClientRect().x - searchCategoriesContainer.getBoundingClientRect().x - (curCatIdx ? arrOffset : 0)
     )
 }
 
@@ -182,6 +198,17 @@ searchArrLeft.addEventListener("click", () => {
 
 searchArrRight.addEventListener("click", () => {
     setCatIdx(curCatIdx + 1)
+})
+
+searchCatButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelector(".search__categories__cat.active")?.classList.remove("active")
+        document.querySelector(".search__results__cat.active")?.classList.remove("active")
+
+        btn.classList.add("active")
+        Array.from(searchCatContainers).find(c => c.dataset.cat === btn.dataset.cat)?.classList.add("active")
+        searchResults.scrollTo(0, 0)
+    })
 })
 
 window.onSpotifyWebPlaybackSDKReady = async () => {
@@ -236,7 +263,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             id: string,
             name: string,
             img: string | null
-        }
+        },
+        isAlbum?: boolean
     }
 
     interface CustomState {
@@ -327,9 +355,9 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         const spotifyItem = createSpotifyItem({
             id: track.id,
-            img: getBestImage(40, track.album.images),
+            img: track.album ? getBestImage(40, track.album.images) : playlist.img,
             title: track.name,
-            artists: track.artists.map((e: any) => e.name).join(", "),
+            metadata: track.artists.map((e: any) => e.name).join(", "),
             active,
             playing,
             explicit: track.explicit
@@ -418,32 +446,35 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         updatePlaylistPlayState()
 
-        const loader = new Image()
+        playlistCreatorImg.classList.toggle("hidden", Boolean(playlist.isAlbum))
+        if (!playlist.isAlbum) {
+            const loader = new Image()
 
-        loader.onload = async () => {
-            if (fetchController !== curFetchController) return
-
-            playlistCreatorImg.classList.remove("loading")
-            setCSSVar(
-                playlistCreatorImg,
-                "img",
-                `url("${loader.src}")`
-            )
-        }
-
-        const cachedImg = ownerImgCache[playlist.creator.id]
-
-        if (playlist.creator.img) {
-            loader.src = playlist.creator.img
-        } else if (cachedImg) {
-            loader.src = cachedImg
-        } else {
-            spotifyApi.getUser(playlist.creator.id).then(user => {
-                const img = user.images[0].url
-                ownerImgCache[user.id] = img
+            loader.onload = async () => {
                 if (fetchController !== curFetchController) return
-                loader.src = img
-            })
+
+                playlistCreatorImg.classList.remove("loading")
+                setCSSVar(
+                    playlistCreatorImg,
+                    "img",
+                    `url("${loader.src}")`
+                )
+            }
+
+            const cachedImg = ownerImgCache[playlist.creator.id]
+
+            if (playlist.creator.img) {
+                loader.src = playlist.creator.img
+            } else if (cachedImg) {
+                loader.src = cachedImg
+            } else {
+                spotifyApi.getUser(playlist.creator.id).then(user => {
+                    const img = user.images[0].url
+                    ownerImgCache[user.id] = img
+                    if (fetchController !== curFetchController) return
+                    loader.src = img
+                })
+            }
         }
 
         const tracksPerFetch = 50
@@ -452,9 +483,17 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         createSongPlaceholders(playlist.numOfTracks === null ? 10 : playlist.numOfTracks)
 
         for (let i = 0; true; i += tracksPerFetch) {
-            const { items, total } = await spotifyApi.getTracks(
-                playlist.id === "usercollection" ? undefined : playlist.id, tracksPerFetch, i
-            )
+            let res: any
+
+            if (playlist.isAlbum) {
+                res = await spotifyApi.getAlbumTracks(playlist.id, tracksPerFetch, i)
+            } else if (playlist.id === "usercollection") {
+                res = await spotifyApi.getUserTracks(tracksPerFetch, i)
+            } else {
+                res = await spotifyApi.getPlaylistTracks(playlist.id, tracksPerFetch, i)
+            }
+
+            const { items, total } = res
 
             if (fetchController !== curFetchController) break
 
@@ -463,7 +502,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 createSongPlaceholders(total)
             }
 
-            items.forEach((i: any) => createSong(i.track, playlist))
+            items.forEach((i: any) => createSong(i.track || i, playlist))
 
             if (items.length < tracksPerFetch) {
                 document.querySelectorAll(".playlist .spotify-item--placeholder").forEach(e => e.remove())
@@ -603,6 +642,12 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         console.error("account_error", message)
     })
 
+    let availableSearchCategories: string[] = []
+
+    searchCatButtons.forEach(btn => {
+        if (btn.dataset.cat) availableSearchCategories.push(btn.dataset.cat)
+    })
+
     let searchTimeout: any
     searchInp.addEventListener("input", () => {
         clearTimeout(searchTimeout)
@@ -611,91 +656,126 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 browseCategoriesContainerWrapper.classList.add("active")
                 searchCategoriesArrWrapper.classList.remove("active")
                 searchResults.classList.remove("active")
-                searchResults.innerHTML = ""
                 return
             }
 
-            const categories = [
-                "track",
-                "playlist",
-                "album",
-                "show",
-                "episode"
-            ]
+            const results = await spotifyApi.search(searchInp.value, availableSearchCategories)
 
-            const results = await spotifyApi.search(searchInp.value, categories)
+            searchCatContainers.forEach(c => c.innerHTML = "")
 
-            searchResults.innerHTML = ""
-
-            browseCategoriesContainerWrapper.classList.remove("active")
-            searchCategoriesArrWrapper.classList.add("active")
-            searchResults.classList.add("active")
-
-            categories.forEach(cat => {
+            availableSearchCategories.forEach(cat => {
                 const category = cat + "s"
 
-                let categoryEl = document.createElement("details")
-                categoryEl.classList.add("search__result-category")
-                categoryEl.open = true
+                results[category].items.forEach((i: any) => {
+                    const categoryContainer = Array.from(searchCatContainers).find(c => c.dataset.cat === cat)
 
-                let summary = document.createElement("summary")
-                summary.classList.add("search__result-category__name")
-                summary.innerText = category
-                categoryEl.appendChild(summary)
+                    const images = i.images || i.album.images
+                    let author = ""
 
-                results[category].items.forEach((item: any) => {
-                    let resultEl = document.createElement("div")
-                    resultEl.classList.add("search__result")
-
-                    widget.addContextMenuBtn(resultEl, {
-                        text: "Open on Spotify",
-                        action: () => {
-                            window.open(`${SP_BASE_URL}/${cat}/${item.id}`)
-                        }
-                    })
-
-                    resultEl.addEventListener("click", () => {
-                        playerEl.classList.add("active")
-                        spotifyApi.play(item.uri)
-                    })
-
-                    let img = document.createElement("img")
-                    const images = item.images || item.album.images
-                    img.src = getBestImage(60, images)
-                    resultEl.appendChild(img)
-
-                    let titleAuthorWrapper = document.createElement("div")
-                    titleAuthorWrapper.classList.add("search__result-title-author")
-
-                    let titleEl = document.createElement("div")
-                    titleEl.classList.add("search__result-title")
-                    titleEl.innerText = item.name
-                    titleAuthorWrapper.appendChild(titleEl)
-
-                    let authorEl = document.createElement("div")
-                    authorEl.classList.add("search__result-author")
-
-                    let author: string
-
-                    if (item.artists) {
-                        author = item.artists.map((e: any) => e.name).join(", ")
-                    } else if (item.owner) {
-                        author = item.owner.display_name
-                    } else if (item.publisher) {
-                        author = item.publisher
-                    } else {
-                        author = ""
+                    if (i.artists) {
+                        author = i.artists.map((e: any) => e.name).join(", ")
+                    } else if (i.owner) {
+                        author = i.owner.display_name
+                    } else if (i.publisher) {
+                        author = i.publisher
                     }
 
-                    authorEl.innerText = author
-                    titleAuthorWrapper.appendChild(authorEl)
+                    let itemData: SpotifyItemProps = {
+                        img: getBestImage(60, images),
+                        title: i.name,
+                        metadata: author,
+                        explicit: i.explicit,
+                        playable: cat === "track",
+                        roundedImg: cat === "artist"
+                    }
 
-                    resultEl.appendChild(titleAuthorWrapper)
+                    const contextMenuData = {
+                        text: "Open on Spotify",
+                        action: () => {
+                            window.open(`${SP_BASE_URL}/${cat}/${i.id}`)
+                        }
+                    }
 
-                    categoryEl.appendChild(resultEl)
+                    const catToDisplayName: Record<string, string> = {
+                        "track": "Song",
+                        "album": "Album",
+                        "playlist": "Playlist",
+                        "artist": "Artist"
+                    }
+
+                    const allItem = createSpotifyItem({
+                        ...itemData,
+                        metadata: cat === "artist" ? catToDisplayName[cat] : `${catToDisplayName[cat]} • ${itemData.metadata}`
+                    })
+                    const catItem = createSpotifyItem(itemData)
+
+                    widget.addContextMenuBtn(allItem, contextMenuData)
+                    widget.addContextMenuBtn(catItem, contextMenuData)
+
+                    if (cat === "playlist") {
+                        const cb = () => {
+                            openPlaylist({
+                                id: i.id,
+                                img: getBestImage(200, i.images),
+                                name: i.name,
+                                playUri: "spotify:playlist:" + i.id,
+                                url: `${SP_BASE_URL}/playlist/${i.id}`,
+                                numOfTracks: i.tracks.total,
+                                creator: {
+                                    id: i.owner.id,
+                                    name: i.owner.display_name,
+                                    img: null
+                                }
+                            })
+                        }
+
+                        allItem.addEventListener("click", cb)
+                        catItem.addEventListener("click", cb)
+                    } else if (cat === "album") {
+                        const cb = () => {
+                            openPlaylist({
+                                id: i.id,
+                                img: getBestImage(200, i.images),
+                                name: i.name,
+                                playUri: i.uri,
+                                url: `${SP_BASE_URL}/album/${i.id}`,
+                                numOfTracks: i.total_tracks,
+                                isAlbum: true,
+                                creator: {
+                                    id: "",
+                                    name: i.artists.map((e: any) => e.name).join(" • "),
+                                    img: null
+                                }
+                            })
+                        }
+
+                        allItem.addEventListener("click", cb)
+                        catItem.addEventListener("click", cb)
+                    } else if (cat === "track") {
+                        const cb = () => {
+                            spotifyApi.play(i.uri)
+                            playerEl.classList.add("active")
+                        }
+
+                        allItem.querySelector("button")?.addEventListener("click", cb)
+                        catItem.querySelector("button")?.addEventListener("click", cb)
+                    } else if (cat === "artist") {
+                        const cb = contextMenuData.action
+
+                        allItem.addEventListener("click", cb)
+                        catItem.addEventListener("click", cb)
+                    }
+
+                    searchAllCatContainer.appendChild(allItem)
+                    categoryContainer?.appendChild(catItem)
                 })
 
-                searchResults.appendChild(categoryEl)
+                browseCategoriesContainerWrapper.classList.remove("active")
+                searchCategoriesArrWrapper.classList.add("active")
+                searchResults.classList.add("active")
+                searchResults.scrollTo(0, 0)
+                searchAllCatButton.click()
+                setCatIdx(0)
             })
         }, 500)
     })
@@ -741,6 +821,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         playerDeviceEl.classList.add("active")
         playerDeviceEl.innerText = `Listening on ${state.device.name}`
+
+        if (!state.item) return
 
         updateState({
             context: {
