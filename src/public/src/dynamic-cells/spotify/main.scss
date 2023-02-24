@@ -97,6 +97,130 @@ body {
     }
 }
 
+.spotify-item {
+    display: flex;
+    gap: 10px;
+    padding: 3px 0;
+    align-items: center;
+    width: 100%;
+
+    & .pause {
+        display: none;
+    }
+
+    &.playing {
+        & .pause {
+            display: inline;
+        }
+
+        & .play {
+            display: none;
+        }
+    }
+
+    &__cover {
+        position: relative;
+        height: 40px;
+        width: 40px;
+        flex-shrink: 0;
+
+        &--placeholder {
+            background-color: #282828;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+
+        button {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #484848;
+            cursor: pointer;
+            transition: all 60ms;
+        }
+
+        svg {
+            fill: #b3b3b3;
+            height: 40%;
+            width: 40%;
+        }
+    }
+
+    &:hover &__cover button {
+        opacity: 1;
+    }
+
+    &__text {
+        white-space: nowrap;
+        min-width: 0;
+
+        &--placeholder {
+            width: 100%;
+        }
+    }
+
+    &.active &__title {
+        color: $spotify-green;
+    }
+
+    &__title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 3px;
+        font-size: 0.9rem;
+
+        &--placeholder {
+            height: 0.7rem;
+            width: 80%;
+            background-color: #282828;
+            border-radius: 100vh;
+            margin-bottom: 6px;
+        }
+    }
+
+    &__metadata {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.775rem;
+        color: #b3b3b3;
+        min-width: 0;
+
+        &--placeholder {
+            height: 0.7rem;
+            width: 70%;
+            background-color: #282828;
+            border-radius: 100vh;
+        }
+    }
+
+    &__explicit {
+        padding: 2px 4px;
+        font-size: 9px;
+        color: $bg;
+        background-color: #ffffff99;
+        border-radius: 2px;
+        margin-right: 2px;
+        vertical-align: middle;
+    }
+
+    &__playing {
+        display: none;
+        width: 16px;
+        height: 16px;
+        margin-left: auto;
+        margin-right: 13px;
+        image-rendering: pixelated;
+    }
+
+    &.playing &__playing {
+        display: block;
+    }
+}
+
 .main-tab {
     position: absolute;
     top: 0;
@@ -728,133 +852,9 @@ body {
     &__songs {
         clear: both;
         padding-top: 8px;
-    }
 
-    &__song {
-        display: flex;
-        gap: 10px;
-        padding: 3px 0;
-        align-items: center;
-        width: 100%;
-
-        &:last-child {
+        .spotify-item:last-child {
             padding-bottom: $main-padding;
-        }
-
-        & .pause {
-            display: none;
-        }
-
-        &.playing {
-            & .pause {
-                display: inline;
-            }
-
-            & .play {
-                display: none;
-            }
-        }
-
-        &__cover {
-            position: relative;
-            height: 40px;
-            width: 40px;
-            flex-shrink: 0;
-
-            &--placeholder {
-                background-color: #282828;
-            }
-
-            img {
-                width: 100%;
-                height: 100%;
-            }
-
-            button {
-                position: absolute;
-                opacity: 0;
-                width: 100%;
-                height: 100%;
-                background-color: #484848;
-                cursor: pointer;
-                transition: all 60ms;
-            }
-
-            svg {
-                fill: #b3b3b3;
-                height: 40%;
-                width: 40%;
-            }
-        }
-
-        &:hover &__cover button {
-            opacity: 1;
-        }
-
-        &__text {
-            white-space: nowrap;
-            min-width: 0;
-
-            &--placeholder {
-                width: 100%;
-            }
-        }
-
-        &.active &__title {
-            color: $spotify-green;
-        }
-
-        &__title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 3px;
-            font-size: 0.9rem;
-
-            &--placeholder {
-                height: 0.7rem;
-                width: 80%;
-                background-color: #282828;
-                border-radius: 100vh;
-                margin-bottom: 6px;
-            }
-        }
-
-        &__metadata {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 0.775rem;
-            color: #b3b3b3;
-            min-width: 0;
-
-            &--placeholder {
-                height: 0.7rem;
-                width: 70%;
-                background-color: #282828;
-                border-radius: 100vh;
-            }
-        }
-
-        &__explicit {
-            padding: 2px 4px;
-            font-size: 9px;
-            color: $bg;
-            background-color: #ffffff99;
-            border-radius: 2px;
-            margin-right: 2px;
-            vertical-align: middle;
-        }
-
-        &__playing {
-            display: none;
-            width: 16px;
-            height: 16px;
-            margin-left: auto;
-            margin-right: 13px;
-            image-rendering: pixelated;
-        }
-
-        &.playing &__playing {
-            display: block;
         }
     }
 }

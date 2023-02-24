@@ -52,6 +52,52 @@ onClickOutside([userButton], () => {
 
 const playerEl = document.querySelector<HTMLDivElement>(".player")!
 
+const spotifyItemPlaceholderTemplate = <HTMLTemplateElement>document.getElementById("spotify-item-placeholder-template")!
+const spotifyItemTemplate = <HTMLTemplateElement>document.getElementById("spotify-item-template")!
+
+interface SpotifyItemProps {
+    img: string,
+    title: string,
+    artists: string,
+    id?: string,
+    active?: boolean,
+    playing?: boolean,
+    explicit?: boolean
+}
+
+function createSpotifyItem({
+    img,
+    title,
+    artists,
+    id,
+    active,
+    playing,
+    explicit
+}: SpotifyItemProps) {
+    const helper = document.createElement("div")
+    helper.innerHTML = spotifyItemTemplate.innerHTML
+
+    const clone = helper.querySelector("div")!
+
+    if (id) clone.dataset.id = id
+
+    clone.classList.toggle("active", Boolean(active))
+    clone.classList.toggle("playing", Boolean(playing))
+
+    clone.querySelector<HTMLImageElement>(".spotify-item__cover img")!.src = img
+    clone.querySelector<HTMLDivElement>(".spotify-item__title")!.innerText = title
+    clone.querySelector<HTMLDivElement>(".spotify-item__artists")!.innerText = artists
+
+    if (!explicit)
+        clone.querySelector<HTMLSpanElement>(".spotify-item__explicit")?.remove()
+
+    return clone
+}
+
+function createSpotifyItemPlaceholder(n: number) {
+    return spotifyItemPlaceholderTemplate.innerHTML.trim().repeat(n)
+}
+
 const libraryTab = document.querySelector<HTMLDivElement>(".menu__tab--library")!
 const searchTab = document.querySelector<HTMLDivElement>(".menu__tab--search")!
 
@@ -223,8 +269,6 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     const playlistCreatorImg = document.querySelector<HTMLDivElement>(".playlist__creator__img")!
     const playlistCreatorName = document.querySelector<HTMLSpanElement>(".playlist__creator span")!
     const playlistSongsContainer = document.querySelector<HTMLDivElement>(".playlist__songs")!
-    const playlistSongPlaceholderTemplate = <HTMLTemplateElement>document.getElementById("playlist-song-placeholder-template")!
-    const playlistSongTemplate = <HTMLTemplateElement>document.getElementById("playlist-song-template")!
 
     playlistBackBtn.addEventListener("click", () => {
         playlistTab.classList.remove("active")
@@ -271,24 +315,27 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     function createSong(track: any, playlist: Playlist) {
         const helper = document.createElement("div")
-        helper.innerHTML = playlistSongTemplate.innerHTML
+        helper.innerHTML = spotifyItemTemplate.innerHTML
 
-        const clone = helper.querySelector("div")!
+        let active = false
+        let playing = false
 
-        clone.dataset.id = track.id
         if (playlist.playUri === curPlayerState?.context.uri && curPlayerState?.currentTrack.id === track.id) {
-            clone.classList.add("active")
-            clone.classList.toggle("playing", !curPlayerState?.paused)
+            active = true
+            playing = !curPlayerState?.paused
         }
 
-        clone.querySelector<HTMLImageElement>(".playlist__song__cover img")!.src = getBestImage(40, track.album.images)
-        clone.querySelector<HTMLDivElement>(".playlist__song__title")!.innerText = track.name
-        clone.querySelector<HTMLDivElement>(".playlist__song__artists")!.innerText = track.artists.map((e: any) => e.name).join(", ")
+        const spotifyItem = createSpotifyItem({
+            id: track.id,
+            img: getBestImage(40, track.album.images),
+            title: track.name,
+            artists: track.artists.map((e: any) => e.name).join(", "),
+            active,
+            playing,
+            explicit: track.explicit
+        })
 
-        if (!track.explicit)
-            clone.querySelector<HTMLSpanElement>(".playlist__song__explicit")?.remove()
-
-        clone.querySelector<HTMLButtonElement>(".playlist__song__cover button")
+        spotifyItem.querySelector<HTMLButtonElement>(".spotify-item__cover button")
             ?.addEventListener("click", () => {
                 if (!openedPlaylist) return
 
@@ -302,20 +349,19 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 }
             })
 
-        const placeholder = document.querySelector<HTMLDivElement>(".playlist__song--placeholder")
+        const placeholder = document.querySelector<HTMLDivElement>(".playlist .spotify-item--placeholder")
 
         if (placeholder)
-            placeholder.replaceWith(clone)
+            placeholder.replaceWith(spotifyItem)
         else
-            playlistSongsContainer.appendChild(clone)
+            playlistSongsContainer.appendChild(spotifyItem)
     }
 
     let ownerImgCache: Record<string, string | undefined> = {}
     let fetchController = 0
 
     function createSongPlaceholders(n: number) {
-        const placeholder = playlistSongPlaceholderTemplate.innerHTML.trim()
-        playlistSongsContainer.innerHTML = playlistSongsContainer.innerHTML + placeholder.repeat(n)
+        playlistSongsContainer.innerHTML = playlistSongsContainer.innerHTML + createSpotifyItemPlaceholder(n)
     }
 
     function updatePlaylistPlayState() {
@@ -327,13 +373,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         if (!curPlayerState || !openedPlaylist) return
 
         document.querySelectorAll(
-            ".playlist__song.active, .playlist__song.playing"
+            ".playlist .spotify-item.active, .playlist .spotify-item.playing"
         ).forEach(s => s.classList.remove("active", "playing"))
 
         if (openedPlaylist.playUri !== curPlayerState.context.uri) return
 
         document.querySelectorAll(
-            `.playlist__song[data-id="${curPlayerState.currentTrack.id}"]`
+            `.playlist .spotify-item[data-id="${curPlayerState.currentTrack.id}"]`
         ).forEach(s => {
             s.classList.add("active")
             s.classList.toggle("playing", !curPlayerState?.paused)
@@ -420,7 +466,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             items.forEach((i: any) => createSong(i.track, playlist))
 
             if (items.length < tracksPerFetch) {
-                document.querySelectorAll(".playlist__song--placeholder").forEach(e => e.remove())
+                document.querySelectorAll(".playlist .spotify-item--placeholder").forEach(e => e.remove())
                 break
             }
         }

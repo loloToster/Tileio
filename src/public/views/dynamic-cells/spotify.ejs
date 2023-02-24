@@ -12,6 +12,42 @@
 </head>
 
 <body>
+    <template id="spotify-item-placeholder-template">
+        <div class="spotify-item spotify-item--placeholder">
+            <div class="spotify-item__cover spotify-item__cover--placeholder"></div>
+            <div class="spotify-item__text spotify-item__text--placeholder">
+                <div class="spotify-item__title spotify-item__title--placeholder"></div>
+                <div class="spotify-item__metadata spotify-item__metadata--placeholder"></div>
+            </div>
+        </div>
+    </template>
+    <template id="spotify-item-template">
+        <div class="spotify-item">
+            <div class="spotify-item__cover">
+                <button>
+                    <svg class="play" viewBox="0 0 24 24">
+                        <path
+                            d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z">
+                        </path>
+                    </svg>
+                    <svg class="pause" viewBox="0 0 24 24">
+                        <path
+                            d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z">
+                        </path>
+                    </svg>
+                </button>
+                <img src="">
+            </div>
+            <div class="spotify-item__text">
+                <div class="spotify-item__title">Title</div>
+                <div class="spotify-item__metadata">
+                    <span class="spotify-item__explicit">E</span>
+                    <span class="spotify-item__artists">Artist</span>
+                </div>
+            </div>
+            <img class="spotify-item__playing" src="/static/assets/dynamic-cells/spotify-equalizer.gif">
+        </div>
+    </template>
     <div class="main-tab menu">
         <div class="menu__tab menu__tab--library active">
             <header class="header">
@@ -271,42 +307,6 @@
                     </path>
                 </svg>
             </button>
-            <template id="playlist-song-placeholder-template">
-                <div class="playlist__song playlist__song--placeholder">
-                    <div class="playlist__song__cover playlist__song__cover--placeholder"></div>
-                    <div class="playlist__song__text playlist__song__text--placeholder">
-                        <div class="playlist__song__title playlist__song__title--placeholder"></div>
-                        <div class="playlist__song__metadata playlist__song__metadata--placeholder"></div>
-                    </div>
-                </div>
-            </template>
-            <template id="playlist-song-template">
-                <div class="playlist__song">
-                    <div class="playlist__song__cover">
-                        <button>
-                            <svg class="play" viewBox="0 0 24 24">
-                                <path
-                                    d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z">
-                                </path>
-                            </svg>
-                            <svg class="pause" viewBox="0 0 24 24">
-                                <path
-                                    d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z">
-                                </path>
-                            </svg>
-                        </button>
-                        <img src="">
-                    </div>
-                    <div class="playlist__song__text">
-                        <div class="playlist__song__title">Title</div>
-                        <div class="playlist__song__metadata">
-                            <span class="playlist__song__explicit">E</span>
-                            <span class="playlist__song__artists">Artist</span>
-                        </div>
-                    </div>
-                    <img class="playlist__song__playing" src="/static/assets/dynamic-cells/spotify-equalizer.gif">
-                </div>
-            </template>
             <div class="playlist__songs"></div>
         </div>
         <header class="playlist__header">
