@@ -3,11 +3,12 @@ import { Schema, model } from "mongoose"
 import { Grid } from "../types/types"
 
 export interface DynamicCellsData {
-    mininote: {
+    mininotes: Map<string, {
+        id: number,
         text: string,
         color: string,
         font: string
-    },
+    } | undefined>,
     weather: {
         lat: number,
         lon: number,
@@ -32,7 +33,7 @@ export interface IUser {
     hashedPassword?: string,
     picture: string,
     grid: Grid,
-    dynamicCells: Partial<DynamicCellsData>
+    dynamicCells: Partial<DynamicCellsData> //todo: move this structure to specific cells in grid structure
 }
 
 const userSchema = new Schema<IUser>({
@@ -47,6 +48,7 @@ const userSchema = new Schema<IUser>({
         bg: String,
         cell: String,
         cells: [{
+            cellId: Number,
             w: Number,
             h: Number,
             x: Number,
@@ -61,10 +63,14 @@ const userSchema = new Schema<IUser>({
         }]
     },
     dynamicCells: {
-        mininote: {
-            text: String,
-            color: String,
-            font: String
+        mininotes: {
+            type: Map,
+            of: {
+                cellId: Number,
+                text: String,
+                color: String,
+                font: String
+            }
         },
         weather: {
             lat: Number,

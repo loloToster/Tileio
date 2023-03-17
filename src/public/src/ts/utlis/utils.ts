@@ -39,6 +39,16 @@ export function setCSSVar(
     return el.style.setProperty("--" + name, value, priority)
 }
 
-export function getCSSVar(el: HTMLElement, name:string) {
+export function getCSSVar(el: HTMLElement, name: string) {
     return el.style.getPropertyValue("--" + name)
+}
+
+export function findFreeId(usedIds: number[]) {
+    usedIds.sort((a, b) => a - b)
+
+    for (let i = 0; i < usedIds.length; i++) {
+        if (!usedIds.includes(i)) return i
+    }
+
+    return usedIds.length + 1
 }

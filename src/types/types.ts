@@ -17,6 +17,7 @@ export interface SerializedDynamicCellContent {
 export type SerializedCellContent = SerializedLinkCellContent | SerializedDynamicCellContent
 
 export interface SerializedCell {
+    cellId?: number,
     x?: number,
     y?: number,
     w?: number,

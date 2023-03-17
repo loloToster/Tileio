@@ -52,7 +52,20 @@ const FONTS = [
 const router = express.Router()
 
 router.get("/", (req, res) => {
-    const noteData = req.user!.dynamicCells.mininote
+    if (req.query.preview === "true")
+        return res.render("dynamic-cells/mininote", {
+            text: "Remember to water the plants",
+            color: COLORS[0],
+            font: FONTS[0],
+            allColors: [],
+            allFonts: [],
+            preview: true
+        })
+
+    if (!req.query.id)
+        return res.status(400).send()
+
+    const noteData = req.user!.dynamicCells.mininotes?.get(req.query.id.toString())
     const text = noteData?.text || ""
     const color = noteData?.color || COLORS[0]
     const font = FONTS.find(f => f.slug === noteData?.font) || FONTS[0]
@@ -62,37 +75,47 @@ router.get("/", (req, res) => {
         color,
         font,
         allColors: COLORS,
-        allFonts: FONTS
+        allFonts: FONTS,
+        preview: false
     })
 })
 
-router.put("/text", async (req, res) => {
+async function updateNote(userId: string | undefined, noteId: string | number, field: string, value: string) {
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            [`dynamicCells.mininotes.${noteId}.${field}`]: value
+        }
+    )
+}
+
+router.put("/:id/text", async (req, res) => {
     const text: unknown = req.body.text
 
     if (typeof text !== "string" || text.length > 2048)
         return res.status(400).send()
 
-    await User.findByIdAndUpdate(req.user!.id, { "dynamicCells.mininote.text": req.body.text })
+    await updateNote(req.user!.id, req.params.id, "text", text)
     res.send()
 })
 
-router.put("/color", async (req, res) => {
+router.put("/:id/color", async (req, res) => {
     const color: unknown = req.body.color
 
     if (typeof color !== "string" || !/^\s*#[0-9a-f]{6}\s*$/i.test(color))
         return res.status(400).send()
 
-    await User.findByIdAndUpdate(req.user!.id, { "dynamicCells.mininote.color": req.body.color })
+    await updateNote(req.user!.id, req.params.id, "color", color)
     res.send()
 })
 
-router.put("/font", async (req, res) => {
+router.put("/:id/font", async (req, res) => {
     const font: unknown = req.body.font
 
     if (typeof font !== "string" || !FONTS.map(f => f.slug).includes(font))
         return res.status(400).send()
 
-    await User.findByIdAndUpdate(req.user!.id, { "dynamicCells.mininote.font": req.body.font })
+    await updateNote(req.user!.id, req.params.id, "font", font)
     res.send()
 })
 

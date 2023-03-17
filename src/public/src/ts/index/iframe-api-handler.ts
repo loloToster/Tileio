@@ -3,29 +3,36 @@ import { GridItemHTMLElement, GridStack } from "gridstack"
 import { createError } from "./error"
 import { ContextMenuBtn, customContextMenu } from "./grid-utils"
 
-type iframeOptions = Partial<{
+type IframeOptions = Partial<{
+    id: number,
     w: number,
     h: number,
     bgColor: hex,
     cellColor: hex,
-    preview: boolean,
-    [key: string]: any
+    preview: boolean
 }>
 
-export function generateIframeUrl(url: string, options: iframeOptions) {
+export function generateIframeUrl(url: string, options: IframeOptions) {
     let result: URL
+
     try {
         result = new URL(url)
     } catch {
         let dummyParams = "?"
-        for (const key in options)
-            dummyParams += `${key}=${encodeURIComponent(options[key].toString())}&`
+
+        for (const key in options) {
+            const value = (options as Record<string, string | boolean | number | undefined>)[key]
+            if (value === undefined) continue
+            dummyParams += `${key}=${encodeURIComponent(value.toString())}&`
+        }
+
         return url + dummyParams.slice(0, -1) // remove last char becasue it is either '?' or '&'
     }
 
-    result.searchParams.set("preview", (options.preview || false).toString())
+    result.searchParams.set("preview", (options.preview ?? false).toString())
     if (options.preview) return result.href
 
+    if (options.id) result.searchParams.set("id", options.id.toString())
     if (options.w) result.searchParams.set("w", options.w.toString())
     if (options.h) result.searchParams.set("h", options.h.toString())
     if (options.bgColor) result.searchParams.set("bgColor", options.bgColor)
@@ -68,15 +75,19 @@ export function setupIframeApi(grid: GridStack) {
 
     // iframe API handler
     window.addEventListener("message", e => {
+        let cell: GridItemHTMLElement | undefined
         let iframe: HTMLIFrameElement | undefined
-        for (const ifr of Array.from(document.getElementsByTagName("iframe"))) {
-            if (ifr.contentWindow === e.source) {
-                iframe = ifr
-                break
-            }
+
+        for (const c of grid.getGridItems()) {
+            const ifr = c.querySelector("iframe")
+            if (!ifr || ifr.contentWindow !== e.source) continue
+
+            cell = c
+            iframe = ifr
+            break
         }
 
-        if (!iframe) return
+        if (!cell || !iframe) return
 
         const serializedCell = JSON.parse(iframe.dataset.serialized || "{}")
         if (serializedCell.type !== "d") return
@@ -143,6 +154,11 @@ export function setupIframeApi(grid: GridStack) {
             case "hcm": {
                 if (!validateMsg(iframe)) return
                 document.querySelector(".rmenu")?.remove()
+                break
+            }
+
+            case "get-id": {
+                iframe.contentWindow?.postMessage({ type: "cid", value: cell.dataset.id || null }, "*")
                 break
             }
 

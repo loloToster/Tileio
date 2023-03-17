@@ -75,6 +75,7 @@ function validateCells(gridW: number, gridH: number, cells: unknown): Serialized
 
     let validatedCells: SerializedCell[] = []
     const emul = new GridEmulator(gridW, gridH)
+    let usedIds: number[] = []
 
     for (const cell of cells) {
         let content: undefined | SerializedCellContent
@@ -104,15 +105,24 @@ function validateCells(gridW: number, gridH: number, cells: unknown): Serialized
             }
         }
 
-        if ((typeof cell.x !== "number" && cell.x !== undefined) ||
-            (typeof cell.y !== "number" && cell.y !== undefined) ||
-            (typeof cell.w !== "number" && cell.w !== undefined) ||
-            (typeof cell.h !== "number" && cell.h !== undefined))
+        if (
+            typeof cell.cellId !== "number" ||
+            typeof cell.x !== "number" ||
+            typeof cell.y !== "number" ||
+            typeof cell.w !== "number" ||
+            typeof cell.h !== "number"
+        )
             throw Error("Bad type of x, y, w or h")
+
+        cell.cellId = parseInt(cell.cellId)
+        if (usedIds.includes(cell.cellId) || cell.cellId < 0 || cell.cellId > 2048)
+            throw Error("Bad cell id")
+        usedIds.push(cell.cellId)
 
         emul.addWidget(cell.x, cell.y, cell.w, cell.h)
 
         validatedCells.push({
+            cellId: cell.cellId,
             x: cell.x,
             y: cell.y,
             w: cell.w,

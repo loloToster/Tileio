@@ -1,3 +1,5 @@
+import { findFreeId } from "./utlis/utils"
+
 interface CustomContextMenuBtn {
     id: number,
     text: string,
@@ -85,7 +87,6 @@ export class Widget {
             }
 
             default: {
-                console.warn("Unknown message type:", e.data.type)
                 break
             }
         }
@@ -108,14 +109,7 @@ export class Widget {
             return acc.concat(val.btns.map(b => b.id))
         }, [])
 
-        const allIds = globalBtnsIds.concat(elBtnsIds).sort()
-
-        for (let i = 0; i < allIds.length + 1; i++) {
-            if (allIds.includes(i)) continue
-            return i
-        }
-
-        throw Error("No free id found?")
+        return findFreeId(globalBtnsIds.concat(elBtnsIds))
     }
 
     private parseBtns(btns: CustomContextMenuBtnArg[]) {
@@ -224,6 +218,24 @@ export class Widget {
         window.top.postMessage({
             type: "hcm"
         }, "*")
+    }
+
+    getId() {
+        return new Promise<string | null>((res, rej) => {
+            if (!window.top) return rej(Error("No top window"))
+
+            const listener = (e: MessageEvent) => {
+                if (e.source != window.top || e.data.type !== "cid") return
+                res(e.data.value)
+                window.removeEventListener("message", listener)
+            }
+
+            window.addEventListener("message", listener)
+
+            window.top.postMessage({
+                type: "get-id"
+            }, "*")
+        })
     }
 }
 

@@ -6,8 +6,15 @@ const w = createWidget()
 const note = <HTMLTextAreaElement>document.getElementById("note")
 const saving = document.querySelector<HTMLDivElement>(".saving")
 
-function sendUpdate(field: "text" | "color" | "font", value: string) {
-    return fetch("/dynamic-cells/mininote/" + field, {
+async function sendUpdate(field: "text" | "color" | "font", value: string) {
+    const cellId = await w.getId()
+
+    if (!cellId) {
+        w.createError("Error in mininote (no cell id)")
+        return
+    }
+
+    return await fetch(`/dynamic-cells/mininote/${cellId}/${field}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -19,7 +26,7 @@ function sendUpdate(field: "text" | "color" | "font", value: string) {
 async function saveNote(text: string) {
     try {
         const res = await sendUpdate("text", text)
-        if (!res.ok) throw Error("Response is not ok")
+        if (!res?.ok) throw Error("Response is not ok")
     } catch {
         w.createError("Could not save the note")
     } finally {

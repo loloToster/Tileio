@@ -1,7 +1,7 @@
 import { GridItemHTMLElement, GridStack, GridStackWidget } from "gridstack"
 
 import { SerializedCell, SerializedCellContent, SerializedDynamicCellContent, SerializedLinkCellContent } from "@backend-types/types"
-import { onClickOutside, isDark } from "../utlis/utils"
+import { onClickOutside, isDark, findFreeId } from "../utlis/utils"
 import { openAddModal } from "./add-modal"
 import { createError } from "./error"
 import { generateIframeUrl } from "./iframe-api-handler"
@@ -36,6 +36,7 @@ export function serializeGridCells(grid: GridStack): SerializedCell[] {
     const cells = grid.getGridItems()
 
     const serializedCells: SerializedCell[] = []
+
     for (const cell of cells) {
         if (cell.classList.contains(dummyClass)) continue
 
@@ -45,7 +46,10 @@ export function serializeGridCells(grid: GridStack): SerializedCell[] {
         if (elementWithSerializedData instanceof HTMLElement && elementWithSerializedData.dataset.serialized)
             content = JSON.parse(elementWithSerializedData.dataset.serialized)
 
+        if (!cell.dataset.id) continue
+
         serializedCells.push({
+            cellId: parseInt(cell.dataset.id),
             w: parseInt(cell.getAttribute("gs-w") || "1"),
             h: parseInt(cell.getAttribute("gs-h") || "1"),
             x: parseInt(cell.getAttribute("gs-x") || "0"),
@@ -116,6 +120,7 @@ export function unserializeContent(cell: SerializedCell) {
 
         const iframe = document.createElement("iframe")
         iframe.src = generateIframeUrl(content.src, {
+            id: cell.cellId,
             w: cell.w || 1,
             h: cell.h || 1,
             bgColor: document.body.style.getPropertyValue("--bg-color"),
@@ -269,10 +274,16 @@ export function createWidgetFromSerializedCell(grid: GridStack, cell: Serialized
         h: cell.h
     }
 
+    if (typeof cell.cellId !== "number") {
+        const usedIds = grid.getGridItems().filter(i => i.dataset.id).map(i => parseInt(i.dataset.id!))
+        cell.cellId = findFreeId(usedIds)
+    }
+
     if (cell.content)
         widget.content = unserializeContent(cell)
 
     let element = grid.addWidget(widget)
+    element.dataset.id = cell.cellId.toString()
 
     if (cell.content?.type == "d") element.classList.add("dynamic-cell")
 
