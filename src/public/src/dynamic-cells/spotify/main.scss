@@ -6,6 +6,8 @@ $grey: grey;
 $dark-grey: #4d4d4d;
 $light-grey: white;
 
+$scrollbar-width: 6px;
+
 $spotify-green: #1db954;
 $spotify-light-green: #1ed760;
 
@@ -41,15 +43,25 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
+    width: $scrollbar-width;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+    background: $bg;
 }
 
 ::-webkit-scrollbar-thumb {
     background: #484848;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
 }
 
 .spotify-input {
@@ -173,6 +185,8 @@ body {
     }
 
     &__title {
+        display: block;
+        max-width: fit-content;
         overflow: hidden;
         text-overflow: ellipsis;
         margin-bottom: 3px;
@@ -327,7 +341,9 @@ body {
             top: calc(100% + 5px);
             padding: 4px;
             background-color: #282828;
-            box-shadow: 0 16px 24px #0000004d, 0 6px 8px #00000033;
+            box-shadow:
+                0 16px 24px #0000004d,
+                0 6px 8px #00000033;
             border-radius: 4px;
 
             &.active {
@@ -372,6 +388,7 @@ body {
 
         border-radius: 4px;
         background-color: #ffffff1a;
+        text-decoration: none !important;
     }
 
     &__playlist {
@@ -580,7 +597,7 @@ body {
     &__browse-wrapper {
         display: none;
         max-height: 100%;
-        overflow: overlay;
+        overflow-y: auto;
 
         &.active {
             display: block;
@@ -609,7 +626,7 @@ body {
             border-radius: 5px;
             cursor: pointer;
             color: white;
-            text-decoration: none;
+            text-decoration: none !important;
 
             span {
                 display: block;
@@ -635,7 +652,7 @@ body {
     &__results {
         display: none;
         max-height: 100%;
-        overflow-y: overlay;
+        overflow-y: auto;
         padding: 0 4vw;
 
         &.active {
@@ -690,7 +707,7 @@ body {
     }
 
     &__content {
-        overflow-y: overlay;
+        overflow-y: auto;
         height: 100%;
         padding: 0 $main-padding;
 
@@ -733,6 +750,8 @@ body {
         padding-bottom: 6px;
 
         img {
+            position: relative;
+            left: $scrollbar-width;
             width: 100%;
             aspect-ratio: 1;
             object-fit: cover;
@@ -757,6 +776,7 @@ body {
     }
 
     &__name {
+        max-width: fit-content;
         font-size: 1.3rem;
         font-weight: 700;
         overflow: hidden;
@@ -767,6 +787,7 @@ body {
         display: flex;
         align-items: center;
         gap: 6px;
+        max-width: fit-content;
         font-size: 0.875rem;
         font-weight: 600;
 
@@ -1005,6 +1026,7 @@ body {
         text-overflow: ellipsis;
         font-weight: bold;
         font-size: 1.6rem;
+        width: fit-content;
         max-width: 80vw;
     }
 
@@ -1012,6 +1034,7 @@ body {
         font-size: 1rem;
         color: #b3b3b3;
         white-space: nowrap;
+        width: fit-content;
         max-width: 80vw;
         overflow: hidden;
         text-overflow: ellipsis;

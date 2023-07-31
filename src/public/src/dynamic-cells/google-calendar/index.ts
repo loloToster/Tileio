@@ -11,6 +11,7 @@ widget.addContextMenuBtn({ text: "Open Calendar", action: () => window.open("htt
 
 const DEFAULT_COLOR = "#047cb4"
 const DARK_COLORS_MAP: Record<string, string | undefined> = {
+    "#9a9cff": "#2c3772",
     "#a4bdfc": "#324191",
     "#7ae7bf": "#299261",
     "#dbadff": "#721d88",
@@ -25,8 +26,11 @@ const DARK_COLORS_MAP: Record<string, string | undefined> = {
     "#dc2127": "#aa0000"
 }
 
+type Nullable<T> = T | null | undefined
+
 interface ParsedEvent {
-    name: string | null | undefined,
+    name: Nullable<string>,
+    link: Nullable<string>,
     time?: string,
     color?: string
 }
@@ -38,14 +42,12 @@ interface ParsedDay {
     events: ParsedEvent[]
 }
 
-type Nullable<T> = T | null | undefined 
-
 /**
  * Gets color of the event, maps it to dark mode equivalent and returns it
  */
 function getColor(
-    ev: ExtendedEvent, 
-    colors: calendar_v3.Schema$Colors, 
+    ev: ExtendedEvent,
+    colors: calendar_v3.Schema$Colors,
     calendars: calendar_v3.Schema$CalendarListEntry[]
 ) {
     let color: Nullable<string>
@@ -93,7 +95,7 @@ function parseCalendar(calRes: CalendarResponse) {
                 const end = new Date(ev.end!.date!)
 
                 if (start <= day && day < end)
-                    parsedEvents.push({ name: ev.summary, color })
+                    parsedEvents.push({ name: ev.summary, link: ev.htmlLink, color })
 
             } else if (ev.start.dateTime) { // not all-day event
                 const start = new Date(ev.start.dateTime)
@@ -103,17 +105,19 @@ function parseCalendar(calRes: CalendarResponse) {
                     if (!utils.sameDay(start, day)) return
 
                     parsedEvents.push({
-                        name: ev.summary,
-                        time: `${utils.getHHMMfromDate(start)} - ${utils.getHHMMfromDate(end)}`,
+                        name: ev.summary, link: ev.htmlLink,
+                        time: start.getTime() === end.getTime() ?
+                            utils.getHHMMfromDate(start) :
+                            `${utils.getHHMMfromDate(start)} - ${utils.getHHMMfromDate(end)}`,
                         color
                     })
                 } else {
                     if (utils.earilerDay(start, day) && utils.laterDay(end, day)) {
-                        parsedEvents.push({ name: ev.summary, color })
+                        parsedEvents.push({ name: ev.summary, link: ev.htmlLink, color })
                     } else if (utils.sameDay(start, day) && !utils.sameDay(end, day)) {
-                        parsedEvents.push({ name: ev.summary, time: utils.getHHMMfromDate(start), color })
+                        parsedEvents.push({ name: ev.summary, link: ev.htmlLink, time: utils.getHHMMfromDate(start), color })
                     } else if (utils.sameDay(end, day) && !utils.sameDay(start, day)) {
-                        parsedEvents.push({ name: ev.summary, time: `Until ${utils.getHHMMfromDate(end)}`, color })
+                        parsedEvents.push({ name: ev.summary, link: ev.htmlLink, time: `Until ${utils.getHHMMfromDate(end)}`, color })
                     }
                 }
             }
@@ -137,9 +141,12 @@ const eventTemplate = <HTMLTemplateElement>document.getElementById("event-templa
 const dayTemplate = <HTMLTemplateElement>document.getElementById("day-template")!
 
 function generateEvent(ev: ParsedEvent) {
-    const clone = <HTMLDivElement>eventTemplate.content.cloneNode(true)
+    const clone = <HTMLElement>eventTemplate.content.cloneNode(true)
 
     clone.querySelector<HTMLDivElement>(".days__event-name")!.innerText = ev.name || "No title"
+
+    if (ev.link)
+        clone.querySelector("a")!.href = ev.link
 
     if (ev.time)
         clone.querySelector<HTMLDivElement>(".days__event-time")!.innerText = ev.time

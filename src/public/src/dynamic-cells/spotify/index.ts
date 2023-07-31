@@ -55,11 +55,18 @@ const playerEl = document.querySelector<HTMLDivElement>(".player")!
 const spotifyItemPlaceholderTemplate = <HTMLTemplateElement>document.getElementById("spotify-item-placeholder-template")!
 const spotifyItemTemplate = <HTMLTemplateElement>document.getElementById("spotify-item-template")!
 
+interface SpotifyItemAuthor {
+    name: string,
+    url?: string
+}
+
 interface SpotifyItemProps {
     img: string,
     title: string,
-    metadata?: string,
+    type?: string,
+    authors?: SpotifyItemAuthor[],
     id?: string,
+    url?: string,
     playable?: boolean,
     active?: boolean,
     playing?: boolean,
@@ -70,8 +77,10 @@ interface SpotifyItemProps {
 function createSpotifyItem({
     img,
     title,
-    metadata = "",
+    type,
+    authors = [],
     id,
+    url,
     playable = true,
     active,
     playing,
@@ -92,8 +101,25 @@ function createSpotifyItem({
     cover.querySelector("img")!.src = img
     cover.classList.toggle("rounded", Boolean(roundedImg))
 
-    clone.querySelector<HTMLDivElement>(".spotify-item__title")!.innerText = title
-    clone.querySelector<HTMLDivElement>(".spotify-item__artists")!.innerText = metadata
+    const titleEl = clone.querySelector<HTMLAnchorElement>(".spotify-item__title")!
+    titleEl.innerText = title
+    if (url) titleEl.href = url
+
+    const details = clone.querySelector<HTMLDivElement>(".spotify-item__details")!
+    details.innerHTML = type || ""
+    if (type && authors.length) details.innerHTML += " • "
+
+    authors.forEach((author, i) => {
+        const a = document.createElement("a")
+        if (author.url) a.href = author.url
+        a.innerText = author.name
+        a.target = "_blank"
+        details.appendChild(a)
+
+        if (i !== authors.length - 1) {
+            details.innerHTML += ", "
+        }
+    })
 
     if (!playable)
         clone.querySelector("button")?.remove()
@@ -221,7 +247,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     const lyricsBox = document.querySelector<HTMLDivElement>(".player__lyrics")!
     const lyricsLinesWrapper = document.querySelector<HTMLDivElement>(".player__lyrics__lines")!
 
-    const titleDiv = document.querySelector<HTMLDivElement>(".player__title")!
+    const titleA = document.querySelector<HTMLAnchorElement>(".player__title")!
     const artistDiv = document.querySelector<HTMLDivElement>(".player__artist")!
 
     const shuffleBtn = document.querySelector<HTMLButtonElement>(".player__shuffle")!
@@ -275,7 +301,10 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             id: string,
             img: string,
             name: string,
-            artist: string,
+            artists: Array<{
+                id: string,
+                name: string
+            }>,
             position: number,
             duration: number
         },
@@ -292,8 +321,9 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     const playlistBackBtn = document.querySelector<HTMLButtonElement>(".playlist__back")!
     const playlistPlayBtn = document.querySelector<HTMLButtonElement>(".playlist__play")!
     const playlistImg = document.querySelector<HTMLImageElement>(".playlist__img img")!
-    const playlistName = document.querySelector<HTMLDivElement>(".playlist__name")!
+    const playlistName = document.querySelector<HTMLAnchorElement>(".playlist__name")!
     const playlistHeaderName = document.querySelector<HTMLDivElement>(".playlist__header__name")!
+    const playlistCreator = document.querySelector<HTMLAnchorElement>(".playlist__creator")!
     const playlistCreatorImg = document.querySelector<HTMLDivElement>(".playlist__creator__img")!
     const playlistCreatorName = document.querySelector<HTMLSpanElement>(".playlist__creator span")!
     const playlistSongsContainer = document.querySelector<HTMLDivElement>(".playlist__songs")!
@@ -355,9 +385,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         const spotifyItem = createSpotifyItem({
             id: track.id,
+            url: `${SP_BASE_URL}/track/${track.id}`,
             img: track.album ? getBestImage(40, track.album.images) : playlist.img,
             title: track.name,
-            metadata: track.artists.map((e: any) => e.name).join(", "),
+            authors: track.artists.map((a: any) => ({
+                name: a.name,
+                url: `${SP_BASE_URL}/artist/${a.id}`,
+            })),
             active,
             playing,
             explicit: track.explicit
@@ -441,6 +475,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         })
 
         playlistName.innerText = playlist.name
+        playlistName.href = playlist.url
+        if (playlist.creator.id) playlistCreator.href = `${SP_BASE_URL}/user/${playlist.creator.id}`
         playlistHeaderName.innerText = playlist.name
         playlistCreatorName.innerText = playlist.creator.name
 
@@ -555,13 +591,17 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
             const clone = helper.querySelector("li")!
 
+            const a = helper.querySelector("a")!
+            a.href = playlist.url
+
             const img = clone.querySelector("img")!
             img.src = playlist.img
 
             const nameDiv = clone.querySelector<HTMLDivElement>(".playlists__playlist-name")!
             nameDiv.innerText = playlist.name
 
-            clone.addEventListener("click", () => {
+            a.addEventListener("click", e => {
+                e.preventDefault()
                 openPlaylist(playlist)
             })
 
@@ -644,6 +684,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
     let availableSearchCategories: string[] = []
 
+    const catToDisplayName: Record<string, string> = {
+        "track": "Song",
+        "album": "Album",
+        "playlist": "Playlist",
+        "artist": "Artist"
+    }
+
     searchCatButtons.forEach(btn => {
         if (btn.dataset.cat) availableSearchCategories.push(btn.dataset.cat)
     })
@@ -666,25 +713,28 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
             availableSearchCategories.forEach(cat => {
                 const category = cat + "s"
 
-                results[category].items.forEach((i: any) => {
+                results[category].items.forEach((item: any) => {
                     const categoryContainer = Array.from(searchCatContainers).find(c => c.dataset.cat === cat)
 
-                    const images = i.images || i.album.images
-                    let author = ""
+                    const images = item.images || item.album.images
+                    let authors: SpotifyItemAuthor[] | undefined
 
-                    if (i.artists) {
-                        author = i.artists.map((e: any) => e.name).join(", ")
-                    } else if (i.owner) {
-                        author = i.owner.display_name
-                    } else if (i.publisher) {
-                        author = i.publisher
+                    if (item.artists) {
+                        authors = item.artists.map((e: any) => ({ name: e.name, url: `${SP_BASE_URL}/artist/${e.id}` }))
+                    } else if (item.owner) {
+                        authors = [{ name: item.owner.display_name, url: `${SP_BASE_URL}/user/${item.owner.id}` }]
+                    } else if (item.publisher) {
+                        authors = [{ name: item.publisher }]
                     }
 
+                    const url = `${SP_BASE_URL}/${cat}/${item.id}`
+
                     let itemData: SpotifyItemProps = {
+                        url,
                         img: getBestImage(60, images),
-                        title: i.name,
-                        metadata: author,
-                        explicit: i.explicit,
+                        title: item.name,
+                        authors,
+                        explicit: item.explicit,
                         playable: cat === "track",
                         roundedImg: cat === "artist"
                     }
@@ -692,20 +742,13 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                     const contextMenuData = {
                         text: "Open on Spotify",
                         action: () => {
-                            window.open(`${SP_BASE_URL}/${cat}/${i.id}`)
+                            window.open(url)
                         }
-                    }
-
-                    const catToDisplayName: Record<string, string> = {
-                        "track": "Song",
-                        "album": "Album",
-                        "playlist": "Playlist",
-                        "artist": "Artist"
                     }
 
                     const allItem = createSpotifyItem({
                         ...itemData,
-                        metadata: cat === "artist" ? catToDisplayName[cat] : `${catToDisplayName[cat]} • ${itemData.metadata}`
+                        type: catToDisplayName[cat]
                     })
                     const catItem = createSpotifyItem(itemData)
 
@@ -713,17 +756,19 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                     widget.addContextMenuBtn(catItem, contextMenuData)
 
                     if (cat === "playlist") {
-                        const cb = () => {
+                        const cb = (e: MouseEvent) => {
+                            e.preventDefault()
+
                             openPlaylist({
-                                id: i.id,
-                                img: getBestImage(200, i.images),
-                                name: i.name,
-                                playUri: "spotify:playlist:" + i.id,
-                                url: `${SP_BASE_URL}/playlist/${i.id}`,
-                                numOfTracks: i.tracks.total,
+                                id: item.id,
+                                img: getBestImage(200, item.images),
+                                name: item.name,
+                                playUri: "spotify:playlist:" + item.id,
+                                url: `${SP_BASE_URL}/playlist/${item.id}`,
+                                numOfTracks: item.tracks.total,
                                 creator: {
-                                    id: i.owner.id,
-                                    name: i.owner.display_name,
+                                    id: item.owner.id,
+                                    name: item.owner.display_name,
                                     img: null
                                 }
                             })
@@ -732,18 +777,20 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                         allItem.addEventListener("click", cb)
                         catItem.addEventListener("click", cb)
                     } else if (cat === "album") {
-                        const cb = () => {
+                        const cb = (e: MouseEvent) => {
+                            e.preventDefault()
+
                             openPlaylist({
-                                id: i.id,
-                                img: getBestImage(200, i.images),
-                                name: i.name,
-                                playUri: i.uri,
-                                url: `${SP_BASE_URL}/album/${i.id}`,
-                                numOfTracks: i.total_tracks,
+                                id: item.id,
+                                img: getBestImage(200, item.images),
+                                name: item.name,
+                                playUri: item.uri,
+                                url: `${SP_BASE_URL}/album/${item.id}`,
+                                numOfTracks: item.total_tracks,
                                 isAlbum: true,
                                 creator: {
                                     id: "",
-                                    name: i.artists.map((e: any) => e.name).join(" • "),
+                                    name: item.artists.map((e: any) => e.name).join(" • "),
                                     img: null
                                 }
                             })
@@ -753,17 +800,12 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                         catItem.addEventListener("click", cb)
                     } else if (cat === "track") {
                         const cb = () => {
-                            spotifyApi.play(i.uri)
+                            spotifyApi.play(item.uri)
                             playerEl.classList.add("active")
                         }
 
                         allItem.querySelector("button")?.addEventListener("click", cb)
                         catItem.querySelector("button")?.addEventListener("click", cb)
-                    } else if (cat === "artist") {
-                        const cb = contextMenuData.action
-
-                        allItem.addEventListener("click", cb)
-                        catItem.addEventListener("click", cb)
                     }
 
                     searchAllCatContainer.appendChild(allItem)
@@ -832,8 +874,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 id: state.item.id,
                 img: getBestImage(300, state.item.album.images),
                 name: state.item.name,
-                artist: state.item.artists
-                    .map((e: any) => e.name).join(", "),
+                artists: state.item.artists
+                    .map((e: any) => ({ id: e.id, name: e.name })),
                 position: state.progress_ms,
                 duration: state.item.duration_ms
             },
@@ -858,8 +900,8 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 id: state.track_window.current_track.id || "",
                 img: getBestImage(300, state.track_window.current_track.album.images),
                 name: state.track_window.current_track.name,
-                artist: state.track_window.current_track.artists
-                    .map(e => e.name).join(", "),
+                artists: state.track_window.current_track.artists
+                    .map(e => ({ id: e.uri.split(":")[2], name: e.name })),
                 position: state.position,
                 duration: state.duration
             },
@@ -884,7 +926,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         lastLyrics = state.currentTrack.id
 
         const colorPromise = getClosestToLightness(state.currentTrack.img, 0.5)
-        const lyricsPromise = getLyrics(state.currentTrack.artist, state.currentTrack.name)
+        const lyricsPromise = getLyrics(state.currentTrack.artists[0].name, state.currentTrack.name)
 
         const [color, lyrics] = await Promise.all([colorPromise, lyricsPromise])
 
@@ -922,8 +964,22 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
 
         setCSSVar(playerEl, "image", `url("${state.currentTrack.img}")`)
 
-        titleDiv.innerText = state.currentTrack.name
-        artistDiv.innerText = state.currentTrack.artist
+        titleA.innerText = state.currentTrack.name
+        titleA.href = `${SP_BASE_URL}/track/${state.currentTrack.id}`
+
+        const { artists } = state.currentTrack
+        artistDiv.innerHTML = ""
+        artists.forEach((artist, i) => {
+            const a = document.createElement("a")
+            a.innerText = artist.name
+            a.href = `${SP_BASE_URL}/artist/${artist.id}`
+            a.target = "_blank"
+            artistDiv.appendChild(a)
+
+            if (i !== artists.length - 1) {
+                artistDiv.innerHTML += ", "
+            }
+        })
 
         shuffleBtn.classList.toggle("active", state.shuffle)
         pauseplay.classList.toggle("playing", !state.paused)
