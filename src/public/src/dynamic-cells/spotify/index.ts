@@ -134,6 +134,46 @@ function createSpotifyItemPlaceholder(n: number) {
     return spotifyItemPlaceholderTemplate.innerHTML.trim().repeat(n)
 }
 
+async function copyToClipboard(text: string) {
+    try {
+        await window.navigator.clipboard.writeText(text)
+    } catch {
+        const textArea = document.createElement("textarea")
+
+        // Avoid scrolling to bottom
+        textArea.style.top = "0"
+        textArea.style.left = "0"
+        textArea.style.position = "fixed"
+
+        textArea.value = text
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+
+        try {
+            document.execCommand("copy")
+        } catch (err) {
+            console.error("Unable to copy to clipboard", err)
+        }
+
+        document.body.removeChild(textArea)
+    }
+}
+
+function addDefaultCtxMenuBtns(el: HTMLElement, url: string) {
+    widget.addContextMenuBtn(el, [{
+        text: "Open on Spotify",
+        action: () => {
+            window.open(url)
+        }
+    }, {
+        text: "Copy link",
+        action: async () => {
+            await copyToClipboard(url)
+        }
+    }])
+}
+
 const libraryTab = document.querySelector<HTMLDivElement>(".menu__tab--library")!
 const searchTab = document.querySelector<HTMLDivElement>(".menu__tab--search")!
 
@@ -322,11 +362,16 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
     const playlistPlayBtn = document.querySelector<HTMLButtonElement>(".playlist__play")!
     const playlistImg = document.querySelector<HTMLImageElement>(".playlist__img img")!
     const playlistName = document.querySelector<HTMLAnchorElement>(".playlist__name")!
+    const playlistHeaderInner = document.querySelector<HTMLDivElement>(".playlist__header__inner")!
     const playlistHeaderName = document.querySelector<HTMLDivElement>(".playlist__header__name")!
     const playlistCreator = document.querySelector<HTMLAnchorElement>(".playlist__creator")!
     const playlistCreatorImg = document.querySelector<HTMLDivElement>(".playlist__creator__img")!
     const playlistCreatorName = document.querySelector<HTMLSpanElement>(".playlist__creator span")!
     const playlistSongsContainer = document.querySelector<HTMLDivElement>(".playlist__songs")!
+
+    playlistHeaderInner.addEventListener("wheel", e => {
+        playlistContent.scrollBy({ top: e.deltaY })
+    })
 
     playlistBackBtn.addEventListener("click", () => {
         playlistTab.classList.remove("active")
@@ -605,12 +650,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                 openPlaylist(playlist)
             })
 
-            widget.addContextMenuBtn(clone, {
-                text: "Open on Spotify",
-                action: () => {
-                    window.open(playlist.url)
-                }
-            })
+            addDefaultCtxMenuBtns(clone, playlist.url)
 
             playlistsList.appendChild(clone)
         }
@@ -739,21 +779,14 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
                         roundedImg: cat === "artist"
                     }
 
-                    const contextMenuData = {
-                        text: "Open on Spotify",
-                        action: () => {
-                            window.open(url)
-                        }
-                    }
-
                     const allItem = createSpotifyItem({
                         ...itemData,
                         type: catToDisplayName[cat]
                     })
                     const catItem = createSpotifyItem(itemData)
 
-                    widget.addContextMenuBtn(allItem, contextMenuData)
-                    widget.addContextMenuBtn(catItem, contextMenuData)
+                    addDefaultCtxMenuBtns(allItem, url)
+                    addDefaultCtxMenuBtns(catItem, url)
 
                     if (cat === "playlist") {
                         const cb = (e: MouseEvent) => {
@@ -1005,12 +1038,7 @@ window.onSpotifyWebPlaybackSDKReady = async () => {
         }
 
         widget.removeContextMenuBtn(playerEl)
-        widget.addContextMenuBtn(playerEl, {
-            text: "Open on Spotify",
-            action: () => {
-                window.open(`${SP_BASE_URL}/track/${state.currentTrack.id}`)
-            }
-        })
+        addDefaultCtxMenuBtns(playerEl, `${SP_BASE_URL}/track/${state.currentTrack.id}`)
 
         updateDuration(state.currentTrack.position, state.currentTrack.duration, state.paused)
         updateLyrics(state)

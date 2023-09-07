@@ -718,20 +718,26 @@ a {
     }
 
     &__header {
+        pointer-events: none;
         position: absolute;
         top: 0;
         left: 0;
         width: 100vw;
 
-        height: 46px;
-
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
         background-color: rgba(var(--r), var(--g), var(--b), var(--opacity, 0));
-        padding: 0 10px;
         font-weight: 600;
+
+        &__inner {
+            pointer-events: all;
+
+            width: calc(100vw - $scrollbar-width);
+            height: 46px;
+
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 10px;
+        }
 
         &__name {
             opacity: var(--opacity, 0);
