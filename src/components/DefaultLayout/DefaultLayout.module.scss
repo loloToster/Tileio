@@ -1,0 +1,117 @@
+@use "@/styles/colors" as colors;
+
+$mobile-threshold: 50rem;
+
+.header {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    display: flex;
+    align-items: center;
+    height: 85px;
+    padding: 20px 120px;
+    background-color: colors.$gray-1;
+    box-shadow: 0px 0px 8px 0px colors.$gray-4;
+
+    @media (max-width: $mobile-threshold) {
+        padding: 20px;
+    }
+
+    a {
+        text-decoration: none;
+        color: white;
+    }
+
+    &__logo {
+        margin-right: auto;
+        display: flex;
+        align-items: center;
+
+        img {
+            height: 2.5rem;
+            width: 2.5rem;
+        }
+
+        span {
+            font-family: monospace;
+            font-size: 2rem;
+            margin-left: 8px;
+        }
+    }
+
+    &__nav {
+        @media (max-width: $mobile-threshold) {
+            width: 0;
+            overflow: hidden;
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            background-color: colors.$gray-4;
+            transition: width 300ms ease-out;
+        }
+
+        ul {
+            padding: 0;
+            margin: 0;
+
+            @media (max-width: $mobile-threshold) {
+                padding: 60px 150px 0 30px;
+            }
+        }
+
+        li {
+            display: inline-block;
+            margin: 0 12px;
+            font-size: 1.1rem;
+            white-space: nowrap;
+
+            @media (max-width: $mobile-threshold) {
+                display: block;
+                margin: 16px;
+                font-size: 1.6rem;
+            }
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    &__navActive {
+        width: 80vw;
+    }
+
+    &__login {
+        padding: 12px 16px;
+        font-size: 1.1rem;
+    }
+
+    &__burger {
+        display: none;
+        z-index: 100;
+
+        @media (max-width: $mobile-threshold) {
+            display: block;
+        }
+
+        svg {
+            fill: white;
+        }
+    }
+}
+
+.footer {
+    padding: 16px 40px;
+    background-color: colors.$gray-2;
+    color: grey;
+
+    &__madeBy {
+        width: fit-content;
+
+        a {
+            color: inherit;
+            text-decoration: underline;
+        }
+    }
+}

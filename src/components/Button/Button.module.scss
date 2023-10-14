@@ -1,0 +1,22 @@
+@use "@/styles/colors" as colors;
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    background-color: colors.$primary;
+    border-radius: 100vh;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 200ms;
+
+    &:hover {
+        background-color: darken(colors.$primary, 10%);
+    }
+
+    svg {
+        margin-left: 8px;
+        fill: white;
+    }
+}
