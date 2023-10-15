@@ -1,3 +1,26 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "next",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["react", "@typescript-eslint"],
+  "rules": {
+    "indent": [
+      "error",
+      2,
+      { "SwitchCase": 1, "ignoredNodes": ["PropertyDefinition"] }
+    ],
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "double"],
+    "semi": ["error", "never"],
+    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "no-duplicate-imports": "error",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "react/react-in-jsx-scope": "off"
+  }
 }

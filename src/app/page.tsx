@@ -1,7 +1,5 @@
-import styles from './page.module.scss'
+import styles from "./page.module.scss"
 
 export default function Home() {
-  return (
-    <h1>Hello World</h1>
-  )
+  return <h1 className={styles.lol}>Hello World</h1>
 }
