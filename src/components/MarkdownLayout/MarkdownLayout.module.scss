@@ -1,0 +1,69 @@
+@use "@/styles/colors" as colors;
+
+$mobile-threshold: 50rem;
+
+.main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+
+    a {
+        color: colors.$primary;
+    }
+}
+
+.toc,
+.content {
+    float: left;
+}
+
+.toc {
+    height: fit-content;
+    margin-top: 32px;
+    padding: 12px;
+    background-color: #30323c;
+    border-radius: 8px;
+    box-shadow: 1px 1px 4px 0px #191a21;
+
+    @media (max-width: $mobile-threshold) {
+        display: none;
+    }
+
+    a {
+        display: block;
+        margin-top: 4px;
+        color: colors.$primary;
+        font-size: 1.1rem;
+    }
+
+    @for $i from 1 through 6 {
+        &__level-#{$i} {
+            margin-left: #{($i - 1) * 10px};
+        }
+    }
+}
+
+.content {
+    width: min(90vw, 780px);
+
+    code {
+        background-color: #1c1d21;
+        font-family:
+            ui-monospace,
+            SFMono-Regular,
+            SF Mono,
+            Menlo,
+            Consolas,
+            Liberation Mono,
+            monospace;
+        margin: 4px;
+        border-radius: 3px;
+        box-shadow: 0 0 0 4px #1c1d21;
+    }
+
+    img {
+        width: 2rem;
+        height: 2rem;
+    }
+}
