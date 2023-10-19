@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.4.2",
     "next": "13.5.4",
     "next-auth": "^4.23.2",
     "react": "^18",
@@ -26,6 +27,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-react": "^7.33.2",
     "prettier": "^3.0.3",
+    "prisma": "^5.4.2",
     "sass": "^1.69.3",
     "typescript": "^5"
   }

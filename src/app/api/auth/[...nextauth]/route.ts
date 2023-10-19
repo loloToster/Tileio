@@ -4,6 +4,8 @@ import GoogleProvider from "next-auth/providers/google"
 import DiscordProvider from "next-auth/providers/discord"
 import GithubProvider from "next-auth/providers/github"
 
+import db from "@/lib/db"
+
 const {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
@@ -45,7 +47,8 @@ const handler = NextAuth({
       clientId: GITHUB_CLIENT_ID,
       clientSecret: GITHUB_CLIENT_SECRET
     })
-  ]
+  ],
+  adapter: db.nextAuthAdapter()
 })
 
 export { handler as GET, handler as POST }
