@@ -7,18 +7,63 @@ datasource db {
   url      = "postgres://postgres:admin@localhost:5432/tileio_v2"
 }
 
+model LinkCellData {
+  id     String @id @default(cuid())
+  cellId String @unique @map("cell_id")
+  cell   Cell   @relation(fields: [cellId], references: [id], onDelete: Cascade)
+
+  color String
+  href  String
+  icon  String
+
+  @@map("link_cells_data")
+}
+
+model DynamicCellData {
+  id     String @id @default(cuid())
+  cellId String @unique @map("cell_id")
+  cell   Cell   @relation(fields: [cellId], references: [id], onDelete: Cascade)
+
+  type String
+  meta Json
+
+  @@map("dynamic_cells_data")
+}
+
+model Cell {
+  id        String  @id @default(cuid())
+  accountId String  @map("account_id")
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  x       Int
+  y       Int
+  width   Int
+  height  Int
+  link    LinkCellData?
+  dynamic DynamicCellData?
+
+  @@unique([accountId, x, y])
+  @@map("cells")
+}
+
 model Account {
   id                String @id @default(cuid())
-  providerType      String
-  providerId        String
-  providerAccountId String
+  providerType      String @map("provider_type")
+  providerId        String @map("provider_id")
+  providerAccountId String @map("provider_account_id")
   userId            String @map("user_id")
-  user              User   @relation(fields: [userId], references: [id])
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // grid
+  width  Int
+  height Int
+  cells  Cell[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([providerId, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
@@ -27,10 +72,12 @@ model Session {
   sessionToken String   @unique @map("session_token")
   // ? accessToken  String   @unique @map("access_token")
   userId       String   @map("user_id")
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("sessions")
 }
 
 model User {
@@ -45,4 +92,6 @@ model User {
 
   accounts Account[]
   sessions Session[]
+
+  @@map("users")
 }
